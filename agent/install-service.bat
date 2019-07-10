@@ -1,0 +1,1 @@
+sc create "Eze Agent2" binpath= "D:\Repo\jeff\oms-site-installer\agent\bin\Debug\netcoreapp2.2\win-x64\Eze.Agent.exe"

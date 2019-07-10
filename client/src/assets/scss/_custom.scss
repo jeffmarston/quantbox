@@ -1,0 +1,85 @@
+// Here you can add other styles
+
+body {
+  background: white;
+}
+
+.main .container-fluid {
+  padding: 0 10px;
+}
+.breadcrumb {
+  margin-bottom: 10px;
+}
+
+.row {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.btn {
+  margin: 4px 6px 4px 0;
+}
+.btn-primary {
+  background-color: rgb(41, 136, 46);
+  border-color: #20d82f;
+}
+
+.ag-theme-balham {
+  .ag-row:not(.ag-row-first) {
+    border-width: 0;
+  }
+  font-size: 14px;
+}
+
+a {
+  color: #20d82f;
+}
+
+.app-header {
+  background-color: rgb(0, 0, 0);
+  color: white;
+  border: none;
+}
+
+.sidebar {
+  background-color: rgb(0, 0, 0);
+  .nav-link.active {
+    background-color: rgb(17, 54, 20);
+    .nav-icon {
+      color: #20d82f;
+    }
+  }
+  .nav-link:hover {
+    background-color: rgb(41, 136, 46);
+  }
+  .nav-title {
+    color: #73818f;
+  }
+}
+
+.breadcrumb {
+  background: #272826;
+  color: white;
+}
+
+.app-footer {
+  background: #272826;
+}
+
+* {
+  font-family: "Source Code Pro", monospace;
+  font-family: "Roboto", sans-serif;
+}
+
+h4 {
+    font-family: "Rosario", sans-serif;
+}
+
+html:not([dir="rtl"]) .aside-menu{
+  margin-right: -50%;
+}
+
+.aside-menu {
+  width: 50%;  
+  margin-right: -600px;
+}
