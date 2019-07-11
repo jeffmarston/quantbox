@@ -1,9 +1,10 @@
 const signalR = require('@aspnet/signalr');
+const env = require("../environment.config.json");
 
 var readyFunction = null;
 
 let connection = new signalR.HubConnectionBuilder()
-  .withUrl("http://localhost:5000/MasterHub")
+  .withUrl(env.serverAddress + "/MasterHub")
   .build();
 
 connection.start().then(function () {

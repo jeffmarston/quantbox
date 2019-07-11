@@ -14,15 +14,15 @@ namespace Eze.Quantbox
         public EmsAdapter()
         {
             _app = new TalipcToolkitApp();
-            
+
             // TODO get from settings manager
-            GatewayMachine = "";
-            Service = "";
-            Topic = "";
-            Bank = "";
-            Branch = "";
-            Customer = "";
-            Deposit = "";
+            GatewayMachine = "stgtsperf1.dev.local";
+            Service = "ACCOUNT_GATEWAY";
+            Topic = "ORDER";
+            Bank = "VALENTINE";
+            Branch = "WINTHROPE";
+            Customer = "MORTIMER";
+            Deposit = "NEUTRAL";
 
             _query = _app.GetAsyncQuery(GatewayMachine, Service, Topic);
             _query.OnTerminate += OnTerminate;

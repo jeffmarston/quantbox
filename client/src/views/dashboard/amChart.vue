@@ -2,10 +2,20 @@
   <b-card>
     <div slot="header">
       <b-row>
-        <b-col sm="5">
+        <b-col sm="2" class="card-enabled-indicator">
+          <span v-if="algo.enabled">
+            Enabled
+            <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
+          </span>
+          <span v-if="!algo.enabled">
+            Disabled
+            <img class="img-active-state" src="img/ux-i-offline.svg" alt="Active" />
+          </span>
+        </b-col>
+        <b-col md="8">
           <h4 id="traffic" class="card-title mb-0">{{ algo.name }}</h4>
         </b-col>
-        <b-col sm="7" class="d-none d-md-block">
+        <b-col md="2" class>
           <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
             <i v-if="algo.enabled" class="fa fa-toggle-on" @click="changeEnabled(algo, false)"></i>
             <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="changeEnabled(algo, true)"></i>
@@ -13,7 +23,17 @@
         </b-col>
       </b-row>
     </div>
-    <div class="hello" ref="chartdiv"></div>
+    <b-row>
+      <b-col sm="3">
+        <h5>Trades Created</h5>
+        <h3 class="trade-count" :class="{ blinky: newTrades }">{{ algo.tradesCreated }}</h3>
+        <h5>Compliance Violations</h5>
+        <h3 class="trade-count" :class="{ blinky: newViolations }">0</h3>
+      </b-col>
+      <b-col sm="9">
+        <div class="hello" ref="chartdiv"></div>
+      </b-col>
+    </b-row>
   </b-card>
 </template>
 
@@ -24,6 +44,7 @@ import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import { setInterval } from "timers";
 import { last } from "@amcharts/amcharts4/.internal/core/utils/Array";
 import { getAlgos, enableAlgos } from "../../shared/algoProvider";
+import { random } from "@amcharts/amcharts4/.internal/core/utils/String";
 
 am4core.useTheme(am4themes_animated);
 
@@ -40,15 +61,16 @@ export default {
       enableAlgos(algo.name, shouldEnable).then(o => {});
     }
   },
-  watch: {
-    history(newValue, oldValue) {
-      console.log(" =============history=============== ");
-      console.log(newValue);
-    },
-    algo(newValue, oldValue) {
-      console.log(" =============algo=============== ");
-      console.log(newValue);
-      this.myAlgo = newValue;
+  computed: {
+    newTrades: function() {
+      if (this.algo.history.length >= 2) {
+        let lastElement = this.algo.history[this.algo.history.length - 1];
+        let penultimate = this.algo.history[this.algo.history.length - 2];
+        if (lastElement.value !== penultimate.value) {
+          return true;
+        }
+      }
+      return false;
     }
   },
   mounted() {
@@ -76,9 +98,11 @@ export default {
     // -------------------------------------------------------------
 
     setInterval(() => {
+      this.newViolations = false;
       var history = this.algo.history;
       var rightNow = new Date().setMilliseconds(0);
-      var lastElement = (history.length > 0) ? history[history.length-1] : null;
+      var lastElement = history.length > 0 ? history[history.length - 1] : null;
+
       if (lastElement && lastElement.date < new Date()) {
         history.push({
           date: rightNow,
@@ -86,11 +110,11 @@ export default {
           value: lastElement.value
         });
       }
+
       chart.data = this.algo.history;
     }, 1000);
 
     // -------------------------------------------------------------
-
 
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
     dateAxis.renderer.grid.template.location = 0;
@@ -127,6 +151,33 @@ export default {
 </script>
 
 <style scoped>
+.card-header {
+  padding: 6px;
+}
+
+.img-active-state {
+  margin-left: 6px;
+  margin-top: -2px;
+}
+
+@keyframes blink {
+  0% {
+    color: rgba(0, 200, 0, 0.9);
+  }
+  100% {
+    color: rgba(0, 0, 0, 1);
+  }
+}
+.blinky {
+  color: rgba(0, 200, 0, 1);
+  animation: blink normal 200ms linear;
+}
+
+.card-enabled-indicator {
+  border-right: 1px solid #ccc;
+  margin-top: 6px;
+}
+
 .fa-toggle-on {
   font-size: 32px;
   color: #4dbd74;

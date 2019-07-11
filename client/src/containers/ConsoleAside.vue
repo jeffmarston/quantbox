@@ -7,14 +7,7 @@
 <script>
 import SignalrHub from "../shared/SignalrHub";
 let signalrHub = null;
-let onReady = function() {
-  try {
-    signalrHub.subscribe("localhost", "");
-  } catch (e) {
-    console.error("Failed to subscribe to SignalR updates: ");
-    console.error(e);
-  }
-};
+let onReady = function() {};
 signalrHub = new SignalrHub(onReady);
 let conn = signalrHub.connection;
 

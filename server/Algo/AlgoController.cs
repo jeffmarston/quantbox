@@ -1,9 +1,7 @@
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using System.Timers;
 
 namespace Eze.Quantbox.Environment
 {
@@ -17,12 +15,25 @@ namespace Eze.Quantbox.Environment
         {
             AlgoMaster = algoMaster;
         }
-    
+
 
         // GET api/algo
         [HttpGet]
         public ActionResult<List<AbstractAlgoModel>> Get()
         {
+            // hack to publish shortly after it's requested, since the client doesn't want to update with the results returned from the REST call.
+            var timer = new Timer();
+            timer.Interval = 2000;
+            timer.Elapsed += (object sender, ElapsedEventArgs e) =>
+            {
+                foreach (var algo in AlgoMaster.Algos)
+                {
+                    algo.PublishState();
+                }
+                timer.Enabled = false;
+            };
+            timer.Enabled = true;
+
             return AlgoMaster.Algos;
         }
 

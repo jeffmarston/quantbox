@@ -2,8 +2,8 @@
   <div class="animated fadeIn">
     <div class="left-half">
       <b-row>
-        <b-col md="12" lg="6" v-for="(algo, idx) in allAlgos" v-bind:key="idx">
-          <amChart style="height: 250px;" v-bind:algo="algo"></amChart>
+        <b-col md="12" lg="12" v-for="(algo, idx) in allAlgos" :key="idx">
+          <amChart style="height: 250px;" :algo="algo"></amChart>
         </b-col>
       </b-row>
     </div>
@@ -25,15 +25,7 @@ import { setInterval } from "timers";
 const _ = require("lodash");
 
 let signalrHub = null;
-let onReady = function() {
-  try {
-    signalrHub.subscribe("localhost", "");
-  } catch (e) {
-    console.error("Failed to subscribe to SignalR updates: ");
-    console.error(e);
-  }
-};
-
+let onReady = function() {};
 signalrHub = new SignalrHub(onReady);
 let conn = signalrHub.connection;
 
@@ -65,6 +57,7 @@ export default {
             let newGuy = this.allAlgos[i];
             newGuy.enabled = updatedAlgo.enabled;
             newGuy.tradesCreated = updatedAlgo.tradesCreated;
+            newGuy.violations = updatedAlgo.violations;
             newGuy.history = [];
 
             // transform into chart datapoints

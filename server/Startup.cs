@@ -37,8 +37,11 @@ namespace Eze.Quantbox
                 .WithOrigins(
                   "http://localhost:8080"
                 , "http://localhost:5000"
-                , "http://192.168.1.100:5000"
-                , "http://192.168.1.100:8080");
+                , "http://marston7060.ezesoft.net:8080"
+                , "http://marston7060.ezesoft.net:5000"
+                , "http://marston7060:5000"
+                , "http://marston7060:8080")
+                ;
             }));
             services.AddSignalR();
             services.AddSingleton(new AlgoMaster());
@@ -60,6 +63,7 @@ namespace Eze.Quantbox
                 routes.MapHub<MasterHub>("/MasterHub");
             });
             app.UseMvcWithDefaultRoute();
+           // app.UseUrls("http://*:1000", "https://*:1234", "http://0.0.0.0:5000")
 
             System.Console.WriteLine("API docs at: /swagger/");
         }
