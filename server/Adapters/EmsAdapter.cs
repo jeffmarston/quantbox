@@ -14,15 +14,15 @@ namespace Eze.Quantbox
         public EmsAdapter()
         {
             _app = new TalipcToolkitApp();
-            
+
             // TODO get from settings manager
-            GatewayMachine = "";
-            Service = "";
-            Topic = "";
-            Bank = "";
-            Branch = "";
-            Customer = "";
-            Deposit = "";
+            GatewayMachine = "stgtsperf1.dev.local";
+            Service = "ACCOUNT_GATEWAY";
+            Topic = "ORDER";
+            Bank = "VALENTINE";
+            Branch = "WINTHROPE";
+            Customer = "MORTIMER";
+            Deposit = "NEUTRAL";
 
             _query = _app.GetAsyncQuery(GatewayMachine, Service, Topic);
             _query.OnTerminate += OnTerminate;
@@ -85,27 +85,33 @@ namespace Eze.Quantbox
                 return false;
             }
 
-            var data = new DataBlock();
+            List<Row> rows = new List<Row>();
             foreach (var trade in trades)
             {
                 var row = new Row();
 
-                row.Add(new Field("TYPE", FieldType.StringScalar, "USERSUBMITSTAGEDORDER"));
+                row.Add(new Field("TYPE", FieldType.StringScalar, "UserSubmitStagedOrder"));
                 row.Add(new Field("BANK", FieldType.StringScalar, Bank));
                 row.Add(new Field("BRANCH", FieldType.StringScalar, Branch));
                 row.Add(new Field("CUSTOMER", FieldType.StringScalar, Customer));
                 row.Add(new Field("DEPOSIT", FieldType.StringScalar, Deposit));
                 row.Add(new Field("DISP_NAME", FieldType.StringScalar, trade.Symbol));
                 row.Add(new Field("VOLUME", FieldType.DoubleScalar, trade.Amount));
-                row.Add(new Field("PRICE_TYPE", FieldType.StringScalar, "MKT"));
+                row.Add(new Field("VOLUME_TYPE", FieldType.StringScalar, "AsEntered"));
+                row.Add(new Field("PRICE_TYPE", FieldType.StringScalar, "Market"));
                 row.Add(new Field("PRICE", FieldType.PriceScalar, new Price("0.0")));
                 row.Add(new Field("GOOD_UNTIL", FieldType.StringScalar, "DAY"));
                 row.Add(new Field("BUYORSELL", FieldType.StringScalar, "BUY"));
+                row.Add(new Field("EXIT_VEHICLE", FieldType.StringScalar, "NONE"));
+                row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
+                row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));
+                row.Add(new Field("STYP", FieldType.IntScalar, 1)); // STOCK
 
-                data.Add(row);
+                rows.Add(row);
             }
 
-            _query.Poke("", data.ConvertToBinary());
+            var data = new DataBlock(rows.ToArray());
+            _query.Poke("ORDERS;*;", data.ConvertToBinary());
             return true;
         }
 

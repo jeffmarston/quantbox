@@ -8,9 +8,14 @@ namespace Eze.Quantbox
 
     public class CsvAdapter: ITradingSystemAdapter
     {
+        private const string csvFolder = @"csv\";
         public CsvAdapter()
         {
             Filename = "GeneratedTrades.csv";
+            if (!Directory.Exists(csvFolder))
+            {
+                Directory.CreateDirectory(csvFolder);
+            }
         }
         public string Filename { get; internal set; }
         private static object _lockObj = new object();
@@ -33,7 +38,7 @@ namespace Eze.Quantbox
             }
             lock (_lockObj)
             {
-                File.WriteAllText("csv\\" + Filename + "_" + trades[0].Algo, sb.ToString());
+                File.WriteAllText(csvFolder + Filename + "_" + trades[0].Algo, sb.ToString());
             }
             return true;
         }

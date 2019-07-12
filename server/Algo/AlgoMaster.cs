@@ -39,8 +39,8 @@ namespace Eze.Quantbox
                 algos = JsonConvert.DeserializeObject<List<AbstractAlgoModel>>(txt);
             }
 
-            //var adapter = new EmsAdapter();
-            var adapter = new CsvAdapter();
+            var adapter = new EmsAdapter();
+            //var adapter = new CsvAdapter();
 
             algos = new List<AbstractAlgoModel>() {
                 new RapidAlgo() { Name = "Algo1", Adapter = adapter, Enabled = true },
