@@ -15,7 +15,6 @@ namespace Eze.Quantbox
         {
             _app = new TalipcToolkitApp();
 
-            // TODO get from settings manager
             GatewayMachine = "stgtsperf1.dev.local";
             Service = "ACCOUNT_GATEWAY";
             Topic = "ORDER";
@@ -85,7 +84,7 @@ namespace Eze.Quantbox
                 return false;
             }
 
-            List<Row> rows = new List<Row>();
+            var data = new DataBlock();
             foreach (var trade in trades)
             {
                 var row = new Row();
@@ -96,7 +95,7 @@ namespace Eze.Quantbox
                 row.Add(new Field("CUSTOMER", FieldType.StringScalar, Customer));
                 row.Add(new Field("DEPOSIT", FieldType.StringScalar, Deposit));
                 row.Add(new Field("DISP_NAME", FieldType.StringScalar, trade.Symbol));
-                row.Add(new Field("VOLUME", FieldType.DoubleScalar, trade.Amount));
+                row.Add(new Field("VOLUME", FieldType.IntScalar, trade.Amount));
                 row.Add(new Field("VOLUME_TYPE", FieldType.StringScalar, "AsEntered"));
                 row.Add(new Field("PRICE_TYPE", FieldType.StringScalar, "Market"));
                 row.Add(new Field("PRICE", FieldType.PriceScalar, new Price("0.0")));
@@ -106,12 +105,12 @@ namespace Eze.Quantbox
                 row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
                 row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));
                 row.Add(new Field("STYP", FieldType.IntScalar, 1)); // STOCK
-
-                rows.Add(row);
+                
+                data.Add(row);
             }
 
-            var data = new DataBlock(rows.ToArray());
             _query.Poke("ORDERS;*;", data.ConvertToBinary());
+
             return true;
         }
 
