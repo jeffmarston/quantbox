@@ -39,13 +39,13 @@ namespace Eze.Quantbox
                 algos = JsonConvert.DeserializeObject<List<AbstractAlgoModel>>(txt);
             }
 
-            var adapter = new EmsAdapter();
-            //var adapter = new CsvAdapter();
+            // var emsAdapter = new EmsAdapter();
+            var csvAdapter = new CsvAdapter();
 
             algos = new List<AbstractAlgoModel>() {
-                new RapidAlgo() { Name = "Algo1", Adapter = adapter, Enabled = true },
-                new SlowBatchAlgo() { Name = "Algo2", Adapter = adapter, Enabled = true },
-                new SlowBatchAlgo() { Name = "Algo3", Adapter = adapter, Enabled = false }
+                new RapidAlgo() { Name = "Algo1", Adapter = csvAdapter, Enabled = true },
+                new SlowBatchAlgo() { Name = "Algo2", Adapter = csvAdapter, Enabled = true },
+                new SlowBatchAlgo() { Name = "Algo3", Adapter = csvAdapter, Enabled = false }
             };
             foreach (var algo in algos)
             {

@@ -19,7 +19,7 @@ namespace Eze.Quantbox
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (this.Enabled && _rand.Next(5)==0)
+            if (this.Enabled && _rand.Next(2)==0)
             {
                 var numTrades = _rand.Next(1, 4);
                 var tradesToCreate = new List<Trade>();

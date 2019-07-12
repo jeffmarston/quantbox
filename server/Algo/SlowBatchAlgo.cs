@@ -19,7 +19,7 @@ namespace Eze.Quantbox
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (this.Enabled && _rand.Next(6) == 0)
+            if (this.Enabled && _rand.Next(4) == 0)
             {
                 var numTrades = _rand.Next(4, 8)*20;
                 var tradesToCreate = new List<Trade>();
@@ -39,6 +39,11 @@ namespace Eze.Quantbox
                 }
                 Adapter.CreateTrades(tradesToCreate);
                 TradesCreated += numTrades;
+                if (_rand.Next(1, 100) > 95)
+                {
+                    // 5% chance of failing 5% of the batch
+                    Violations += Convert.ToInt32(numTrades * 0.05);
+                }
                 PublishState();
             }
             else

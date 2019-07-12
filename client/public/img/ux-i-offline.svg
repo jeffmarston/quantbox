@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Icons/Status/ux-i-offline</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M8,13 C10.7614237,13 13,10.7614237 13,8 C13,5.23857625 10.7614237,3 8,3 C5.23857625,3 3,5.23857625 3,8 C3,10.7614237 5.23857625,13 8,13 Z M8,15 C4.13400675,15 1,11.8659932 1,8 C1,4.13400675 4.13400675,1 8,1 C11.8659932,1 15,4.13400675 15,8 C15,11.8659932 11.8659932,15 8,15 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="AlgoOff" transform="translate(-5.000000, -5.000000)">
+            <g id="Icons/Status/ux-i-offline" transform="translate(4.000000, 4.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Online-Circle" fill="#000000" fill-rule="nonzero" transform="translate(8.000000, 8.000000) rotate(90.000000) translate(-8.000000, -8.000000) " xlink:href="#path-1"></use>
+                <g id="Color/Fill/Icon/default" mask="url(#mask-2)" fill="#90A4AE" fill-rule="evenodd">
+                    <rect id="Background" x="0" y="0" width="16" height="16"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,25 +1,17 @@
 <template>
   <div class="app">
     <AppHeader fixed>
-      <SidebarToggler class="d-lg-none" display="md" mobile />
-      <!-- <b-link class="navbar-brand" to="#">
-        <img class="navbar-brand-full" src="img/brand/logo.svg" width="170" height="55" alt="Ezesoft Logo">
-        <img class="navbar-brand-minimized" src="img/brand/sygnet.svg" width="30" height="30" alt="Ezesoft Logo">
-      </b-link>-->
-      <SidebarToggler class="d-md-down-none" display="lg" />
+      <!-- <SidebarToggler class="d-lg-none" display="md" mobile />
+      <SidebarToggler class="d-md-down-none" display="lg" /> -->
 
-      <h4>Quantraceptive</h4>
+      <h4 style="margin-left: 20px;">Quantraceptive</h4>
 
       <b-navbar-nav class="ml-auto">
-        <!-- <b-nav-item class="d-md-down-none" to="/alerts">
-          <i class="icon-bell"></i>
-          <b-badge pill variant="danger">3</b-badge>
-        </b-nav-item> 
-        <DefaultHeaderDropdownAccnt/>-->
-        <AsideToggler class="d-none d-lg-block" />
+        <AsideToggler class="d-none d-lg-block" :value="false"/>
       </b-navbar-nav>
     </AppHeader>
     <div class="app-body">
+
       <AppSidebar fixed>
         <SidebarHeader />
         <SidebarForm />
@@ -27,6 +19,7 @@
         <SidebarFooter />
         <SidebarMinimizer />
       </AppSidebar>
+
       <main class="main">
         <Breadcrumb :list="list" />
         <div class="container-fluid">

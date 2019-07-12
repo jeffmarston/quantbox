@@ -15,6 +15,7 @@ namespace Eze.Quantbox
         public ITradingSystemAdapter Adapter { protected get; set; }
         public string Name { get; set; }
         public bool Enabled { get; set; }
+        public int Violations { get; set; }
         public int TradesCreated
         {
             get => _tradesCreated;
