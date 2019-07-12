@@ -53,7 +53,7 @@ namespace Eze.Quantbox
         {
             if (Publisher != null)
             {
-                Publisher.SendAsync("console", msg);
+                Publisher.SendAsync("console", msg, Name);
                 Debug.WriteLine(msg);
             }
         }

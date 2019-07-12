@@ -1,21 +1,27 @@
 <template>
   <div class="animated fadeIn">
-    <div class="left-half">
+    <div class="top-bar">
       <b-row>
-        <b-col md="12" lg="12" v-for="(algo, idx) in allAlgos" :key="idx">
-          <amChart style="height: 250px;" :algo="algo"></amChart>
+        <b-col md="12" lg="12">
+          <h4>Trading Algorithms</h4>
+          <b-button class="top-bar-button" variant="primary"><i class="fa fa-plus"></i>Create New</b-button>
         </b-col>
       </b-row>
     </div>
 
-    <!-- <div class="right-half">
-      Hello worldly world
-    </div>-->
+    <div class="card-view">
+      <b-row>
+        <b-col md="12" lg="12" v-for="(algo, idx) in allAlgos" :key="idx">
+          <algo-card :algo="algo"></algo-card>
+        </b-col>
+      </b-row>
+    </div>
+
   </div>
 </template>
 
 <script>
-import amChart from "./amChart";
+import AlgoCard from "./AlgoCard";
 import SignalrHub from "../../shared/SignalrHub";
 import { Callout, Switch as cSwitch } from "@coreui/vue";
 import { getAlgos, enableAlgos } from "../../shared/algoProvider";
@@ -32,16 +38,17 @@ let conn = signalrHub.connection;
 export default {
   name: "algo-dash",
   components: {
-    amChart,
+    AlgoCard,
     cSwitch
   },
   mounted() {
     getAlgos().then(o => {
       o.forEach(algo => {
+        algo.lastMsg = "";
         this.allAlgos.push(algo);
         //algo.history = [];
       });
-      this.subscribeToChange(this.allAlgos);
+      this.subscribeToChange();
     });
   },
   data: function() {
@@ -50,14 +57,13 @@ export default {
     };
   },
   methods: {
-    subscribeToChange(algos) {
+    subscribeToChange() {
       conn.on("algos", updatedAlgo => {
         for (let i = 0; i < this.allAlgos.length; i++) {
           if (this.allAlgos[i].name === updatedAlgo.name) {
             let newGuy = this.allAlgos[i];
             newGuy.enabled = updatedAlgo.enabled;
             newGuy.tradesCreated = updatedAlgo.tradesCreated;
-            newGuy.violations = updatedAlgo.violations;
             newGuy.history = [];
 
             // transform into chart datapoints
@@ -73,20 +79,33 @@ export default {
           }
         }
       });
+
+      conn.on("console", (msg, algoName) => {
+        for (let i = 0; i < this.allAlgos.length; i++) {
+          if (this.allAlgos[i].name === algoName) {
+            let newGuy = this.allAlgos[i];            
+            newGuy.lastMsg = "[" + new Date().toLocaleTimeString() + "] " + msg;
+            this.allAlgos[i] = newGuy;
+          }
+        }
+      });
     }
   }
 };
 </script>
 
 <style scoped>
-.left-half {
-  width: 100%;
-  float: left;
+h4 {
+  display: inline-block;
+  margin-top: 7px;
 }
-.right-half {
-  width: 0;
-  height: 100%;
-  background: darkred;
+.top-bar {
+  margin: 8px;
+}
+.fa-plus {
+  margin-right: 10px;
+}
+.top-bar-button {
   float: right;
 }
 </style>

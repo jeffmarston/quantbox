@@ -4,12 +4,12 @@
       <b-row>
         <b-col sm="2" class="card-enabled-indicator">
           <span v-if="algo.enabled">
-            Enabled
             <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
+            Enabled
           </span>
           <span v-if="!algo.enabled">
-            Disabled
             <img class="img-active-state" src="img/ux-i-offline.svg" alt="Active" />
+            Disabled
           </span>
         </b-col>
         <b-col md="8">
@@ -23,17 +23,34 @@
         </b-col>
       </b-row>
     </div>
+
     <b-row>
       <b-col sm="3">
-        <h5>Trades Created</h5>
-        <h3 class="trade-count" :class="{ blinky: newTrades }">{{ algo.tradesCreated }}</h3>
-        <h5>Compliance Violations</h5>
-        <h3 class="trade-count" :class="{ blinky: newViolations }">0</h3>
+        <div class="card-summary-panel">
+          <strong>Trades Created</strong>
+          <h3 class="trade-count" :class="{ blinky: newTrades }">{{ algo.tradesCreated }}</h3>
+          <a href="reviewTrades">Review Trades</a>
+        </div>
+        <div class="card-summary-panel">
+          <strong>Compliance Violations</strong>
+          <h3 class="trade-count">0</h3>
+          <a href="reviewCompliance">Review Compliance Alerts</a>
+        </div>
       </b-col>
+      <!-- <b-col sm="2">
+        <div class="card-summary-panel">
+          <strong>Today's PL</strong>
+          <h3 class="trade-count">{{ todaysPL }}</h3>
+        </div>
+      </b-col>-->
       <b-col sm="9">
         <div class="hello" ref="chartdiv"></div>
       </b-col>
     </b-row>
+
+    <div slot="footer">
+      <span>{{lastMsg}}</span>
+    </div>
   </b-card>
 </template>
 
@@ -49,11 +66,12 @@ import { random } from "@amcharts/amcharts4/.internal/core/utils/String";
 am4core.useTheme(am4themes_animated);
 
 export default {
-  name: "HelloWorld",
+  name: "AlgoCard",
   props: ["algo"],
   data: function() {
     return {
-      chartData: []
+      chartData: [],
+      todaysPL: "$5,367.89"
     };
   },
   methods: {
@@ -71,6 +89,9 @@ export default {
         }
       }
       return false;
+    },
+    lastMsg: function() {
+      return this.algo.lastMsg;
     }
   },
   mounted() {
@@ -98,7 +119,6 @@ export default {
     // -------------------------------------------------------------
 
     setInterval(() => {
-      this.newViolations = false;
       var history = this.algo.history;
       var rightNow = new Date().setMilliseconds(0);
       var lastElement = history.length > 0 ? history[history.length - 1] : null;
@@ -151,10 +171,6 @@ export default {
 </script>
 
 <style scoped>
-.card-header {
-  padding: 6px;
-}
-
 .img-active-state {
   margin-left: 6px;
   margin-top: -2px;
@@ -176,6 +192,7 @@ export default {
 .card-enabled-indicator {
   border-right: 1px solid #ccc;
   margin-top: 6px;
+  padding: 0;
 }
 
 .fa-toggle-on {
@@ -185,5 +202,35 @@ export default {
 .fa-toggle-off {
   font-size: 32px;
   color: gray;
+}
+a {
+  color: #20a8d8;
+  font-size: 12px;
+}
+
+.card {
+  border-radius: 0;
+  border-bottom: none;
+}
+.card-header {
+  padding: 6px;
+}
+.card-body {
+  padding: 10px 0 0 0;
+}
+.card-summary-panel {
+  min-width: 170px;
+  margin: 10px 0 10px 0;
+}
+.card-summary-panel h3 {
+  margin: 0;
+}
+.card-footer {
+  padding: 4px 8px;
+  background-color: #000000;
+  border-bottom: 1px solid #c8ced3;
+  border-top: 1px solid #c8ced3;
+  color: #20d82f;
+  min-height: 30px;
 }
 </style>
