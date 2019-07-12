@@ -15,7 +15,6 @@ namespace Eze.Quantbox
         {
             _app = new TalipcToolkitApp();
 
-            // TODO get from settings manager
             GatewayMachine = "stgtsperf1.dev.local";
             Service = "ACCOUNT_GATEWAY";
             Topic = "ORDER";
@@ -90,22 +89,28 @@ namespace Eze.Quantbox
             {
                 var row = new Row();
 
-                row.Add(new Field("TYPE", FieldType.StringScalar, "USERSUBMITSTAGEDORDER"));
+                row.Add(new Field("TYPE", FieldType.StringScalar, "UserSubmitStagedOrder"));
                 row.Add(new Field("BANK", FieldType.StringScalar, Bank));
                 row.Add(new Field("BRANCH", FieldType.StringScalar, Branch));
                 row.Add(new Field("CUSTOMER", FieldType.StringScalar, Customer));
                 row.Add(new Field("DEPOSIT", FieldType.StringScalar, Deposit));
                 row.Add(new Field("DISP_NAME", FieldType.StringScalar, trade.Symbol));
-                row.Add(new Field("VOLUME", FieldType.DoubleScalar, trade.Amount));
-                row.Add(new Field("PRICE_TYPE", FieldType.StringScalar, "MKT"));
+                row.Add(new Field("VOLUME", FieldType.IntScalar, trade.Amount));
+                row.Add(new Field("VOLUME_TYPE", FieldType.StringScalar, "AsEntered"));
+                row.Add(new Field("PRICE_TYPE", FieldType.StringScalar, "Market"));
                 row.Add(new Field("PRICE", FieldType.PriceScalar, new Price("0.0")));
                 row.Add(new Field("GOOD_UNTIL", FieldType.StringScalar, "DAY"));
                 row.Add(new Field("BUYORSELL", FieldType.StringScalar, "BUY"));
-
+                row.Add(new Field("EXIT_VEHICLE", FieldType.StringScalar, "NONE"));
+                row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
+                row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));
+                row.Add(new Field("STYP", FieldType.IntScalar, 1)); // STOCK
+                
                 data.Add(row);
             }
 
-            _query.Poke("", data.ConvertToBinary());
+            _query.Poke("ORDERS;*;", data.ConvertToBinary());
+
             return true;
         }
 
