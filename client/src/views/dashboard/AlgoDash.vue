@@ -4,14 +4,14 @@
       <b-row>
         <b-col md="12" lg="12">
           <h4>Trading Algorithms</h4>
-          <b-button class="top-bar-button" variant="primary"><i class="fa fa-plus"></i>Create New</b-button>
+          <b-button class="top-bar-button" variant="primary" @click="newAlgo"><i class="fa fa-plus"></i>Create New</b-button>
         </b-col>
       </b-row>
     </div>
 
     <div class="card-view">
       <b-row>
-        <b-col md="12" lg="12" v-for="(algo, idx) in allAlgos" :key="idx">
+        <b-col lg="6" xs="12" v-for="(algo, idx) in allAlgos" :key="idx">
           <algo-card :algo="algo"></algo-card>
         </b-col>
       </b-row>
@@ -100,7 +100,7 @@ h4 {
   margin-top: 7px;
 }
 .top-bar {
-  margin: 8px;
+  margin: 8px 0;
 }
 .fa-plus {
   margin-right: 10px;

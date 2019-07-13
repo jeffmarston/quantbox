@@ -38,12 +38,12 @@ router.addRoutes([
     {
       path: '/',
       redirect: '/dashboard',
-      name: 'home',
+      name: 'Home',
       component: DefaultContainer,
       children: [
         {
           path: 'dashboard',
-          name: 'dashboard',
+          name: 'Dashboard',
           component: AlgoDash
         },
         {

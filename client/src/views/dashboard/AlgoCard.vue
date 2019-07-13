@@ -2,7 +2,7 @@
   <b-card>
     <div slot="header">
       <b-row>
-        <b-col sm="2" class="card-enabled-indicator">
+        <b-col xs="2" class="card-enabled-indicator">
           <span v-if="algo.enabled">
             <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
             Enabled
@@ -12,10 +12,10 @@
             Disabled
           </span>
         </b-col>
-        <b-col md="8">
-          <h4 id="traffic" class="card-title mb-0">{{ algo.name }}</h4>
+        <b-col xs="8" class="card-header-block">
+          <h5  class="card-title mb-0">{{ algo.name }}</h5>
         </b-col>
-        <b-col md="2" class>
+        <b-col xs="2">
           <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
             <i v-if="algo.enabled" class="fa fa-toggle-on" @click="changeEnabled(algo, false)"></i>
             <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="changeEnabled(algo, true)"></i>
@@ -191,8 +191,7 @@ export default {
 
 .card-enabled-indicator {
   border-right: 1px solid #ccc;
-  margin-top: 6px;
-  padding: 0;
+  padding: 6px 0 0 0;
 }
 
 .fa-toggle-on {
@@ -213,7 +212,10 @@ a {
   border-bottom: none;
 }
 .card-header {
-  padding: 6px;
+  padding: 0 6px;
+}
+.card-header-block {
+  padding: 4px 6px;
 }
 .card-body {
   padding: 10px 0 0 0;
@@ -232,5 +234,10 @@ a {
   border-top: 1px solid #c8ced3;
   color: #20d82f;
   min-height: 30px;
+}
+.card-footer>div{
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>

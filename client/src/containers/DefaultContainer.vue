@@ -7,8 +7,8 @@
       <h4 style="margin-left: 20px;">Quantraceptive</h4>
 
       <b-navbar-nav class="ml-auto">
-        Open Console
-        <AsideToggler class="d-none d-lg-block" :value="false">Open Console</AsideToggler>
+        <span class="d-none d-lg-block">Open Console</span>
+        <AsideToggler class="d-none d-lg-block" :value="false"/>
       </b-navbar-nav>
     </AppHeader>
     <div class="app-body">

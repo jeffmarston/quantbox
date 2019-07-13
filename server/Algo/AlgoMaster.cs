@@ -43,9 +43,9 @@ namespace Eze.Quantbox
             var csvAdapter = new CsvAdapter();
 
             algos = new List<AbstractAlgoModel>() {
-                new RapidAlgo() { Name = "Algo1", Adapter = csvAdapter, Enabled = true },
-                new SlowBatchAlgo() { Name = "Algo2", Adapter = csvAdapter, Enabled = true },
-                new SlowBatchAlgo() { Name = "Algo3", Adapter = csvAdapter, Enabled = false }
+                new RapidAlgo() { Name = "Algorithm One", Adapter = csvAdapter, Enabled = true },
+                new SlowBatchAlgo() { Name = "Algorithm Two", Adapter = csvAdapter, Enabled = true },
+                new SlowBatchAlgo() { Name = "Algorithm Three", Adapter = csvAdapter, Enabled = false }
             };
             foreach (var algo in algos)
             {
