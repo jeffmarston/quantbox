@@ -2,13 +2,6 @@
   <div class="animated fadeIn">
     <b-row>
       <b-col xl="12">
-        <b-button variant="primary">
-          <i class="icon-save" />&nbsp;Save
-        </b-button>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col xl="12">
         <codemirror ref="myCm" :value="code" :options="cmOptions"></codemirror>
       </b-col>
     </b-row>
@@ -23,12 +16,19 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/mode/javascript/javascript.js";
 // theme css
 import "codemirror/theme/monokai.css";
+import { setTimeout } from 'timers';
 
 export default {
   name: "code-editor",
   components: { codemirror },
+  mounted() {
+    setTimeout(()=> {
+        this.$refs.myCm.refresh();
+    }, 100);
+  },
   data: () => {
     return {
+      myCm: {},
       code: `      
 import { ezePricing } from "eze-pricing";
 import { ezeEvents } from "eze-events";

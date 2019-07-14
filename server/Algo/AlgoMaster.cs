@@ -2,11 +2,14 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eze.Quantbox
 {
     public class AlgoMaster
     {
+        private static string _folderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Eze", "Quantbox");
+        private const string _filename = "config.json";
         private IClientProxy _publisher;
 
         public List<AbstractAlgoModel> Algos { get; internal set; }
@@ -30,38 +33,39 @@ namespace Eze.Quantbox
 
         private void Init()
         {
-            List<AbstractAlgoModel> algos;
-            string folderbase = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
-            string filePath = System.IO.Path.Combine(folderbase, "Eze", "Quantbox", "algos.json");
+            List<AbstractAlgoModel> algos = new List<AbstractAlgoModel>();
+            var adapter = new CsvAdapter();
+            // var adapter = new EmsAdapter();
+
+            string filePath = System.IO.Path.Combine(_folderPath, _filename);
             if (System.IO.File.Exists(filePath))
             {
                 string txt = System.IO.File.ReadAllText(filePath);
-                algos = JsonConvert.DeserializeObject<List<AbstractAlgoModel>>(txt);
-            }
-
-            // var emsAdapter = new EmsAdapter();
-            var csvAdapter = new CsvAdapter();
-
-            algos = new List<AbstractAlgoModel>() {
-                new RapidAlgo() { Name = "Algorithm One", Adapter = csvAdapter, Enabled = true },
-                new SlowBatchAlgo() { Name = "Algorithm Two", Adapter = csvAdapter, Enabled = true },
-                new SlowBatchAlgo() { Name = "Algorithm Three", Adapter = csvAdapter, Enabled = false }
-            };
-            foreach (var algo in algos)
+                var config = JsonConvert.DeserializeObject<QuantBoxConfig>(txt);
+                foreach (var metadata in config.Metadata)
+                {
+                    algos.Add(new RapidAlgo(metadata, adapter));
+                }
+            } else
             {
-                Console.WriteLine("Initialized: " + algo.Name);
+                // No config, create an initial one just for ease of demo
+                algos.Add(new RapidAlgo(new AlgoMetadata("Algorithm One"), adapter));
+                algos.Add(new RapidAlgo(new AlgoMetadata("Algorithm Two"), adapter));
+
             }
             Algos = algos;
         }
 
-        private void Save()
+        public void Save()
         {
-            string json = JsonConvert.SerializeObject(Algos);
-            string folderbase = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
-            string folderPath = System.IO.Path.Combine(folderbase, "Eze", "Quantbox");
+            var config = new QuantBoxConfig();
+            config.Metadata = from algo in Algos select algo.Metadata;
+            
+            string json = JsonConvert.SerializeObject(config);
+
             // If directory doesn't exist, create it
-            System.IO.Directory.CreateDirectory(folderPath);
-            System.IO.File.WriteAllText(System.IO.Path.Combine(folderPath, "algos.json"), json);
+            System.IO.Directory.CreateDirectory(_folderPath);
+            System.IO.File.WriteAllText(System.IO.Path.Combine(_folderPath, _filename), json);
         }
     }
 }

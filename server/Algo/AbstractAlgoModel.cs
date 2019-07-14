@@ -8,13 +8,15 @@ namespace Eze.Quantbox
 
     public abstract class AbstractAlgoModel
     {
-        protected List<string> Symbols = new List<string>() { "AAPL", "BBY", "COKE", "DELL", "ENR", "F", "GOOG", "HD" };
+        public AlgoMetadata Metadata { get; set; }
+        public AlgoState State { get; protected set; }
+
         private int _tradesCreated;
 
         public IClientProxy Publisher { protected get; set; }
-        public ITradingSystemAdapter Adapter { protected get; set; }
-        public string Name { get; set; }
-        public bool Enabled { get; set; }
+        protected ITradingSystemAdapter Adapter { get; set; }
+        public string Name { get; protected set; }
+        public bool Enabled { get => Metadata.Enabled; set => Metadata.Enabled = value; }
         public int Violations { get; set; }
         public int TradesCreated
         {
@@ -34,6 +36,7 @@ namespace Eze.Quantbox
                 });
             }
         }
+
         public IList<AlgoHistory> History { get; private set; }
 
         public AbstractAlgoModel()

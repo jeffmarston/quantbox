@@ -5,8 +5,10 @@
       <SidebarToggler class="d-md-down-none" display="lg" /> -->
 
       <h4 style="margin-left: 20px;">Quantraceptive</h4>
-
+      
+      
       <b-navbar-nav class="ml-auto">
+        <DefaultHeaderDropdownAccnt/>
         <span class="d-none d-lg-block">Open Console</span>
         <AsideToggler class="d-none d-lg-block" :value="false"/>
       </b-navbar-nav>

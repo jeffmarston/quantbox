@@ -13,7 +13,7 @@ namespace Eze.Quantbox
 
         public override string ToString()
         {
-            return $"(Symbol={Symbol}, Symbol={Side}, Symbol={Amount})";
+            return $"(Symbol={Symbol}, Side={Side}, Amount={Amount})";
         }
     }
 }

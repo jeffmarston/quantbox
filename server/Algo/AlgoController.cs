@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Timers;
 
-namespace Eze.Quantbox.Environment
+namespace Eze.Quantbox
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -49,6 +49,9 @@ namespace Eze.Quantbox.Environment
             }
             else
             {
+                foundAlgo.Metadata.Enabled = enabled;
+                AlgoMaster.Save();
+
                 foundAlgo.Enabled = enabled;
                 foundAlgo.PublishState();
                 foundAlgo.PublishToConsole((enabled ? "Enabled " : "Disabled ") + foundAlgo.Name);

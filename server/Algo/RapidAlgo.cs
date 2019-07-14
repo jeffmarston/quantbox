@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Timers;
-using Microsoft.AspNetCore.SignalR;
 
 namespace Eze.Quantbox
 {
@@ -10,8 +9,13 @@ namespace Eze.Quantbox
         private Random _rand = new Random();
         private Timer _timer = new Timer();
 
-        public RapidAlgo()
+        public RapidAlgo(AlgoMetadata metadata, ITradingSystemAdapter adapter)
         {
+            Name = metadata.Name;
+            Adapter = adapter;
+            Metadata = metadata;
+            State = new AlgoState();
+
             _timer.Interval = 1000;
             _timer.Elapsed += Timer_Elapsed;
             _timer.Enabled = true;
@@ -19,16 +23,20 @@ namespace Eze.Quantbox
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (this.Enabled && _rand.Next(2)==0)
+            if (this.Enabled && _rand.Next(Metadata.FrequencySec) == 0)
             {
-                var numTrades = _rand.Next(1, 4);
+                // Prevent crazy huge number of trades.
+                if (TradesCreated > 10000) {
+                    TradesCreated = 0;
+                }
+                var numTrades = _rand.Next(Metadata.MinBatchSize, Metadata.MaxBatchSize);
                 var tradesToCreate = new List<Trade>();
                 for (int i = 0; i < numTrades; i++)
                 {
                     var trade = new Trade()
                     {
-                        Symbol = Symbols[_rand.Next(0, Symbols.Count)],
-                        Side = "Buy",
+                        Symbol = Metadata.Symbols[_rand.Next(0, Metadata.Symbols.Count)],
+                        Side = (_rand.Next(100) < Metadata.BuyShortRatio) ? "Buy" : "Short",
                         Amount = _rand.Next(1, 40) * 100,
                         Trader = "JEFF",
                         Manager = "FO",

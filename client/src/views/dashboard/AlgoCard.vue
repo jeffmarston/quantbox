@@ -1,57 +1,55 @@
 <template>
-  <b-card>
-    <div slot="header">
-      <b-row>
-        <b-col xs="2" class="card-enabled-indicator">
-          <span v-if="algo.enabled">
-            <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
-            Enabled
-          </span>
-          <span v-if="!algo.enabled">
-            <img class="img-active-state" src="img/ux-i-offline.svg" alt="Active" />
-            Disabled
-          </span>
+    <b-card>
+      <div slot="header">
+        <b-row>
+          <b-col xs="2" class="card-enabled-indicator">
+            <span v-if="algo.enabled">
+              <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
+              Enabled
+            </span>
+            <span v-if="!algo.enabled">
+              <img class="img-active-state" src="img/ux-i-offline.svg" alt="Active" />
+              Disabled
+            </span>
+          </b-col>
+          <b-col xs="8" class="card-header-block">
+            <h5 class="card-title mb-0">{{ algo.name }}</h5>
+          </b-col>
+          <b-col xs="2">
+            <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
+              <a @click="toggleConfigMode" >Options...</a>
+              <i v-if="algo.enabled" class="fa fa-toggle-on" @click="toggleEnabled(algo, false)"></i>
+              <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="toggleEnabled(algo, true)"></i>
+            </b-button-toolbar>
+          </b-col>
+        </b-row>
+      </div>
+
+      <b-row  v-if="!configMode">
+        <b-col sm="3">
+          <div class="card-summary-panel">
+            <strong>Trades Created</strong>
+            <h3 class="trade-count" :class="{ blinky: newTrades }">{{ algo.tradesCreated }}</h3>
+            <a href="reviewTrades">Review Trades</a>
+          </div>
+          <div class="card-summary-panel">
+            <strong>Compliance Violations</strong>
+            <h3 class="trade-count">0</h3>
+            <a href="reviewCompliance">Review Compliance Alerts</a>
+          </div>
         </b-col>
-        <b-col xs="8" class="card-header-block">
-          <h5  class="card-title mb-0">{{ algo.name }}</h5>
-        </b-col>
-        <b-col xs="2">
-          <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
-            <i v-if="algo.enabled" class="fa fa-toggle-on" @click="changeEnabled(algo, false)"></i>
-            <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="changeEnabled(algo, true)"></i>
-          </b-button-toolbar>
+        <b-col sm="9">
+          <div class="hello" ref="chartdiv"></div>
         </b-col>
       </b-row>
-    </div>
 
-    <b-row>
-      <b-col sm="3">
-        <div class="card-summary-panel">
-          <strong>Trades Created</strong>
-          <h3 class="trade-count" :class="{ blinky: newTrades }">{{ algo.tradesCreated }}</h3>
-          <a href="reviewTrades">Review Trades</a>
-        </div>
-        <div class="card-summary-panel">
-          <strong>Compliance Violations</strong>
-          <h3 class="trade-count">0</h3>
-          <a href="reviewCompliance">Review Compliance Alerts</a>
-        </div>
-      </b-col>
-      <!-- <b-col sm="2">
-        <div class="card-summary-panel">
-          <strong>Today's PL</strong>
-          <h3 class="trade-count">{{ todaysPL }}</h3>
-        </div>
-      </b-col>-->
-      <b-col sm="9">
-        <div class="hello" ref="chartdiv"></div>
-      </b-col>
-    </b-row>
+      <algo-config :algoName="algo.name" v-if="configMode"></algo-config>    
 
-    <div slot="footer">
-      <span>{{lastMsg}}</span>
-    </div>
-  </b-card>
+      <div slot="footer">
+        <span>{{lastMsg}}</span>
+      </div>
+    </b-card>
+
 </template>
 
 <script>
@@ -62,21 +60,30 @@ import { setInterval } from "timers";
 import { last } from "@amcharts/amcharts4/.internal/core/utils/Array";
 import { getAlgos, enableAlgos } from "../../shared/algoProvider";
 import { random } from "@amcharts/amcharts4/.internal/core/utils/String";
+import AlgoConfig from "../admin/AlgoConfig";
 
 am4core.useTheme(am4themes_animated);
 
 export default {
   name: "AlgoCard",
+  components: {
+    AlgoConfig
+  },
   props: ["algo"],
   data: function() {
     return {
       chartData: [],
-      todaysPL: "$5,367.89"
+      configMode: false
     };
   },
   methods: {
-    changeEnabled(algo, shouldEnable) {
+    toggleEnabled(algo, shouldEnable) {
       enableAlgos(algo.name, shouldEnable).then(o => {});
+    },
+    toggleConfigMode() {
+      
+      this.$emit('showOptions', true);
+      this.configMode = !this.configMode;
     }
   },
   computed: {
@@ -203,6 +210,7 @@ export default {
   color: gray;
 }
 a {
+  text-decoration: underline;
   color: #20a8d8;
   font-size: 12px;
 }
@@ -235,7 +243,7 @@ a {
   color: #20d82f;
   min-height: 30px;
 }
-.card-footer>div{
+.card-footer > div {
   overflow-x: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
