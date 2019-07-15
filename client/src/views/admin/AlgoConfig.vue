@@ -2,7 +2,7 @@
   <div class="animated fadeIn">
     <b-form>
       <b-form-group label="Name" label-for="algoName" :label-cols="3">
-        <b-form-input id="algoName" type="text" :value="algoName"></b-form-input>
+        <b-form-input id="algoName" type="text" v-model="algoConfig.name"></b-form-input>
       </b-form-group>
 
       <b-form-group
@@ -28,9 +28,6 @@
       </b-form-group>
 
     </b-form>
-    <div slot="footer">
-      <b-button type="submit" variant="success" @click="save">Save</b-button>
-    </div>
   </div>
 </template>
 
@@ -62,8 +59,11 @@ export default {
       });
     },
     save() {
+      console.log(this.algoConfig);
+
       let mine = JSON.parse(JSON.stringify(this.algoConfig));
       mine.symbols = mine.symbols.split(",");
+      //mine.name = this.algoName;
 
       saveAlgoConfig(mine).then(o => {
         console.log("Saved: " + this.algoName);

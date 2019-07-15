@@ -48,14 +48,22 @@ namespace Eze.Quantbox
             var foundAlgo = AlgoMaster.Algos.Find(o => o.Name.ToLower().Trim() == algoName);
             if (foundAlgo == null)
             {
-                return NotFound();
+                if (string.IsNullOrWhiteSpace(config.Name))
+                {
+                    return BadRequest("Name not specified");
+                }
+
+                // Create a new one
+                // config.Name = algoName;
+                AlgoMaster.CreateAlgo(config);
+
+                AlgoMaster.Save();
+                return Accepted();
             }
             else
             {
                 foundAlgo.Metadata = config;
-                // Don't overwrite enabled
                 foundAlgo.Metadata.Enabled = foundAlgo.Enabled;
-
                 AlgoMaster.Save();
                 return Accepted();
             }

@@ -8,9 +8,10 @@ namespace Eze.Quantbox
 {
     public class AlgoMaster
     {
-        private static string _folderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Eze", "Quantbox");
-        private const string _filename = "config.json";
+        private readonly string _folderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Eze", "Quantbox");
+        private readonly string _filename = "config.json";
         private IClientProxy _publisher;
+        private readonly ITradingSystemAdapter _adapter = new CsvAdapter();
 
         public List<AbstractAlgoModel> Algos { get; internal set; }
         public IClientProxy Publisher
@@ -33,10 +34,6 @@ namespace Eze.Quantbox
 
         private void Init()
         {
-            List<AbstractAlgoModel> algos = new List<AbstractAlgoModel>();
-            var adapter = new CsvAdapter();
-            // var adapter = new EmsAdapter();
-
             string filePath = System.IO.Path.Combine(_folderPath, _filename);
             if (System.IO.File.Exists(filePath))
             {
@@ -44,16 +41,20 @@ namespace Eze.Quantbox
                 var config = JsonConvert.DeserializeObject<QuantBoxConfig>(txt);
                 foreach (var metadata in config.Metadata)
                 {
-                    algos.Add(new RapidAlgo(metadata, adapter));
+                    CreateAlgo(metadata);
                 }
             } else
             {
                 // No config, create an initial one just for ease of demo
-                algos.Add(new RapidAlgo(new AlgoMetadata("Algorithm One"), adapter));
-                algos.Add(new RapidAlgo(new AlgoMetadata("Algorithm Two"), adapter));
-
+                CreateAlgo(new AlgoMetadata("Algorithm One"));
             }
-            Algos = algos;
+        }
+
+        public AbstractAlgoModel CreateAlgo(AlgoMetadata metadata)
+        {
+            var newOne = new RapidAlgo(metadata, _adapter);
+            Algos.Add(newOne);
+            return newOne;
         }
 
         public void Save()

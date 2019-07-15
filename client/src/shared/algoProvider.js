@@ -24,8 +24,7 @@ export async function getAlgoConfig(algoName) {
 
 export async function saveAlgoConfig(algoConfig) {
     var saveConfig = algoConfig;
-    console.log("Save: " + JSON.stringify(algoConfig));
-    
+    console.log("Save: " + JSON.stringify(algoConfig));    
 
     var response = await fetch(
         env.serverAddress + "/api/Configuration/algo/" + algoConfig.name, {

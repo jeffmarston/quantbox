@@ -29,9 +29,9 @@ namespace Eze.Quantbox
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async Task Subscribe(string command, string serviceName)
-        {
-            // Really no need to use this now, since client sends data via REST API
-        }
+        //public async Task Subscribe(string command, string serviceName)
+        //{
+        //    // Really no need to use this now, since client sends data via REST API
+        //}
     }
 }

@@ -22,16 +22,16 @@
     <b-modal
       v-if="isEditMode"
       :title="editingAlgo.name"
-      size="lg"
+      size="xl"
       v-model="isEditMode"
-      @ok="myModal = false"
+      @ok="saveModal"
     >
       <b-tabs>
-        <b-tab active title="Code">
+        <b-tab title="Code">
           <code-editor></code-editor>
         </b-tab>
-        <b-tab title="Parameters">
-          <algo-config :algoName="editingAlgo.name"></algo-config>
+        <b-tab active title="Parameters">
+          <algo-config ref="configComponent" :algoName="editingAlgo.name"></algo-config>
         </b-tab>
       </b-tabs>
     </b-modal>
@@ -44,6 +44,7 @@ import SignalrHub from "../../shared/SignalrHub";
 import { getAlgos } from "../../shared/algoProvider";
 import CodeEditor from "../admin/CodeEditor";
 import AlgoConfig from "../admin/AlgoConfig";
+import { load } from "@amcharts/amcharts4/.internal/core/utils/Net";
 
 const _ = require("lodash");
 
@@ -60,14 +61,7 @@ export default {
     AlgoConfig
   },
   mounted() {
-    getAlgos().then(o => {
-      o.forEach(algo => {
-        algo.lastMsg = "";
-        this.allAlgos.push(algo);
-        //algo.history = [];
-      });
-      this.subscribeToChange();
-    });
+    this.load();
   },
   data: function() {
     return {
@@ -77,6 +71,16 @@ export default {
     };
   },
   methods: {
+    load() {
+      getAlgos().then(o => {
+        this.allAlgos = [];
+        o.forEach(algo => {
+          algo.lastMsg = "";
+          this.allAlgos.push(algo);
+        });
+        this.subscribeToChange();
+      });
+    },
     subscribeToChange() {
       conn.on("algos", updatedAlgo => {
         for (let i = 0; i < this.allAlgos.length; i++) {
@@ -111,11 +115,18 @@ export default {
       });
     },
     createNewAlgo() {
-      //this.showEditor = true;
+      let newAlgo = { name: "New Algo Rhythm2" };
+      this.editingAlgo = newAlgo;
+      this.isEditMode = !this.isEditMode;
     },
     showOptions(algo) {
       this.editingAlgo = algo;
       this.isEditMode = !this.isEditMode;
+    },
+    saveModal() {
+      this.$refs.configComponent.save();
+      this.editingAlgo = {};
+      this.load();
     }
   }
 };

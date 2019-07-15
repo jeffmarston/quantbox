@@ -17,7 +17,7 @@
           </b-col>
           <b-col xs="2">
             <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
-              <a @click="toggleConfigMode" >Options...</a>
+              <a href @click.prevent="showOptions" >Options...</a>
               <i v-if="algo.enabled" class="fa fa-toggle-on" @click="toggleEnabled(algo, false)"></i>
               <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="toggleEnabled(algo, true)"></i>
             </b-button-toolbar>
@@ -25,11 +25,11 @@
         </b-row>
       </div>
 
-      <b-row  v-if="!configMode">
+      <b-row>
         <b-col sm="3">
           <div class="card-summary-panel">
             <strong>Trades Created</strong>
-            <h3 class="trade-count" :class="{ blinky: newTrades }">{{ algo.tradesCreated }}</h3>
+            <h3 class="trade-count" :class="{ blinky: newTrades }">{{ algo.tradesCreated | numberFilter }}</h3>
             <a href="reviewTrades">Review Trades</a>
           </div>
           <div class="card-summary-panel">
@@ -41,9 +41,7 @@
         <b-col sm="9">
           <div class="hello" ref="chartdiv"></div>
         </b-col>
-      </b-row>
-
-      <algo-config :algoName="algo.name" v-if="configMode"></algo-config>    
+      </b-row> 
 
       <div slot="footer">
         <span>{{lastMsg}}</span>
@@ -72,18 +70,15 @@ export default {
   props: ["algo"],
   data: function() {
     return {
-      chartData: [],
-      configMode: false
+      chartData: []
     };
   },
   methods: {
     toggleEnabled(algo, shouldEnable) {
       enableAlgos(algo.name, shouldEnable).then(o => {});
     },
-    toggleConfigMode() {
-      
+    showOptions() {      
       this.$emit('showOptions', true);
-      this.configMode = !this.configMode;
     }
   },
   computed: {
@@ -99,6 +94,11 @@ export default {
     },
     lastMsg: function() {
       return this.algo.lastMsg;
+    }
+  },
+  filters: {
+    numberFilter (value) {
+      return `${value.toLocaleString()}`
     }
   },
   mounted() {
@@ -213,6 +213,7 @@ a {
   text-decoration: underline;
   color: #20a8d8;
   font-size: 12px;
+  margin: 6px 8px 0 0;
 }
 
 .card {
