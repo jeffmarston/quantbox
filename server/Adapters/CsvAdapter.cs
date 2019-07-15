@@ -9,9 +9,9 @@ namespace Eze.Quantbox
     public class CsvAdapter: ITradingSystemAdapter
     {
         private const string csvFolder = @"csv\";
-        public CsvAdapter()
+        public CsvAdapter(EmsSettings emsSettings)
         {
-            Filename = "GeneratedTrades.csv";
+            Filename = "GeneratedTrades";
             if (!Directory.Exists(csvFolder))
             {
                 Directory.CreateDirectory(csvFolder);
@@ -37,8 +37,8 @@ namespace Eze.Quantbox
                 sb.Append(trade.Algo).AppendLine();
             }
             lock (_lockObj)
-            {
-                File.WriteAllText(csvFolder + Filename + "_" + trades[0].Algo, sb.ToString());
+            { 
+                File.AppendAllText(csvFolder + Filename + "_" + trades[0].Algo+".csv", sb.ToString());
             }
             return true;
         }

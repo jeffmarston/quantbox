@@ -115,7 +115,7 @@ export default {
       });
     },
     createNewAlgo() {
-      let newAlgo = { name: "New Algo Rhythm2" };
+      let newAlgo = { name: "New Algorithm" };
       this.editingAlgo = newAlgo;
       this.isEditMode = !this.isEditMode;
     },

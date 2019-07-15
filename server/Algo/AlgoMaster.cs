@@ -11,7 +11,9 @@ namespace Eze.Quantbox
         private readonly string _folderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Eze", "Quantbox");
         private readonly string _filename = "config.json";
         private IClientProxy _publisher;
-        private readonly ITradingSystemAdapter _adapter = new CsvAdapter();
+
+//        private ITradingSystemAdapter _adapter = new EmsAdapter(EmsSettings.CreateDefault());
+        private ITradingSystemAdapter _adapter = new CsvAdapter(EmsSettings.CreateDefault());
 
         public List<AbstractAlgoModel> Algos { get; internal set; }
         public IClientProxy Publisher
@@ -39,6 +41,14 @@ namespace Eze.Quantbox
             {
                 string txt = System.IO.File.ReadAllText(filePath);
                 var config = JsonConvert.DeserializeObject<QuantBoxConfig>(txt);
+
+                // EMS Settings
+                if (config.EmsSettings != null)
+                {
+                    _adapter = new EmsAdapter(config.EmsSettings);
+                }
+
+                // Algo Metadata
                 foreach (var metadata in config.Metadata)
                 {
                     CreateAlgo(metadata);

@@ -8,7 +8,7 @@ namespace Eze.Quantbox
     public class QuantBoxConfig
     {
         public IEnumerable<AlgoMetadata> Metadata { get; set; }
-        public string EmsSettings { get; set; }
+        public EmsSettings EmsSettings { get; set; }
 
     }
 }

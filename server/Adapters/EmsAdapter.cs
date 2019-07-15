@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using RealTick.Api.Talipc;
-using RealTick.Api.Communication;
+﻿using RealTick.Api.Communication;
 using RealTick.Api.Data;
+using RealTick.Api.Talipc;
+using System;
+using System.Collections.Generic;
 
 namespace Eze.Quantbox
 {
@@ -11,17 +11,19 @@ namespace Eze.Quantbox
         private TalipcToolkitApp _app;
         private AsyncQuery _query;
 
-        public EmsAdapter()
+        public EmsAdapter(EmsSettings settings)
         {
             _app = new TalipcToolkitApp();
 
-            GatewayMachine = "stgtsperf1.dev.local";
             Service = "ACCOUNT_GATEWAY";
             Topic = "ORDER";
-            Bank = "VALENTINE";
-            Branch = "WINTHROPE";
-            Customer = "MORTIMER";
-            Deposit = "NEUTRAL";
+
+            // THESE ARE SETTINGS
+            GatewayMachine = settings.Gateway;
+            Bank = settings.Bank;
+            Branch = settings.Branch;
+            Customer = settings.Customer;
+            Deposit = settings.Deposit;
 
             _query = _app.GetAsyncQuery(GatewayMachine, Service, Topic);
             _query.OnTerminate += OnTerminate;
@@ -30,7 +32,7 @@ namespace Eze.Quantbox
             _query.OnExecute += OnExecute;
             _query.OnExecuteAck += OnExecuteAck;
             _query.OnRequestData += OnRequestData;
-            
+
             if (!_query.Connect())
             {
                 Console.WriteLine("No dice on connection");
@@ -105,7 +107,7 @@ namespace Eze.Quantbox
                 row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
                 row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));
                 row.Add(new Field("STYP", FieldType.IntScalar, 1)); // STOCK
-                
+
                 data.Add(row);
             }
 
