@@ -22,6 +22,24 @@ export async function getAlgoConfig(algoName) {
     return await response.json();
 }
 
+export async function getEmsConfig() {
+    const response = await fetch(env.serverAddress + "/api/configuration/ems", {
+        mode: "cors"
+    });
+    return await response.json();
+}
+
+export async function saveEmsConfig(emsConfig) {
+    var response = await fetch(
+        env.serverAddress + "/api/Configuration/ems", {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(emsConfig)
+        });
+    return await response.status;
+}
+
 export async function saveAlgoConfig(algoConfig) {
     var saveConfig = algoConfig;
     console.log("Save: " + JSON.stringify(algoConfig));    

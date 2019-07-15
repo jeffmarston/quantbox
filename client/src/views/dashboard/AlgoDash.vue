@@ -41,7 +41,7 @@
 <script>
 import AlgoCard from "./AlgoCard";
 import SignalrHub from "../../shared/SignalrHub";
-import { getAlgos } from "../../shared/algoProvider";
+import { getAlgos } from "../../shared/restProvider";
 import CodeEditor from "../admin/CodeEditor";
 import AlgoConfig from "../admin/AlgoConfig";
 import { load } from "@amcharts/amcharts4/.internal/core/utils/Net";
@@ -83,24 +83,43 @@ export default {
     },
     subscribeToChange() {
       conn.on("algos", updatedAlgo => {
+        let foundIt = false;
         for (let i = 0; i < this.allAlgos.length; i++) {
           if (this.allAlgos[i].name === updatedAlgo.name) {
-            let newGuy = this.allAlgos[i];
-            newGuy.enabled = updatedAlgo.enabled;
-            newGuy.tradesCreated = updatedAlgo.tradesCreated;
-            newGuy.history = [];
+            foundIt = true;
+            let algoToUpdate = this.allAlgos[i];
+            algoToUpdate.enabled = updatedAlgo.enabled;
+            algoToUpdate.tradesCreated = updatedAlgo.tradesCreated;
+            algoToUpdate.history = [];
 
             // transform into chart datapoints
             updatedAlgo.history.forEach(dp => {
-              newGuy.history.push({
+              algoToUpdate.history.push({
                 date: new Date(dp.date),
                 name: "point_" + dp.date,
                 value: dp.value
               });
             });
 
-            this.allAlgos[i] = newGuy;
+            this.allAlgos[i] = algoToUpdate;
           }
+        }
+        if (!foundIt) {
+          let algoToInsert = updatedAlgo;
+          algoToInsert.enabled = updatedAlgo.enabled;
+          algoToInsert.tradesCreated = updatedAlgo.tradesCreated;
+
+          // transform into chart datapoints
+          algoToInsert.history = [];
+          updatedAlgo.history.forEach(dp => {
+            algoToInsert.history.push({
+              date: new Date(dp.date),
+              name: "point_" + dp.date,
+              value: dp.value
+            });
+          });
+
+          this.allAlgos.push(algoToInsert);
         }
       });
 

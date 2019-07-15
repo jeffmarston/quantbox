@@ -11,8 +11,11 @@ namespace Eze.Quantbox
         private TalipcToolkitApp _app;
         private AsyncQuery _query;
 
+        public EmsSettings Settings { get; }
+
         public EmsAdapter(EmsSettings settings)
         {
+            Settings = settings;
             _app = new TalipcToolkitApp();
 
             Service = "ACCOUNT_GATEWAY";

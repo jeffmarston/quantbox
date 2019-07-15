@@ -8,9 +8,12 @@ namespace Eze.Quantbox
 
     public class CsvAdapter: ITradingSystemAdapter
     {
+        public EmsSettings Settings { get; }
+
         private const string csvFolder = @"csv\";
         public CsvAdapter(EmsSettings emsSettings)
         {
+            Settings = emsSettings;
             Filename = "GeneratedTrades";
             if (!Directory.Exists(csvFolder))
             {

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -55,7 +54,8 @@ namespace Eze.Quantbox
 
                 // Create a new one
                 // config.Name = algoName;
-                AlgoMaster.CreateAlgo(config);
+                var newAlgo = AlgoMaster.CreateAlgo(config);
+                newAlgo.PublishState();
 
                 AlgoMaster.Save();
                 return Accepted();
@@ -67,6 +67,22 @@ namespace Eze.Quantbox
                 AlgoMaster.Save();
                 return Accepted();
             }
+        }
+
+        // GET api/configuration/ems
+        [HttpGet("ems")]
+        public ActionResult<EmsSettings> PostEmsConfig()
+        {
+            return AlgoMaster.EmsSettings;
+        }
+
+        // POST api/configuration/ems
+        [HttpPost("ems")]
+        public ActionResult<string> PostEmsConfig([FromBody] EmsSettings config)
+        {
+            AlgoMaster.EmsSettings = config;
+            AlgoMaster.Save();
+            return Accepted();
         }
     }
 }

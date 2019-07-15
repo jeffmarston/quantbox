@@ -12,14 +12,30 @@ namespace Eze.Quantbox
         private readonly string _filename = "config.json";
         private IClientProxy _publisher;
 
-//        private ITradingSystemAdapter _adapter = new EmsAdapter(EmsSettings.CreateDefault());
+        //        private ITradingSystemAdapter _adapter = new EmsAdapter(EmsSettings.CreateDefault());
         private ITradingSystemAdapter _adapter = new CsvAdapter(EmsSettings.CreateDefault());
 
         public List<AbstractAlgoModel> Algos { get; internal set; }
+        public EmsSettings EmsSettings
+        {
+            get
+            {
+                return _adapter.Settings;
+            }
+            set
+            {
+                _adapter = new CsvAdapter(value);
+                foreach (var algo in Algos)
+                {
+                    algo.Adapter = _adapter;
+                }
+            }
+        }
         public IClientProxy Publisher
         {
             get => _publisher;
-            set {
+            set
+            {
                 _publisher = value;
                 foreach (var algo in Algos)
                 {
@@ -45,7 +61,7 @@ namespace Eze.Quantbox
                 // EMS Settings
                 if (config.EmsSettings != null)
                 {
-                    _adapter = new EmsAdapter(config.EmsSettings);
+                    _adapter = new CsvAdapter(config.EmsSettings);
                 }
 
                 // Algo Metadata
@@ -53,7 +69,8 @@ namespace Eze.Quantbox
                 {
                     CreateAlgo(metadata);
                 }
-            } else
+            }
+            else
             {
                 // No config, create an initial one just for ease of demo
                 CreateAlgo(new AlgoMetadata("Algorithm One"));
@@ -63,6 +80,7 @@ namespace Eze.Quantbox
         public AbstractAlgoModel CreateAlgo(AlgoMetadata metadata)
         {
             var newOne = new RapidAlgo(metadata, _adapter);
+            newOne.Publisher = _publisher;
             Algos.Add(newOne);
             return newOne;
         }
@@ -71,12 +89,14 @@ namespace Eze.Quantbox
         {
             var config = new QuantBoxConfig();
             config.Metadata = from algo in Algos select algo.Metadata;
-            
-            string json = JsonConvert.SerializeObject(config);
+            config.EmsSettings = _adapter.Settings;
+
+            string json = JsonConvert.SerializeObject(config, Formatting.Indented);
 
             // If directory doesn't exist, create it
             System.IO.Directory.CreateDirectory(_folderPath);
             System.IO.File.WriteAllText(System.IO.Path.Combine(_folderPath, _filename), json);
         }
+
     }
 }

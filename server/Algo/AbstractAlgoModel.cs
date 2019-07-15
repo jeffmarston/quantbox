@@ -14,7 +14,7 @@ namespace Eze.Quantbox
         private int _tradesCreated;
 
         public IClientProxy Publisher { protected get; set; }
-        protected ITradingSystemAdapter Adapter { get; set; }
+        public ITradingSystemAdapter Adapter { get; set; }
         public string Name { get; protected set; }
         public bool Enabled { get => Metadata.Enabled; set => Metadata.Enabled = value; }
         public int Violations { get; set; }

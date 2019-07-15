@@ -56,7 +56,7 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import { setInterval } from "timers";
 import { last } from "@amcharts/amcharts4/.internal/core/utils/Array";
-import { getAlgos, enableAlgos } from "../../shared/algoProvider";
+import { getAlgos, enableAlgos } from "../../shared/restProvider";
 import { random } from "@amcharts/amcharts4/.internal/core/utils/String";
 import AlgoConfig from "../admin/AlgoConfig";
 

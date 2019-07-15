@@ -9,7 +9,6 @@ const AlgoDash = () => import('@/views/dashboard/AlgoDash');
 const AlgoGrid = () => import('@/views/admin/AlgoGrid');
 const CodeEditor = () => import('@/views/admin/CodeEditor');
 const Settings = () => import('@/views/general/Settings');
-const Alerts = () => import('@/views/notifications/Alerts');
 
 // Views - Pages
 const Page404 = () => import('@/views/pages/Page404');
@@ -80,11 +79,6 @@ router.addRoutes([
           path: 'settings',
           name: 'settings',
           component: Settings
-        },
-        {
-          path: 'alerts',
-          name: 'alerts',
-          component: Alerts
         }
       ]
     },

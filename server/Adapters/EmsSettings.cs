@@ -2,11 +2,11 @@
 {
     public class EmsSettings
     {
-        public string Gateway { get; internal set; }
-        public string Bank { get; internal set; }
-        public string Branch { get; internal set; }
-        public string Customer { get; internal set; }
-        public string Deposit { get; internal set; }
+        public string Gateway { get; set; }
+        public string Bank { get; set; }
+        public string Branch { get; set; }
+        public string Customer { get; set; }
+        public string Deposit { get; set; }
 
         public static EmsSettings CreateDefault()
         {

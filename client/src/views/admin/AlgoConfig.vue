@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { getAlgoConfig, saveAlgoConfig } from "../../shared/algoProvider";
+import { getAlgoConfig, saveAlgoConfig } from "../../shared/restProvider";
 const _ = require("lodash");
 
 export default {
