@@ -11,7 +11,6 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
-    "@amcharts/amcharts4": "^4.5.3",
     "@aspnet/signalr": "^1.0.4",
     "@coreui/coreui": "^2.1.6",
     "@coreui/coreui-plugin-chartjs-custom-tooltips": "^1.2.0",
@@ -28,6 +27,8 @@
     "css-vars-ponyfill": "^1.16.2",
     "flag-icon-css": "^3.2.0",
     "font-awesome": "^4.7.0",
+    "highcharts": "^7.1.2",
+    "highcharts-vue": "^1.3.5",
     "jquery": "^1.9.1",
     "lodash": "^4.17.11",
     "perfect-scrollbar": "^1.4.0",
@@ -37,7 +38,8 @@
     "vue-codemirror": "^4.0.6",
     "vue-perfect-scrollbar": "^0.1.0",
     "vue-property-decorator": "^7.3.0",
-    "vue-router": "^3.0.2"
+    "vue-router": "^3.0.2",
+    "vue2-highcharts": "^1.2.5"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.3.0",

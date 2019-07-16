@@ -48,7 +48,6 @@ namespace Eze.Quantbox
                 Adapter.CreateTrades(tradesToCreate);
                 TradesCreated += numTrades;
                 PublishState();
-                PublishToConsole("Sending to Adapter: " + Adapter.Settings.Bank);
             }
             else
             {

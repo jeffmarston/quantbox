@@ -1,84 +1,154 @@
 <template>
-    <b-card>
-      <div slot="header">
-        <b-row>
-          <b-col xs="2" class="card-enabled-indicator">
-            <span v-if="algo.enabled">
-              <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
-              Enabled
-            </span>
-            <span v-if="!algo.enabled">
-              <img class="img-active-state" src="img/ux-i-offline.svg" alt="Active" />
-              Disabled
-            </span>
-          </b-col>
-          <b-col xs="8" class="card-header-block">
-            <h5 class="card-title mb-0">{{ algo.name }}</h5>
-          </b-col>
-          <b-col xs="2">
-            <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
-              <a href @click.prevent="showOptions" >Options...</a>
-              <i v-if="algo.enabled" class="fa fa-toggle-on" @click="toggleEnabled(algo, false)"></i>
-              <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="toggleEnabled(algo, true)"></i>
-            </b-button-toolbar>
-          </b-col>
-        </b-row>
-      </div>
-
+  <b-card>
+    <div slot="header">
       <b-row>
-        <b-col sm="3">
-          <div class="card-summary-panel">
-            <strong>Trades Created</strong>
-            <h3 class="trade-count" :class="{ blinky: newTrades }">{{ algo.tradesCreated | numberFilter }}</h3>
-            <a href="reviewTrades">Review Trades</a>
-          </div>
-          <div class="card-summary-panel">
-            <strong>Compliance Violations</strong>
-            <h3 class="trade-count">0</h3>
-            <a href="reviewCompliance">Review Compliance Alerts</a>
-          </div>
+        <b-col xs="2" class="card-enabled-indicator">
+          <span v-if="algo.enabled">
+            <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
+            Enabled
+          </span>
+          <span v-if="!algo.enabled">
+            <img class="img-active-state" src="img/ux-i-offline.svg" alt="Active" />
+            Disabled
+          </span>
         </b-col>
-        <b-col sm="9">
-          <div class="hello" ref="chartdiv"></div>
+        <b-col xs="8" class="card-header-block">
+          <h5 class="card-title mb-0">{{ algo.name }}</h5>
         </b-col>
-      </b-row> 
+        <b-col xs="2">
+          <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
+            <a href @click.prevent="showOptions">Options</a>
+            <i v-if="algo.enabled" class="fa fa-toggle-on" @click="toggleEnabled(algo, false)"></i>
+            <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="toggleEnabled(algo, true)"></i>
+          </b-button-toolbar>
+        </b-col>
+      </b-row>
+    </div>
 
-      <div slot="footer">
-        <span>{{lastMsg}}</span>
-      </div>
-    </b-card>
+    <b-row>
+      <b-col sm="3">
+        <div class="card-summary-panel">
+          <strong>Trades Created</strong>
+          <h3
+            class="trade-count"
+            :class="{ blinky: newTrades }"
+          >{{ algo.tradesCreated | numberFilter }}</h3>
+          <a href="reviewTrades">Review Trades</a>
+        </div>
+        <div class="card-summary-panel">
+          <strong>Compliance Violations</strong>
+          <h3 class="trade-count">0</h3>
+          <a href="reviewCompliance">Review Compliance Alerts</a>
+        </div>
+      </b-col>
 
+      <b-col sm="9">
+        <vue-highcharts :options="options" ref="chartref"></vue-highcharts>
+      </b-col>
+    </b-row>
+
+    <div slot="footer">
+      <span>{{lastMsg}}</span>
+    </div>
+  </b-card>
 </template>
 
 <script>
-import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
-import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import { setInterval } from "timers";
-import { last } from "@amcharts/amcharts4/.internal/core/utils/Array";
 import { getAlgos, enableAlgos } from "../../shared/restProvider";
-import { random } from "@amcharts/amcharts4/.internal/core/utils/String";
 import AlgoConfig from "../admin/AlgoConfig";
-
-am4core.useTheme(am4themes_animated);
+import VueHighcharts from "vue2-highcharts";
 
 export default {
   name: "AlgoCard",
   components: {
-    AlgoConfig
+    AlgoConfig,
+    VueHighcharts
   },
   props: ["algo"],
   data: function() {
     return {
-      chartData: []
+      vm: this,
+      highcharts: {},
+      options: {
+        chart: {
+          type: "spline",
+          events: {
+            load: this.myLoader
+          },
+          height: "200"
+        },
+        title: {
+          text: ""
+        },
+        time: {
+          useUTC: false
+        },
+        xAxis: {
+          type: "datetime",
+          tickPixelInterval: 240
+        },
+        yAxis: {
+          title: {
+            text: "Trades"
+          },
+          plotLines: [
+            {
+              value: 0,
+              width: 1,
+              color: "#808080"
+            }
+          ]
+        },
+        tooltip: {
+          crosshairs: true,
+          shared: true
+        },
+        credits: {
+          enabled: false
+        },
+        legend: { enabled: false },
+        series: [
+          {
+            name: "Trades Created",
+            data: (() => {
+              // generate an array of random data
+              var data = [];
+
+              this.algo.history.forEach(element => {
+                var timeConverted = new Date(element.date).getTime();
+                data.push({
+                  x: timeConverted,
+                  y: element.value
+                });
+              });
+
+              return data;
+            })()
+          }
+        ]
+      }
     };
   },
   methods: {
+    myLoader(parentObj) {
+      // set up the updating of the chart each second
+      let series = parentObj.target.series[0];
+      setInterval(() => {
+        let history = this.algo.history;
+        let rightNow = new Date().getTime();
+        let lastElement =
+          history.length > 0 ? history[history.length - 1] : null;
+
+        if (lastElement) {
+          series.addPoint([rightNow, lastElement.value], true, true);
+        }
+      }, 2000);
+    },
     toggleEnabled(algo, shouldEnable) {
       enableAlgos(algo.name, shouldEnable).then(o => {});
     },
-    showOptions() {      
-      this.$emit('showOptions', true);
+    showOptions() {
+      this.$emit("showOptions", true);
     }
   },
   computed: {
@@ -97,81 +167,8 @@ export default {
     }
   },
   filters: {
-    numberFilter (value) {
-      return `${value.toLocaleString()}`
-    }
-  },
-  mounted() {
-    let chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart);
-
-    chart.paddingRight = 20;
-
-    let data = [];
-    const timeWindow = 240; // seconds
-    var startTime = new Date(Date.now() - timeWindow * 1000);
-
-    let visits = 10;
-    let lastDate = 0;
-    for (let i = 1; i < timeWindow; i++) {
-      visits += Math.round((Math.random() < 0.5 ? 1 : 0) * Math.random() * 10);
-      data.push({
-        date: new Date(startTime.setSeconds(startTime.getSeconds() + 1)),
-        name: "name" + i,
-        value: visits
-      });
-      lastDate = i;
-    }
-    chart.data = data;
-
-    // -------------------------------------------------------------
-
-    setInterval(() => {
-      var history = this.algo.history;
-      var rightNow = new Date().setMilliseconds(0);
-      var lastElement = history.length > 0 ? history[history.length - 1] : null;
-
-      if (lastElement && lastElement.date < new Date()) {
-        history.push({
-          date: rightNow,
-          name: "point_" + rightNow,
-          value: lastElement.value
-        });
-      }
-
-      chart.data = this.algo.history;
-    }, 1000);
-
-    // -------------------------------------------------------------
-
-    let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-    dateAxis.renderer.grid.template.location = 0;
-    dateAxis.baseInterval = {
-      timeUnit: "minutes",
-      count: 5
-    };
-    dateAxis.tooltipDateFormat = "HH:mm:ss";
-
-    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.tooltip.disabled = true;
-    valueAxis.renderer.minWidth = 35;
-
-    let series = chart.series.push(new am4charts.LineSeries());
-    series.dataFields.dateX = "date";
-    series.dataFields.valueY = "value";
-
-    series.tooltipText = "{valueY.value}";
-    chart.cursor = new am4charts.XYCursor();
-
-    // let scrollbarX = new am4charts.XYChartScrollbar();
-    // scrollbarX.series.push(series);
-    // chart.scrollbarX = scrollbarX;
-
-    this.chart = chart;
-  },
-
-  beforeDestroy() {
-    if (this.chart) {
-      this.chart.dispose();
+    numberFilter(value) {
+      return `${value.toLocaleString()}`;
     }
   }
 };
