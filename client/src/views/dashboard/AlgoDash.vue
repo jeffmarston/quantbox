@@ -95,8 +95,7 @@ export default {
             // transform into chart datapoints
             updatedAlgo.history.forEach(dp => {
               algoToUpdate.history.push({
-                date: new Date(dp.date),
-                name: "point_" + dp.date,
+                date: dp.date,
                 value: dp.value
               });
             });
@@ -104,6 +103,7 @@ export default {
             this.allAlgos[i] = algoToUpdate;
           }
         }
+        // Inserting a new card
         if (!foundIt) {
           let algoToInsert = updatedAlgo;
           algoToInsert.enabled = updatedAlgo.enabled;
@@ -113,8 +113,7 @@ export default {
           algoToInsert.history = [];
           updatedAlgo.history.forEach(dp => {
             algoToInsert.history.push({
-              date: new Date(dp.date),
-              name: "point_" + dp.date,
+              date: dp.date,
               value: dp.value
             });
           });
