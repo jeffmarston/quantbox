@@ -19,13 +19,7 @@
       </b-row>
     </div>
 
-    <b-modal
-      v-if="isEditMode"
-      :title="editingAlgo.name"
-      size="xl"
-      v-model="isEditMode"
-      @ok="saveModal"
-    >
+    <b-modal v-if="showModal" :title="editorTitle" size="xl" v-model="showModal" @ok="saveModal">
       <b-tabs>
         <b-tab title="Code">
           <code-editor></code-editor>
@@ -44,7 +38,6 @@ import SignalrHub from "../../shared/SignalrHub";
 import { getAlgos } from "../../shared/restProvider";
 import CodeEditor from "../admin/CodeEditor";
 import AlgoConfig from "../admin/AlgoConfig";
-import { load } from "@amcharts/amcharts4/.internal/core/utils/Net";
 
 const _ = require("lodash");
 
@@ -66,8 +59,9 @@ export default {
   data: function() {
     return {
       allAlgos: [],
-      isEditMode: false,
-      editingAlgo: null
+      showModal: false,
+      editingAlgo: null,
+      editorTitle: ""
     };
   },
   methods: {
@@ -122,6 +116,12 @@ export default {
         }
       });
 
+      conn.on("delete-algo", algoName => {
+        _.remove(this.allAlgos, o => {
+          return o.name === algoName;
+        });
+      });
+
       conn.on("console", (msg, algoName) => {
         for (let i = 0; i < this.allAlgos.length; i++) {
           if (this.allAlgos[i].name === algoName) {
@@ -133,13 +133,15 @@ export default {
       });
     },
     createNewAlgo() {
-      let newAlgo = { name: "New Algorithm" };
+      let newAlgo = {};
       this.editingAlgo = newAlgo;
-      this.isEditMode = !this.isEditMode;
+      this.editorTitle = "Create Algorithm";
+      this.showModal = !this.showModal;
     },
     showOptions(algo) {
       this.editingAlgo = algo;
-      this.isEditMode = !this.isEditMode;
+      this.editorTitle = "Edit Algorithm";
+      this.showModal = !this.showModal;
     },
     saveModal() {
       this.$refs.configComponent.save();

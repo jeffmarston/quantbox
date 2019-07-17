@@ -106,7 +106,9 @@ export default {
         credits: {
           enabled: false
         },
-        legend: { enabled: false },
+        legend: {
+          enabled: false
+        },
         series: [
           {
             name: "Trades Created",

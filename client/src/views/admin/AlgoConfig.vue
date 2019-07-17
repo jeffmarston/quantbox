@@ -19,20 +19,20 @@
       <b-form-group label="Frequency" label-for="frequency" :label-cols="3">
         <b-form-input id="frequency" type="text" v-model="algoConfig.frequencySec"></b-form-input>
       </b-form-group>
-      
+
       <b-form-group label="Min batch size" label-for="minBatch" :label-cols="3">
         <b-form-input id="minBatch" type="text" v-model="algoConfig.minBatchSize"></b-form-input>
       </b-form-group>
       <b-form-group label="Max batch size" label-for="maxBatch" :label-cols="3">
         <b-form-input id="maxBatch" type="text" v-model="algoConfig.maxBatchSize"></b-form-input>
       </b-form-group>
-
     </b-form>
+    <b-button @click="deleteAlgo" text="Delete" variant="danger">Delete</b-button>
   </div>
 </template>
 
 <script>
-import { getAlgoConfig, saveAlgoConfig } from "../../shared/restProvider";
+import { getAlgoConfig, saveAlgoConfig, deleteAlgoConfig } from "../../shared/restProvider";
 const _ = require("lodash");
 
 export default {
@@ -68,6 +68,13 @@ export default {
       saveAlgoConfig(mine).then(o => {
         console.log("Saved: " + this.algoName);
       });
+    },
+    deleteAlgo() {
+      if (confirm("Are you sure you want to delete " + this.algoName + "?")) {
+        deleteAlgoConfig(this.algoName).then(o => {
+          console.log("Deleted: " + this.algoName);
+        });
+      }
     }
   }
 };

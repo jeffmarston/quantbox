@@ -60,5 +60,14 @@ namespace Eze.Quantbox
                 Debug.WriteLine(msg);
             }
         }
+
+        public void PublishDelete()
+        {
+            if (Publisher != null)
+            {
+                Publisher.SendAsync("delete-algo", Name);
+                Debug.WriteLine("Delete algo " + Name);
+            }
+        }
     }
 }

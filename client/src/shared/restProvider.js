@@ -22,6 +22,16 @@ export async function getAlgoConfig(algoName) {
     return await response.json();
 }
 
+export async function deleteAlgoConfig(algoName) {
+    var response = await fetch(
+        env.serverAddress + "/api/configuration/algo/" + algoName, {
+            method: 'DELETE',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' }
+        });
+    return await response.status;
+}
+
 export async function getEmsConfig() {
     const response = await fetch(env.serverAddress + "/api/configuration/ems", {
         mode: "cors"
@@ -31,7 +41,7 @@ export async function getEmsConfig() {
 
 export async function saveEmsConfig(emsConfig) {
     var response = await fetch(
-        env.serverAddress + "/api/Configuration/ems", {
+        env.serverAddress + "/api/configuration/ems", {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
@@ -45,7 +55,7 @@ export async function saveAlgoConfig(algoConfig) {
     console.log("Save: " + JSON.stringify(algoConfig));    
 
     var response = await fetch(
-        env.serverAddress + "/api/Configuration/algo/" + algoConfig.name, {
+        env.serverAddress + "/api/configuration/algo/" + algoConfig.name, {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
