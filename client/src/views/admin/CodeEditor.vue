@@ -1,16 +1,5 @@
 <template>
-  <div class="animated fadeIn">
-    <b-row>
-      <b-col sm="6" class="no-pad" >
-        <b-form-group label="Language" label-for="language" label-cols="3">
-          <b-form-select
-            id="language"
-            :plain="true"
-            :options="['Python','R','C#','C++','Javascript']"
-          ></b-form-select>
-        </b-form-group>
-      </b-col>
-    </b-row>
+  <div class="animated">
     <b-row>
       <b-col xl="12" class="no-pad" >
         <codemirror ref="myCm" :value="code" :options="cmOptions"></codemirror>
@@ -27,6 +16,9 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/mode/javascript/javascript.js";
 // theme css
 import "codemirror/theme/monokai.css";
+import "codemirror/theme/base16-dark.css";
+import "codemirror/theme/darcula.css";
+import "codemirror/theme/twilight.css";
 import { setTimeout } from "timers";
 
 export default {
@@ -110,10 +102,13 @@ setInterval(() => {
       cmOptions: {
         tabSize: 4,
         mode: "text/javascript",
-        theme: "monokai",
+        theme: 'darcula',
+        //theme: 'twilight',
+        //theme: "monokai",
         //theme: "default",
         lineNumbers: true,
-        line: true
+        line: true,
+        height: 500
       }
     };
   },
@@ -129,5 +124,8 @@ setInterval(() => {
 }
 .form-row {
   margin-bottom: 2px;
+}
+.CodeMirror {
+  height: 400px;
 }
 </style>

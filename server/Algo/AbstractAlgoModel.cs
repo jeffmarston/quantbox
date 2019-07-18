@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Eze.Quantbox
 {
 
-    public abstract class AbstractAlgoModel
+    public abstract class AbstractAlgoModel: IDisposable
     {
         public AlgoMetadata Metadata { get; set; }
         public AlgoState State { get; protected set; }
@@ -60,5 +60,16 @@ namespace Eze.Quantbox
                 Debug.WriteLine(msg);
             }
         }
+
+        public void PublishDelete()
+        {
+            if (Publisher != null)
+            {
+                Publisher.SendAsync("delete-algo", Name);
+                Debug.WriteLine("Delete algo " + Name);
+            }
+        }
+
+        public abstract void Dispose();
     }
 }

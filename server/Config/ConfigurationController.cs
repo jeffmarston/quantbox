@@ -69,6 +69,26 @@ namespace Eze.Quantbox
             }
         }
 
+        // DELETE api/configuration/algo/{algoName}
+        [HttpDelete("algo/{algoName}")]
+        public ActionResult<string> DeleteAlgoConfig(string algoName)
+        {
+            algoName = algoName.ToLower().Trim();
+            var foundAlgo = AlgoMaster.Algos.Find(o => o.Name.ToLower().Trim() == algoName);
+            if (foundAlgo == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                AlgoMaster.Algos.Remove(foundAlgo);
+                AlgoMaster.Save();
+                foundAlgo.PublishDelete();
+                foundAlgo.Dispose();
+                return Accepted();
+            }
+        }
+
         // GET api/configuration/ems
         [HttpGet("ems")]
         public ActionResult<EmsSettings> PostEmsConfig()

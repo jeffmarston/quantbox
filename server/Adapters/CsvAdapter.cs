@@ -14,13 +14,13 @@ namespace Eze.Quantbox
         public CsvAdapter(EmsSettings emsSettings)
         {
             Settings = emsSettings;
-            Filename = "GeneratedTrades";
+            FilenameRoot = "GeneratedTrades";
             if (!Directory.Exists(csvFolder))
             {
                 Directory.CreateDirectory(csvFolder);
             }
         }
-        public string Filename { get; internal set; }
+        public string FilenameRoot { get; internal set; }
         private static object _lockObj = new object();
 
         public bool CreateTrades(IList<Trade> trades)
@@ -41,7 +41,8 @@ namespace Eze.Quantbox
             }
             lock (_lockObj)
             { 
-                File.AppendAllText(csvFolder + Filename + "_" + trades[0].Algo+".csv", sb.ToString());
+                var filename  = FilenameRoot + "_" + string.Concat(trades[0].Algo.Split(Path.GetInvalidFileNameChars())) + ".csv";
+                File.AppendAllText(csvFolder + filename, sb.ToString());
             }
             return true;
         }

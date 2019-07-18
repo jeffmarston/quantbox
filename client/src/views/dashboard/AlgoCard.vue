@@ -17,7 +17,12 @@
         </b-col>
         <b-col xs="2">
           <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
-            <a href @click.prevent="showOptions">Options</a>
+            <b-nav-item-dropdown text="Options" right>
+              <b-dropdown-item href="#" @click.prevent="showCode">Code</b-dropdown-item>
+              <b-dropdown-item href="#" @click.prevent="showParameters">Parameters</b-dropdown-item>
+              <b-dropdown-item href="#" @click.prevent="deleteAlgo">Delete</b-dropdown-item>
+            </b-nav-item-dropdown>
+
             <i v-if="algo.enabled" class="fa fa-toggle-on" @click="toggleEnabled(algo, false)"></i>
             <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="toggleEnabled(algo, true)"></i>
           </b-button-toolbar>
@@ -26,24 +31,37 @@
     </div>
 
     <b-row>
-      <b-col sm="3">
-        <div class="card-summary-panel">
-          <strong>Trades Created</strong>
-          <h3
-            class="trade-count"
-            :class="{ blinky: newTrades }"
-          >{{ algo.tradesCreated | numberFilter }}</h3>
-          <a href="reviewTrades">Review Trades</a>
-        </div>
-        <div class="card-summary-panel">
-          <strong>Compliance Violations</strong>
-          <h3 class="trade-count">0</h3>
-          <a href="reviewCompliance">Review Compliance Alerts</a>
-        </div>
+      <b-col sm="4">
+        <b-row>
+          <div class="card-summary-panel">
+            <label class="card-label large">Trades Created</label>
+            <h3
+              class="trade-count"
+              :class="{ blinky: newTrades }"
+            >{{ algo.tradesCreated | numberFilter }}</h3>
+            <a href="reviewTrades">Review Trades</a>
+          </div>
+        </b-row>
+        <b-row>
+          <b-col sm="6" style="padding:0">
+            <div class="card-summary-panel">
+              <label class="card-label">Trade Exceptions</label>
+              <h5 class="trade-count">0</h5>
+              <a href="reviewCompliance">Review Exceptions</a>
+            </div>
+          </b-col>
+          <b-col sm="6">
+            <div class="card-summary-panel">
+              <label class="card-label">Order Routed</label>
+              <h5 class="trade-count">0</h5>
+              <a href="reviewTrades">Review Routes</a>
+            </div>
+          </b-col>
+        </b-row>
       </b-col>
 
-      <b-col sm="9">
-        <vue-highcharts :options="options" ref="chartref"></vue-highcharts>
+      <b-col sm="8">
+        <vue-highcharts :options="options" ref="chart"></vue-highcharts>
       </b-col>
     </b-row>
 
@@ -54,7 +72,11 @@
 </template>
 
 <script>
-import { getAlgos, enableAlgos } from "../../shared/restProvider";
+import {
+  getAlgos,
+  enableAlgos,
+  deleteAlgoConfig
+} from "../../shared/restProvider";
 import AlgoConfig from "../admin/AlgoConfig";
 import VueHighcharts from "vue2-highcharts";
 
@@ -65,13 +87,17 @@ export default {
     VueHighcharts
   },
   props: ["algo"],
+  watch: {
+    algo(newValue, oldValue) {
+      console.log("====" + JSON.stringify(newValue));
+    }
+  },
   data: function() {
     return {
-      vm: this,
-      highcharts: {},
+      timer: null,
       options: {
         chart: {
-          type: "spline",
+          type: "line",
           events: {
             load: this.myLoader
           },
@@ -106,7 +132,9 @@ export default {
         credits: {
           enabled: false
         },
-        legend: { enabled: false },
+        legend: {
+          enabled: false
+        },
         series: [
           {
             name: "Trades Created",
@@ -133,7 +161,7 @@ export default {
     myLoader(parentObj) {
       // set up the updating of the chart each second
       let series = parentObj.target.series[0];
-      setInterval(() => {
+      this.timer = setInterval(() => {
         let history = this.algo.history;
         let rightNow = new Date().getTime();
         let lastElement =
@@ -147,8 +175,19 @@ export default {
     toggleEnabled(algo, shouldEnable) {
       enableAlgos(algo.name, shouldEnable).then(o => {});
     },
-    showOptions() {
-      this.$emit("showOptions", true);
+    showCode() {
+      this.$emit("showCode");
+    },
+    showParameters() {
+      this.$emit("showParameters");
+    },
+    deleteAlgo() {
+      if (confirm("Are you sure you want to delete " + this.algo.name + "?")) {
+        deleteAlgoConfig(this.algo.name).then(o => {
+          console.log("Deleted: " + this.algo.name);
+          this.timer.clearInerval();
+        });
+      }
     }
   },
   computed: {
@@ -195,22 +234,29 @@ export default {
 
 .card-enabled-indicator {
   border-right: 1px solid #ccc;
-  padding: 6px 0 0 0;
+  padding: 8px 0 0 0;
 }
 
 .fa-toggle-on {
+  margin: 2px 0;
   font-size: 32px;
   color: #4dbd74;
 }
 .fa-toggle-off {
+  margin: 2px 0;
   font-size: 32px;
   color: gray;
 }
+
 a {
   text-decoration: underline;
   color: #20a8d8;
   font-size: 12px;
   margin: 6px 8px 0 0;
+}
+.dropdown {
+  list-style: none;
+  color: #20a8d8;
 }
 
 .card {
@@ -221,7 +267,7 @@ a {
   padding: 0 6px;
 }
 .card-header-block {
-  padding: 4px 6px;
+  padding: 6px;
 }
 .card-body {
   padding: 10px 0 0 0;
@@ -230,20 +276,29 @@ a {
   min-width: 170px;
   margin: 10px 0 10px 0;
 }
-.card-summary-panel h3 {
-  margin: 0;
-}
 .card-footer {
   padding: 4px 8px;
-  background-color: #000000;
+  background-color: #222;
   border-bottom: 1px solid #c8ced3;
   border-top: 1px solid #c8ced3;
-  color: #20d82f;
+  color: #c0c0c0;
   min-height: 30px;
 }
 .card-footer > div {
   overflow-x: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.card-label {
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 0;
+}
+
+.card-label.large {
+  font-size: 16px;
+}
+.trade-count {
+    margin: 0;
 }
 </style>

@@ -21,6 +21,15 @@ namespace Eze.Quantbox
             _timer.Enabled = true;
         }
 
+        public override void Dispose()
+        {
+            _timer.Enabled = false;
+            Metadata = null;
+            State = null;
+            Adapter = null;
+            _timer.Dispose();
+        }
+
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (this.Enabled && _rand.Next(Metadata.FrequencySec) == 0)

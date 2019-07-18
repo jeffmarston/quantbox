@@ -1,5 +1,5 @@
 <template>
-  <div class="animated fadeIn">
+  <div class="animated">
     <b-form>
       <b-form-group label="Name" label-for="algoName" :label-cols="3">
         <b-form-input id="algoName" type="text" v-model="algoConfig.name"></b-form-input>
@@ -13,20 +13,19 @@
       >
         <b-form-input id="symbols" type="text" v-model="algoConfig.symbols"></b-form-input>
       </b-form-group>
-      <b-form-group label="Ratios of Buys/Sells" label-for="bsRatio" :label-cols="3">
+      <b-form-group label="Ratios of Buys/Shorts" label-for="bsRatio" :label-cols="3">
         <b-form-input id="bsRatio" type="text" v-model="algoConfig.buyShortRatio"></b-form-input>
       </b-form-group>
       <b-form-group label="Frequency" label-for="frequency" :label-cols="3">
         <b-form-input id="frequency" type="text" v-model="algoConfig.frequencySec"></b-form-input>
       </b-form-group>
-      
+
       <b-form-group label="Min batch size" label-for="minBatch" :label-cols="3">
         <b-form-input id="minBatch" type="text" v-model="algoConfig.minBatchSize"></b-form-input>
       </b-form-group>
       <b-form-group label="Max batch size" label-for="maxBatch" :label-cols="3">
         <b-form-input id="maxBatch" type="text" v-model="algoConfig.maxBatchSize"></b-form-input>
       </b-form-group>
-
     </b-form>
   </div>
 </template>
@@ -37,19 +36,16 @@ const _ = require("lodash");
 
 export default {
   name: "algo-config",
-  props: ["algoName"],
-  watch: {
-    algoName(newVal, oldVal) {
-      // console.log("NEW VALUE IS: " + newVal);
-    }
-  },
+  props: ["algoName", "options"],
   data() {
     return {
       algoConfig: {}
     };
   },
   mounted() {
-    this.load(this.algoName);
+    if (!this.options.create) {
+      this.load(this.algoName);
+    }    
   },
   methods: {
     load(algoName) {
@@ -59,15 +55,9 @@ export default {
       });
     },
     save() {
-      console.log(this.algoConfig);
-
       let mine = JSON.parse(JSON.stringify(this.algoConfig));
       mine.symbols = mine.symbols.split(",");
-      //mine.name = this.algoName;
-
-      saveAlgoConfig(mine).then(o => {
-        console.log("Saved: " + this.algoName);
-      });
+      saveAlgoConfig(mine).then(o => { });
     }
   }
 };

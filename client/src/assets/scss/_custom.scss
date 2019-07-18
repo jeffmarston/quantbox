@@ -16,19 +16,10 @@ body {
   margin-left: 0;
 }
 
-// .navbar-toggler-icon {
-//   background-image: 
-//   url("data:image/svg+xml d='M1408 131q0 -120 -73 -189.5t-194 -69.5h-874q-121 0 -194 69.5t-73 189.5q0 53 3.5 103.5t14 109t26.5 108.5t43 97.5t62 81t85.5 53.5t111.5 20q9 0 42 -21.5t74.5 -48t108 -48t133.5 -21.5t133.5 21.5t108 48t74.5 48t42 21.5q61 0 111.5 -20t85.5 -53.5t62 -81 t43 -97.5t26.5 -108.5t14 -109t3.5 -103.5zM1088 1024q0 -159 -112.5 -271.5t-271.5 -112.5t-271.5 112.5t-112.5 271.5t112.5 271.5t271.5 112.5t271.5 -112.5t112.5 -271.5z'");
-//   // url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://ww…p='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-// }
-
 .btn {
   margin: 4px 0 4px 0;
+  border-radius: 0;
 }
-// .btn-primary {
-//   background-color: rgb(41, 136, 46);
-//   border-color: #20d82f;
-// }
 
 .ag-theme-balham {
   .ag-row:not(.ag-row-first) {
@@ -37,12 +28,12 @@ body {
   font-size: 14px;
 }
 
-a {
-  color: #20d82f;
-}
+// .breadcrumb-item > a {
+//   color: #20d82f;
+// }
 
 .app-header {
-  background-color: rgb(0, 0, 0);
+  background-color: #222;
   color: white;
   border: none;
 }
@@ -64,7 +55,7 @@ a {
 }
 
 .breadcrumb {
-  background: #272826;
+  background: #555;
   color: white;
 }
 
@@ -81,12 +72,17 @@ a {
   min-width: 730px;
 }
 
-h4 {
+.app-title {
     font-family: "Rosario", sans-serif;
+    margin-left: 20px;
 }
 
 html:not([dir="rtl"]) .aside-menu{
   margin-right: -800px;
+}
+
+.dropdown-item {
+  padding-top: 4px;
 }
 
 .aside-menu {
@@ -96,4 +92,23 @@ html:not([dir="rtl"]) .aside-menu{
 
 html:not([dir="rtl"]) .aside-menu-show.aside-menu-fixed .main, html:not([dir="rtl"]) .aside-menu-show.aside-menu-fixed .app-footer, html:not([dir="rtl"]) .aside-menu-lg-show.aside-menu-fixed .main, html:not([dir="rtl"]) .aside-menu-lg-show.aside-menu-fixed .app-footer {
     margin-right: 800px;
+}
+
+.modal-content {
+  border-radius: 0;
+}
+.modal-body {
+  padding: 0;
+  border: 0;
+}
+.modal-header {
+  padding: 14px;
+  border: none;
+}
+.modal-footer {
+  padding: 14px;
+  border: none;
+}
+.tab-content {
+  border-bottom:none;
 }

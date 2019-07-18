@@ -77,7 +77,7 @@ router.addRoutes([
         },
         {
           path: 'settings',
-          name: 'settings',
+          name: 'Settings',
           component: Settings
         }
       ]
