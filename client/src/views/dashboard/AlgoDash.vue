@@ -44,7 +44,6 @@ import SignalrHub from "../../shared/SignalrHub";
 import { getAlgos } from "../../shared/restProvider";
 import CodeEditor from "../admin/CodeEditor";
 import AlgoConfig from "../admin/AlgoConfig";
-import { load } from "@amcharts/amcharts4/.internal/core/utils/Net";
 
 const _ = require("lodash");
 
