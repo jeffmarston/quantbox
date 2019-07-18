@@ -8,7 +8,7 @@ namespace Eze.Quantbox
 {
     public class EmsAdapter : ITradingSystemAdapter, IDisposable
     {
-        private TalipcToolkitApp _app;
+        static TalipcToolkitApp _app;
         private AsyncQuery _query;
 
         public EmsSettings Settings { get; }
@@ -16,7 +16,10 @@ namespace Eze.Quantbox
         public EmsAdapter(EmsSettings settings)
         {
             Settings = settings;
-            _app = new TalipcToolkitApp();
+            if (_app == null)
+            {
+                _app = new TalipcToolkitApp();
+            }
 
             Service = "ACCOUNT_GATEWAY";
             Topic = "ORDER";
@@ -105,7 +108,10 @@ namespace Eze.Quantbox
                 row.Add(new Field("PRICE_TYPE", FieldType.StringScalar, "Market"));
                 row.Add(new Field("PRICE", FieldType.PriceScalar, new Price("0.0")));
                 row.Add(new Field("GOOD_UNTIL", FieldType.StringScalar, "DAY"));
-                row.Add(new Field("BUYORSELL", FieldType.StringScalar, "BUY"));
+                string side = trade.Side;
+                if (side == "Short" || side == "SHORT")
+                    side = "SellShort";
+                row.Add(new Field("BUYORSELL", FieldType.StringScalar, side));
                 row.Add(new Field("EXIT_VEHICLE", FieldType.StringScalar, "NONE"));
                 row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
                 row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));

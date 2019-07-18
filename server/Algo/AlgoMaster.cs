@@ -12,8 +12,8 @@ namespace Eze.Quantbox
         private readonly string _filename = "config.json";
         private IClientProxy _publisher;
 
-        //        private ITradingSystemAdapter _adapter = new EmsAdapter(EmsSettings.CreateDefault());
-        private ITradingSystemAdapter _adapter = new CsvAdapter(EmsSettings.CreateDefault());
+        private ITradingSystemAdapter _adapter = new EmsAdapter(EmsSettings.CreateDefault());
+        //private ITradingSystemAdapter _adapter = new CsvAdapter(EmsSettings.CreateDefault());
 
         public List<AbstractAlgoModel> Algos { get; internal set; }
         public EmsSettings EmsSettings
@@ -24,7 +24,7 @@ namespace Eze.Quantbox
             }
             set
             {
-                _adapter = new CsvAdapter(value);
+                _adapter = new EmsAdapter(value);
                 foreach (var algo in Algos)
                 {
                     algo.Adapter = _adapter;
@@ -61,7 +61,7 @@ namespace Eze.Quantbox
                 // EMS Settings
                 if (config.EmsSettings != null)
                 {
-                    _adapter = new CsvAdapter(config.EmsSettings);
+                    _adapter = new EmsAdapter(config.EmsSettings);
                 }
 
                 // Algo Metadata
