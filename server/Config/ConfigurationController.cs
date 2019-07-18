@@ -84,6 +84,7 @@ namespace Eze.Quantbox
                 AlgoMaster.Algos.Remove(foundAlgo);
                 AlgoMaster.Save();
                 foundAlgo.PublishDelete();
+                foundAlgo.Dispose();
                 return Accepted();
             }
         }

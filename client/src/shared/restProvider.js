@@ -52,8 +52,6 @@ export async function saveEmsConfig(emsConfig) {
 
 export async function saveAlgoConfig(algoConfig) {
     var saveConfig = algoConfig;
-    console.log("Save: " + JSON.stringify(algoConfig));    
-
     var response = await fetch(
         env.serverAddress + "/api/configuration/algo/" + algoConfig.name, {
             method: 'POST',

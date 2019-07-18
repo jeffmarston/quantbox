@@ -7,6 +7,11 @@
           <b-button class="top-bar-button" variant="primary" @click="createNewAlgo">
             <i class="fa fa-plus"></i>Create New
           </b-button>
+          <router-link to="/settings">
+            <b-button class="top-bar-button" variant="secondary">
+              <i class="fa fa-cog"></i>Options
+            </b-button>
+          </router-link>
         </b-col>
       </b-row>
     </div>
@@ -14,18 +19,30 @@
     <div class="card-view">
       <b-row>
         <b-col lg="6" xs="12" v-for="(algo, idx) in allAlgos" :key="idx">
-          <algo-card :algo="algo" @showOptions="showOptions(algo)"></algo-card>
+          <algo-card
+            :algo="algo"
+            @showParameters="showParameters(algo)"
+            @showCode="showCode(algo)"
+            @deleteAlgo="deleteAlgo(algo)"
+          ></algo-card>
         </b-col>
       </b-row>
     </div>
 
-    <b-modal v-if="showModal" :title="editorTitle" size="xl" v-model="showModal" @ok="saveModal">
+    <b-modal
+      no-fade
+      v-if="showModal"
+      :title="editOptions.create ? 'Create' : 'Edit'"
+      size="xl"
+      v-model="showModal"
+      @ok="saveModal"
+    >
       <b-tabs>
-        <b-tab title="Code">
+        <b-tab :active="editOptions.focus === 'code'" title="Code">
           <code-editor></code-editor>
         </b-tab>
-        <b-tab active title="Parameters">
-          <algo-config ref="configComponent" :algoName="editingAlgo.name"></algo-config>
+        <b-tab :active="editOptions.focus === 'parameters'" title="Parameters">
+          <algo-config ref="configComponent" :algoName="editingAlgo.name" :options="editOptions"></algo-config>
         </b-tab>
       </b-tabs>
     </b-modal>
@@ -61,7 +78,7 @@ export default {
       allAlgos: [],
       showModal: false,
       editingAlgo: null,
-      editorTitle: ""
+      editOptions: { create: true }
     };
   },
   methods: {
@@ -95,6 +112,7 @@ export default {
             });
 
             this.allAlgos[i] = algoToUpdate;
+            //console.log(algoToUpdate);
           }
         }
         // Inserting a new card
@@ -117,9 +135,15 @@ export default {
       });
 
       conn.on("delete-algo", algoName => {
-        _.remove(this.allAlgos, o => {
-          return o.name === algoName;
-        });
+        let idxToRemove = -1;
+        for (let i = 0; i < this.allAlgos.length; i++) {
+          if (this.allAlgos[i].name === algoName) {
+            idxToRemove = i;
+          }
+        }
+        if (idxToRemove >= 0) {
+          this.allAlgos.splice(idxToRemove, 1);
+        }
       });
 
       conn.on("console", (msg, algoName) => {
@@ -135,12 +159,17 @@ export default {
     createNewAlgo() {
       let newAlgo = {};
       this.editingAlgo = newAlgo;
-      this.editorTitle = "Create Algorithm";
+      this.editOptions = { create: true, focus: "code" };
       this.showModal = !this.showModal;
     },
-    showOptions(algo) {
+    showParameters(algo) {
       this.editingAlgo = algo;
-      this.editorTitle = "Edit Algorithm";
+      this.editOptions = { create: false, focus: "parameters" };
+      this.showModal = !this.showModal;
+    },
+    showCode(algo) {
+      this.editingAlgo = algo;
+      this.editOptions = { create: false, focus: "code" };
       this.showModal = !this.showModal;
     },
     saveModal() {
@@ -160,10 +189,11 @@ h4 {
 .top-bar {
   margin: 8px 0;
 }
-.fa-plus {
+.fa {
   margin-right: 10px;
 }
 .top-bar-button {
   float: right;
+  margin-left: 8px;
 }
 </style>
