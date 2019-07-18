@@ -6,6 +6,45 @@ using System.Collections.Generic;
 
 namespace Eze.Quantbox
 {
+
+    public class OrderRecord
+    {
+        public string OrderID;
+        public string OrderTag;
+        public string Type;
+        public string Side;
+        public string Symbol;
+        public string Status;
+        public long lQty;
+        public long lQtyTraded;
+        public double dPrice;
+        public long lWorking;
+
+        public string GetDetails()
+        {
+            string sDetails = "";
+            sDetails = Side + " " + lQty + " " + Symbol + ": " + Status;
+            if (lQtyTraded > 0)
+                sDetails += "(" + lQtyTraded + " traded @ " + dPrice.ToString("F2") + ")";
+            return sDetails;
+        }
+    }
+
+    public class OrderStats
+    {
+        public long Total;
+        public long Pending;
+        public long Staged;     //  live but not working
+        public long Working;    //  at least one order out in the market
+        public long Completed;  // no longer live, and at least partially completed
+        public long Deleted;    // no longer live, nothing filled
+
+        public void Reset()
+        {
+            Total = Pending = Staged = Working = Completed = Deleted = 0;
+        }
+    }
+
     public class EmsAdapter : ITradingSystemAdapter, IDisposable
     {
         static TalipcToolkitApp _app;
