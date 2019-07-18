@@ -51,6 +51,16 @@ namespace Eze.Quantbox
         private AsyncQuery _query;
 
         public EmsSettings Settings { get; }
+        public Dictionary<string, OrderStats> Stats = new Dictionary<string, OrderStats>();
+        public OrderStats GetStats(string AlgoName)
+        {
+            if (Stats.ContainsKey(AlgoName))
+                return Stats[AlgoName];
+            else
+                return null;
+        }
+
+        private Dictionary<string, OrderRecord> _book = new Dictionary<string, OrderRecord>();
 
         public EmsAdapter(EmsSettings settings)
         {
@@ -59,6 +69,8 @@ namespace Eze.Quantbox
             {
                 _app = new TalipcToolkitApp();
             }
+
+            Stats = new Dictionary<string, OrderStats>();
 
             Service = "ACCOUNT_GATEWAY";
             Topic = "ORDER";
@@ -82,17 +94,30 @@ namespace Eze.Quantbox
             {
                 Console.WriteLine("No dice on connection");
             }
+            else
+            {
+                _query.Advise("ORDERS;*;", "TAL4");
+                _query.Request("ORDERS;*;", "TAL4");
+            }
         }
 
         #region Callbacks
         private void OnRequestData(object sender, DataEventArgs e)
         {
-            Console.WriteLine("OnRequestData");
+            string sItem = e.Item;
+            Console.WriteLine("OnRequestData: " + sItem);
+
+            if (sItem.StartsWith("ORDERS;"))
+            {
+                IDataBlock block = e.Data.GetDataAsBlock();
+                ProcessDataBlock(block, true);
+            }
+
         }
 
         private void OnExecuteAck(object sender, AckEventArgs e)
         {
-            Console.WriteLine("OnExecuteAck");
+            Console.WriteLine("OnExecuteAck (" + e.Status + ")");
         }
 
         private void OnExecute(object sender, ExecuteEventArgs e)
@@ -102,12 +127,90 @@ namespace Eze.Quantbox
 
         private void OnAdviseData(object sender, DataEventArgs e)
         {
-            Console.WriteLine("OnAdviseData");
+            //Console.WriteLine("OnAdviseData");
+            string sItem = e.Item;
+            if (sItem.StartsWith("ORDERS;"))
+            {
+                IDataBlock block = e.Data.GetDataAsBlock();
+                ProcessDataBlock(block, false);
+                RecalculateStats();
+            }
+        }
+
+        private void ProcessDataBlock(IDataBlock block, bool bRequest)
+        {
+            foreach (Row row in block)
+            {
+                OrderRecord order = new OrderRecord();
+                foreach (Field f in row)
+                {
+                    if (f.FieldInfo.Name == "TYPE")
+                        order.Type = f.StringValue;
+                    else if (f.FieldInfo.Name == "ORDER_ID")
+                        order.OrderID = f.StringValue;
+                    else if (f.FieldInfo.Name == "CURRENT_STATUS")
+                        order.Status = f.StringValue;
+                    else if (f.FieldInfo.Name == "DISP_NAME")
+                        order.Symbol = f.StringValue;
+                    else if (f.FieldInfo.Name == "VOLUME")
+                        order.lQty = f.IntValue;
+                    else if (f.FieldInfo.Name == "VOLUME_TRADED")
+                        order.lQtyTraded = f.IntValue;
+                    else if (f.FieldInfo.Name == "BUYORSELL")
+                        order.Side = f.StringValue;
+                    else if (f.FieldInfo.Name == "AVG_PRICE")
+                        order.dPrice = f.DoubleValue;
+                    else if (f.FieldInfo.Name == "WORKING_QTY")
+                        order.lWorking = f.LongValue;
+                    else if (f.FieldInfo.Name == "ORDER_TAG")
+                        order.OrderTag = f.StringValue;
+                }
+                ProcessOrder(order, bRequest);
+            }
+            RecalculateStats();
+        }
+
+        private void ProcessOrder(OrderRecord order, bool bRequest)
+        {
+            if (order != null)
+            {
+                if (order.Type == "UserSubmitStagedOrder")
+                {
+                    string sDetails = order.GetDetails();
+                    if (!bRequest)    // don't want to spam the console at startup...
+                        Console.WriteLine("Received Order Update: " + sDetails);
+                }
+
+                _book[order.OrderID] = order;
+            }
+        }
+
+        private void RecalculateStats()
+        {
+            foreach (KeyValuePair<string, OrderStats> s in Stats)
+                s.Value.Reset();
+
+            foreach ( KeyValuePair<string, OrderRecord> entry in _book )
+            {
+                string tag = entry.Value.OrderTag;
+                if (tag == null || tag == "")
+                    tag = "<no tag>";
+                OrderStats stats = null;
+                if ( Stats.ContainsKey(tag) )
+                    stats = Stats[tag];
+                if (stats == null)
+                {
+                    stats = new OrderStats();
+                    Stats[tag] = stats;
+                }
+
+                stats.AddOrder(entry.Value);
+            }
         }
 
         private void OnOtherAck(object sender, AckEventArgs e)
         {
-            Console.WriteLine("OnOtherAck");
+            //Console.WriteLine("OnOtherAck");
         }
 
         private void OnTerminate(object sender, EventArgs e)
@@ -155,6 +258,7 @@ namespace Eze.Quantbox
                 row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
                 row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));
                 row.Add(new Field("STYP", FieldType.IntScalar, 1)); // STOCK
+                row.Add(new Field("ORDER_TAG", FieldType.StringScalar, trade.Algo)); // STOCK
 
                 data.Add(row);
             }
