@@ -43,6 +43,31 @@ namespace Eze.Quantbox
         {
             Total = Pending = Staged = Working = Completed = Deleted = 0;
         }
+
+        public void AddOrder(OrderRecord order)
+        {
+            Total++;
+            switch (order.Status)
+            {
+                case "PENDING":
+                    Pending++;
+                    break;
+                case "LIVE":
+                    {
+                        if (order.lWorking > 0)
+                            Working++;
+                        else
+                            Staged++;
+                        break;
+                    }
+                case "COMPLETED":
+                    Completed++;
+                    break;
+                case "DELETED":
+                    Deleted++;
+                    break;
+            }
+        }
     }
 
     public class EmsAdapter : ITradingSystemAdapter, IDisposable
