@@ -9,6 +9,7 @@ namespace Eze.Quantbox
     public class CsvAdapter: ITradingSystemAdapter
     {
         public EmsSettings Settings { get; }
+        public OrderStats GetStats(string AlgoName) { return null; }
 
         private const string csvFolder = @"csv\";
         public CsvAdapter(EmsSettings emsSettings)
