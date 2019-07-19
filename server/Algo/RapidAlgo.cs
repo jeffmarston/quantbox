@@ -35,8 +35,12 @@ namespace Eze.Quantbox
             if (this.Enabled && _rand.Next(Metadata.FrequencySec) == 0)
             {
                 // Prevent crazy huge number of trades.
-                if (Stats.Created > 10000) {
+                if (Stats.Created > 10000)
+                {
                     Stats.Created = 0;
+                    Stats.Routed = 0;
+                    Stats.Exceptions = 0;
+                    Enabled = false;
                 }
                 var numTrades = _rand.Next(Metadata.MinBatchSize, Metadata.MaxBatchSize);
                 var tradesToCreate = new List<Trade>();
@@ -67,7 +71,7 @@ namespace Eze.Quantbox
             else
             {
                 // do nothing, just record history;
-                StampHistory();
+                // StampHistory();
             }
 
             OrderStats stats = Adapter.GetStats(Name);

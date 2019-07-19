@@ -14,7 +14,15 @@ namespace Eze.Quantbox
         public IClientProxy Publisher { protected get; set; }
         public ITradingSystemAdapter Adapter { get; set; }
         public string Name { get; protected set; }
-        public bool Enabled { get => Metadata.Enabled; set => Metadata.Enabled = value; }
+        public bool Enabled
+        {
+            get { return Metadata.Enabled; }
+            set
+            {
+                Metadata.Enabled = value;
+                PublishState();
+            }
+        }
         public int Violations { get; set; }
         public void StampHistory()
         {

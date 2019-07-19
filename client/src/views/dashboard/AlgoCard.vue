@@ -2,7 +2,7 @@
   <b-card>
     <div slot="header">
       <b-row>
-        <b-col xs="2" class="card-enabled-indicator">
+        <b-col md="2" class="card-enabled-indicator d-none d-md-block">
           <span v-if="algo.enabled">
             <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
             Enabled
@@ -16,7 +16,7 @@
           <h5 class="card-title mb-0">{{ algo.name }}</h5>
         </b-col>
         <b-col xs="2">
-          <b-button-toolbar class="float-right" aria-label="Toolbar with buttons group">
+          <b-button-toolbar class="float-right enable-button-size">
             <b-nav-item-dropdown text="Options" right>
               <b-dropdown-item href="#" @click.prevent="showCode">Code</b-dropdown-item>
               <b-dropdown-item href="#" @click.prevent="showParameters">Parameters</b-dropdown-item>
@@ -31,13 +31,13 @@
     </div>
 
     <b-row>
-      <b-col sm="4">
+      <b-col md="4" xs="11">
         <b-row>
           <div class="card-summary-panel">
             <label class="card-label large">Trades Created</label>
             <h3
               class="trade-count"
-              :class="{ blinky: newTrades }"
+              :class="{ 'green-text': algo.enabled }"
             >{{ algo.stats.created | numberFilter }}</h3>
             <a href="reviewTrades">Review Trades</a>
           </div>
@@ -46,27 +46,21 @@
           <b-col sm="6" style="padding:0">
             <div class="card-summary-panel">
               <label class="card-label">Trade Exceptions</label>
-              <h5
-                class="trade-count"
-                :class="{ blinky: newTrades }"
-              >{{ algo.stats.exceptions | numberFilter }}</h5>
+              <h5 class="trade-count">{{ algo.stats.exceptions | numberFilter }}</h5>
               <a href="reviewExceptions">Review Exceptions</a>
             </div>
           </b-col>
           <b-col sm="6">
             <div class="card-summary-panel">
               <label class="card-label">Order Routed</label>
-              <h5
-                class="trade-count"
-                :class="{ blinky: newTrades }"
-              >{{ algo.stats.routed | numberFilter }}</h5>
+              <h5 class="trade-count">{{ algo.stats.routed | numberFilter }}</h5>
               <a href="reviewRoutes">Review Routes</a>
             </div>
           </b-col>
         </b-row>
       </b-col>
 
-      <b-col sm="8">
+      <b-col md="8" xs="1">
         <vue-highcharts :options="options" ref="chart"></vue-highcharts>
       </b-col>
     </b-row>
@@ -96,6 +90,8 @@ export default {
   data: function() {
     return {
       timer: null,
+      blinkTrades: false,
+      lastTick: 0,
       options: {
         chart: {
           type: "spline",
@@ -120,7 +116,7 @@ export default {
           }
         },
         plotOptions: {
-          line: {
+          series: {
             marker: {
               enabled: false
             }
@@ -141,6 +137,7 @@ export default {
             name: "Trades Created",
             data: (() => {
               let data = [];
+
               this.algo.history.forEach(element => {
                 let timeConverted = new Date(element.date).getTime();
                 data.push({
@@ -171,7 +168,16 @@ export default {
           history.length > 0 ? history[history.length - 1] : null;
 
         if (lastElement) {
-          series.addPoint([rightNow, this.algo.stats.created], true, false);
+          series.addPoint([rightNow, this.algo.stats.created], true, true);
+
+          // if (this.lastTick !== this.algo.stats.created) {
+          //   this.blinkTrades = true;
+          //   setTimeout(() => {
+          //     this.blinkTrades = false;
+          //   }, 200);
+          // }
+
+          // this.lastTick = this.algo.stats.created;
         }
       }, 2000);
     },
@@ -194,16 +200,18 @@ export default {
     }
   },
   computed: {
-    newTrades: function() {
-      if (this.algo.history.length >= 2) {
-        let lastElement = this.algo.history[this.algo.history.length - 1];
-        let penultimate = this.algo.history[this.algo.history.length - 2];
-        if (lastElement.value !== penultimate.value) {
-          return true;
-        }
-      }
-      return false;
-    },
+    // newTrades: function() {
+    //   if (this.algo.history.length >= 2) {
+    //     let lastElement = this.algo.history[this.algo.history.length - 1];
+    //     let penultimate = this.algo.history[this.algo.history.length - 2];
+
+    //     console.log(this.algo.history);
+    //     if (lastElement.value !== this.algo.stats.created) {
+    //       return true;
+    //     }
+    //   }
+    //   return false;
+    // },
     lastMsg: function() {
       return this.algo.lastMsg;
     }
@@ -222,22 +230,30 @@ export default {
   margin-top: -2px;
 }
 
-@keyframes blink {
+/* @keyframes blink {
   0% {
-    color: rgba(0, 200, 0, 0.9);
+    color: rgb(43, 28, 28);
+  }
+  50% {
+    color: lime;
   }
   100% {
-    color: rgba(0, 0, 0, 1);
+    color: rgb(43, 28, 28);
   }
 }
 .blinky {
-  color: rgba(0, 200, 0, 1);
-  animation: blink normal 200ms linear;
+  color: lime;
+  transition: color 200ms linear;
+  xanimation: blink normal 200ms linear;
+} */
+.green-text {
+  color: #4dbd74;
 }
 
 .card-enabled-indicator {
   border-right: 1px solid #ccc;
   padding: 8px 0 0 0;
+  min-width: 85px;
 }
 
 .fa-toggle-on {
@@ -304,4 +320,7 @@ a {
 .trade-count {
   margin: 0;
 }
+/* .enable-button-size {    
+  min-width: 160px;
+} */
 </style>

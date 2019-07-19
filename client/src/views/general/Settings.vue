@@ -74,7 +74,6 @@ export default {
     },
     save() {
       saveEmsConfig(this.emsConfig).then(o => {
-        console.log("Saved EMS Config");
       });
     }
   }

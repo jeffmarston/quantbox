@@ -171,7 +171,6 @@ export default {
   },
   methods: {
     cellClick(event) {
-      console.log(event);
     },
     onGridReady(params) {
       this.gridApi = params.api;
