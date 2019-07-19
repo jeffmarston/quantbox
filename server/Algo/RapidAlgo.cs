@@ -14,7 +14,7 @@ namespace Eze.Quantbox
             Name = metadata.Name;
             Adapter = adapter;
             Metadata = metadata;
-            State = new AlgoState();
+            Stats = new AlgoStats(Name);
 
             _timer.Interval = 1000;
             _timer.Elapsed += Timer_Elapsed;
@@ -25,7 +25,7 @@ namespace Eze.Quantbox
         {
             _timer.Enabled = false;
             Metadata = null;
-            State = null;
+            Stats = null;
             Adapter = null;
             _timer.Dispose();
         }
@@ -35,8 +35,8 @@ namespace Eze.Quantbox
             if (this.Enabled && _rand.Next(Metadata.FrequencySec) == 0)
             {
                 // Prevent crazy huge number of trades.
-                if (TradesCreated > 10000) {
-                    TradesCreated = 0;
+                if (Stats.Created > 10000) {
+                    Stats.Created = 0;
                 }
                 var numTrades = _rand.Next(Metadata.MinBatchSize, Metadata.MaxBatchSize);
                 var tradesToCreate = new List<Trade>();
@@ -54,14 +54,20 @@ namespace Eze.Quantbox
                     tradesToCreate.Add(trade);
                     PublishToConsole(Name + " created trade: " + trade.ToString());
                 }
+
                 Adapter.CreateTrades(tradesToCreate);
-                TradesCreated += numTrades;
-                PublishState();
+
+                Stats.Created += numTrades;
+                Stats.Routed += Stats.Created / 2;
+                Stats.Exceptions += Stats.Created / 5;
+                StampHistory();
+
+                PublishStats();
             }
             else
             {
                 // do nothing, just record history;
-                TradesCreated = TradesCreated;
+                StampHistory();
             }
 
             OrderStats stats = Adapter.GetStats(Name);

@@ -38,7 +38,7 @@
             <h3
               class="trade-count"
               :class="{ blinky: newTrades }"
-            >{{ algo.tradesCreated | numberFilter }}</h3>
+            >{{ algo.stats.created | numberFilter }}</h3>
             <a href="reviewTrades">Review Trades</a>
           </div>
         </b-row>
@@ -46,15 +46,21 @@
           <b-col sm="6" style="padding:0">
             <div class="card-summary-panel">
               <label class="card-label">Trade Exceptions</label>
-              <h5 class="trade-count">0</h5>
-              <a href="reviewCompliance">Review Exceptions</a>
+              <h5
+                class="trade-count"
+                :class="{ blinky: newTrades }"
+              >{{ algo.stats.exceptions | numberFilter }}</h5>
+              <a href="reviewExceptions">Review Exceptions</a>
             </div>
           </b-col>
           <b-col sm="6">
             <div class="card-summary-panel">
               <label class="card-label">Order Routed</label>
-              <h5 class="trade-count">0</h5>
-              <a href="reviewTrades">Review Routes</a>
+              <h5
+                class="trade-count"
+                :class="{ blinky: newTrades }"
+              >{{ algo.stats.routed | numberFilter }}</h5>
+              <a href="reviewRoutes">Review Routes</a>
             </div>
           </b-col>
         </b-row>
@@ -87,17 +93,12 @@ export default {
     VueHighcharts
   },
   props: ["algo"],
-  watch: {
-    algo(newValue, oldValue) {
-      console.log("====" + JSON.stringify(newValue));
-    }
-  },
   data: function() {
     return {
       timer: null,
       options: {
         chart: {
-          type: "line",
+          type: "spline",
           events: {
             load: this.myLoader
           },
@@ -116,14 +117,14 @@ export default {
         yAxis: {
           title: {
             text: "Trades"
-          },
-          plotLines: [
-            {
-              value: 0,
-              width: 1,
-              color: "#808080"
+          }
+        },
+        plotOptions: {
+          line: {
+            marker: {
+              enabled: false
             }
-          ]
+          }
         },
         tooltip: {
           crosshairs: true,
@@ -139,14 +140,15 @@ export default {
           {
             name: "Trades Created",
             data: (() => {
-              // generate an array of random data
-              var data = [];
-
+              let data = [];
               this.algo.history.forEach(element => {
-                var timeConverted = new Date(element.date).getTime();
+                let timeConverted = new Date(element.date).getTime();
                 data.push({
                   x: timeConverted,
-                  y: element.value
+                  y: element.value,
+                  marker: {
+                    enabled: false
+                  }
                 });
               });
 
@@ -164,11 +166,12 @@ export default {
       this.timer = setInterval(() => {
         let history = this.algo.history;
         let rightNow = new Date().getTime();
+        // this logic may not be necessary is highcharts can extend the line to the rightmost boundary
         let lastElement =
           history.length > 0 ? history[history.length - 1] : null;
 
         if (lastElement) {
-          series.addPoint([rightNow, lastElement.value], true, true);
+          series.addPoint([rightNow, this.algo.stats.created], true, false);
         }
       }, 2000);
     },
@@ -185,7 +188,7 @@ export default {
       if (confirm("Are you sure you want to delete " + this.algo.name + "?")) {
         deleteAlgoConfig(this.algo.name).then(o => {
           console.log("Deleted: " + this.algo.name);
-          this.timer.clearInerval();
+          clearInterval(this.timer);
         });
       }
     }
@@ -299,6 +302,6 @@ a {
   font-size: 16px;
 }
 .trade-count {
-    margin: 0;
+  margin: 0;
 }
 </style>

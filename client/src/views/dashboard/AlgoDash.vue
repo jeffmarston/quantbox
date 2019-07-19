@@ -100,7 +100,7 @@ export default {
             foundIt = true;
             let algoToUpdate = this.allAlgos[i];
             algoToUpdate.enabled = updatedAlgo.enabled;
-            algoToUpdate.tradesCreated = updatedAlgo.tradesCreated;
+            algoToUpdate.stats = updatedAlgo.stats;
             algoToUpdate.history = [];
 
             // transform into chart datapoints
@@ -119,7 +119,7 @@ export default {
         if (!foundIt) {
           let algoToInsert = updatedAlgo;
           algoToInsert.enabled = updatedAlgo.enabled;
-          algoToInsert.tradesCreated = updatedAlgo.tradesCreated;
+          algoToInsert.stats = updatedAlgo.stats;
 
           // transform into chart datapoints
           algoToInsert.history = [];
@@ -131,6 +131,14 @@ export default {
           });
 
           this.allAlgos.push(algoToInsert);
+        }
+      });
+
+      conn.on("algo-stats", stats => {
+        for (let i = 0; i < this.allAlgos.length; i++) {
+          if (this.allAlgos[i].name === stats.name) {
+            this.allAlgos[i].stats = stats;
+          }
         }
       });
 
