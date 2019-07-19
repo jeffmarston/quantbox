@@ -204,9 +204,8 @@ namespace Eze.Quantbox
                     string sDetails = order.GetDetails();
                     if (!bRequest)    // don't want to spam the console at startup...
                         Console.WriteLine("Received Order Update: " + sDetails);
+                    _book[order.OrderID] = order;
                 }
-
-                _book[order.OrderID] = order;
             }
         }
 
