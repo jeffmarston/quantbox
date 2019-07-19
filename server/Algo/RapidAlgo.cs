@@ -75,7 +75,7 @@ namespace Eze.Quantbox
             else
             {
                 // do nothing, just record history;
-                // StampHistory();
+                StampHistory();
             }
 
             OrderStats stats = Adapter.GetStats(Name);

@@ -108,7 +108,7 @@ export default {
         },
         xAxis: {
           type: "datetime",
-          tickPixelInterval: 240
+          tickInterval: 1000 * 60
         },
         yAxis: {
           title: {
@@ -169,15 +169,6 @@ export default {
 
         if (lastElement) {
           series.addPoint([rightNow, this.algo.stats.created], true, true);
-
-          // if (this.lastTick !== this.algo.stats.created) {
-          //   this.blinkTrades = true;
-          //   setTimeout(() => {
-          //     this.blinkTrades = false;
-          //   }, 200);
-          // }
-
-          // this.lastTick = this.algo.stats.created;
         }
       }, 2000);
     },
@@ -200,18 +191,6 @@ export default {
     }
   },
   computed: {
-    // newTrades: function() {
-    //   if (this.algo.history.length >= 2) {
-    //     let lastElement = this.algo.history[this.algo.history.length - 1];
-    //     let penultimate = this.algo.history[this.algo.history.length - 2];
-
-    //     console.log(this.algo.history);
-    //     if (lastElement.value !== this.algo.stats.created) {
-    //       return true;
-    //     }
-    //   }
-    //   return false;
-    // },
     lastMsg: function() {
       return this.algo.lastMsg;
     }
@@ -229,23 +208,6 @@ export default {
   margin-left: 6px;
   margin-top: -2px;
 }
-
-/* @keyframes blink {
-  0% {
-    color: rgb(43, 28, 28);
-  }
-  50% {
-    color: lime;
-  }
-  100% {
-    color: rgb(43, 28, 28);
-  }
-}
-.blinky {
-  color: lime;
-  transition: color 200ms linear;
-  xanimation: blink normal 200ms linear;
-} */
 .green-text {
   color: #4dbd74;
 }

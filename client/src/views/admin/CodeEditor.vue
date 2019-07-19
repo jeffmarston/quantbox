@@ -32,72 +32,110 @@ export default {
   data: () => {
     return {
       myCm: {},
-      code: `      
-import { ezePricing } from "eze-pricing";
-import { ezeEvents } from "eze-events";
-let pricingFeed = ezePricing.feed;
-setInterval(() => {
-      data.splice(0, 1);
-      if (this.isEnabled) {
-        visits += Math.round(
-          (Math.random() < 0.5 ? 1 : 0) * Math.random() * 10
-        );
-      }
-      data.push({
-        date: new Date(startTime.setSeconds(startTime.getSeconds() + 1)),
-        name: "name" + lastDate,
-        value: visits
-      });
-      lastDate++;
-      chart.data = data;
-    }, 1000);
+      code: `using RealTick.Api.Communication;
+using RealTick.Api.Data;
+using RealTick.Api.Talipc;
+using System;
+using System.Collections.Generic;
 
-    setInterval(() => {
-      data.splice(0, 1);
-      if (this.isEnabled) {
-        visits += Math.round(
-          (Math.random() < 0.5 ? 1 : 0) * Math.random() * 10
-        );
-      }
-      data.push({
-        date: new Date(startTime.setSeconds(startTime.getSeconds() + 1)),
-        name: "name" + lastDate,
-        value: visits
-      });
-      lastDate++;
-      chart.data = data;
-    }, 1000);
+public EmsAdapter(EmsSettings settings)
+{
+    Settings = settings;
+    if (_app == null)
+        _app = new TalipcToolkitApp();
 
-    setInterval(() => {
-      data.splice(0, 1);
-      if (this.isEnabled) {
-        visits += Math.round(
-          (Math.random() < 0.5 ? 1 : 0) * Math.random() * 10
-        );
-      }
-      data.push({
-        date: new Date(startTime.setSeconds(startTime.getSeconds() + 1)),
-        name: "name" + lastDate,
-        value: visits
-      });
-      lastDate++;
-      chart.data = data;
-    }, 1000);
-    setInterval(() => {
-      data.splice(0, 1);
-      if (this.isEnabled) {
-        visits += Math.round(
-          (Math.random() < 0.5 ? 1 : 0) * Math.random() * 10
-        );
-      }
-      data.push({
-        date: new Date(startTime.setSeconds(startTime.getSeconds() + 1)),
-        name: "name" + lastDate,
-        value: visits
-      });
-      lastDate++;
-      chart.data = data;
-    }, 1000);
+    Service = "ACCOUNT_GATEWAY";
+    Topic = "ORDER";
+
+    // Set up Connection
+    _query = _app.GetAsyncQuery(settings.Gateway, Service, Topic);
+    _query.OnTerminate += OnTerminate;
+    _query.OnOtherAck += OnOtherAck;
+    _query.OnAdviseData += OnAdviseData;
+    _query.OnExecuteAck += OnExecuteAck;
+    _query.OnRequestData += OnRequestData;
+
+    if (!_query.Connect())
+    {
+        Console.WriteLine("Unable to connect");
+    }
+    else
+    {
+        _query.Advise("ORDERS;*;", "TAL4");
+        _query.Request("ORDERS;*;", "TAL4");
+    }
+}
+
+#region Callbacks
+private void OnRequestData(object sender, DataEventArgs e)
+{
+    string sItem = e.Item;
+    Console.WriteLine("OnRequestData: " + sItem);
+
+    if (sItem.StartsWith("ORDERS;"))
+    {
+        IDataBlock block = e.Data.GetDataAsBlock();
+        ProcessDataBlock(block, true);
+    }
+}
+
+private void OnAdviseData(object sender, DataEventArgs e)
+{
+    //Console.WriteLine("OnAdviseData");
+    string sItem = e.Item;
+    if (sItem.StartsWith("ORDERS;"))
+    {
+        IDataBlock block = e.Data.GetDataAsBlock();
+        ProcessDataBlock(block, false);
+        RecalculateStats();
+    }
+}
+
+private void ProcessDataBlock(IDataBlock block, bool bRequest)
+{
+    foreach (Row row in block)
+    {
+        OrderRecord order = new OrderRecord();
+        foreach (Field f in row)
+        {
+            if (f.FieldInfo.Name == "TYPE")
+                order.Type = f.StringValue;
+            else if (f.FieldInfo.Name == "ORDER_ID")
+                order.OrderID = f.StringValue;
+            else if (f.FieldInfo.Name == "CURRENT_STATUS")
+                order.Status = f.StringValue;
+            else if (f.FieldInfo.Name == "DISP_NAME")
+                order.Symbol = f.StringValue;
+            else if (f.FieldInfo.Name == "VOLUME")
+                order.lQty = f.IntValue;
+            else if (f.FieldInfo.Name == "VOLUME_TRADED")
+                order.lQtyTraded = f.IntValue;
+            else if (f.FieldInfo.Name == "BUYORSELL")
+                order.Side = f.StringValue;
+            else if (f.FieldInfo.Name == "AVG_PRICE")
+                order.dPrice = f.DoubleValue;
+            else if (f.FieldInfo.Name == "WORKING_QTY")
+                order.lWorking = f.LongValue;
+            else if (f.FieldInfo.Name == "ORDER_TAG")
+                order.OrderTag = f.StringValue;
+        }
+        ProcessOrder(order, bRequest);
+    }
+}
+
+private void ProcessOrder(OrderRecord order, bool bRequest)
+{
+    if (order != null)
+    {
+        if (order.Type == "UserSubmitStagedOrder")
+        {
+            string sDetails = order.GetDetails();
+            if (!bRequest)    // don't want to spam the console at startup...
+                Console.WriteLine("Received Order Update: " + sDetails);
+            _book[order.OrderID] = order;
+        }
+    }
+}
 `,
       cmOptions: {
         tabSize: 4,

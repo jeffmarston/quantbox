@@ -27,10 +27,20 @@ export default {
     subscribeToConsole(algos) {
       conn.on("console", msg => {
         if (this.lines.length > 100) {
-          this.lines.splice(0,1);
+          this.lines.splice(0, 1);
         }
         this.lineCount++;
-        this.lines.push("[" + new Date().toLocaleTimeString() + "] " + msg);
+
+        let date = new Date();
+        let dateString =
+          date.getHours() +
+          ":" +
+          date.getMinutes() +
+          ":" +
+          date.getSeconds() +
+          "." +
+          date.getMilliseconds();
+        this.lines.push("[" + dateString + "] " + msg);
       });
     }
   }

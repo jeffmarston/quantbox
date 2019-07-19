@@ -4,7 +4,7 @@
       <!-- <SidebarToggler class="d-lg-none" display="md" mobile />
       <SidebarToggler class="d-md-down-none" display="lg" /> -->
 
-      <h4 class="app-title">Quantraceptive</h4>
+      <h4 class="app-title">Black Box Simulator</h4>
       
       
       <b-navbar-nav class="ml-auto">
