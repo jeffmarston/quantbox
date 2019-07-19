@@ -59,8 +59,10 @@ namespace Eze.Quantbox
 
                 OrderStats EmsStats = Adapter.GetStats(Name);
                 Stats.Created += numTrades;
-                //Stats.Routed += Stats.Created / 2;
-                Stats.Routed = (int)(EmsStats.Completed + EmsStats.Working);
+                if ( EmsStats )
+                    Stats.Routed = (int)(EmsStats.Completed + EmsStats.Working);
+                else
+                    Stats.Routed += Stats.Created / 2;
                 Stats.Exceptions += Stats.Created / 5;
                 StampHistory();
 
