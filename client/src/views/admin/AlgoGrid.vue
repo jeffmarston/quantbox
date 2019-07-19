@@ -145,7 +145,7 @@ export default {
         let matchRow = _.find(this.rowData, o => o.name === updatedAlgo.name);
 
         if (matchRow) {
-          matchRow.tradesCreated = updatedAlgo.tradesCreated;
+          matchRow.stats = updatedAlgo.stats;
           this.gridApi.redrawRows(matchRow);
         } else {
           this.rowData.push(updatedAlgo);
