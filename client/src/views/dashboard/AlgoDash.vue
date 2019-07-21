@@ -1,5 +1,5 @@
 <template>
-  <div class="animated fadeIn">
+  <div class="animated fadeIn style='min-width: 450px;'">
     <div class="top-bar">
       <b-row>
         <b-col md="12" lg="12">

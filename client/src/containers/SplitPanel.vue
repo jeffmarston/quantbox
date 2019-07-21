@@ -1,7 +1,7 @@
 <template class="splitpanel-template">
   <splitpanes style="height: 100%" @resized="resized()" @resize="resize()">
-    <algo-dash ref="dash"></algo-dash>
-    <console-aside></console-aside>
+    <algo-dash  splitpanes-size="100" ref="dash"></algo-dash>
+    <console-aside splitpanes-size="0"></console-aside>
   </splitpanes>
 </template>
 

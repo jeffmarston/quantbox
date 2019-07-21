@@ -1,69 +1,61 @@
 <template>
   <b-card>
-    <div slot="header">
-      <b-row>
-        <b-col md="2" class="card-enabled-indicator d-none d-md-block">
-          <span v-if="algo.enabled">
-            <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
-            Enabled
-          </span>
-          <span v-if="!algo.enabled">
-            <img class="img-active-state" src="img/ux-i-offline.svg" alt="Active" />
-            Disabled
-          </span>
-        </b-col>
-        <b-col xs="8" class="card-header-block">
-          <h5 class="card-title mb-0">{{ algo.name }}</h5>
-        </b-col>
-        <b-col xs="2">
-          <b-button-toolbar class="float-right enable-button-size">
-            <b-nav-item-dropdown text="Options" right>
-              <b-dropdown-item href="#" @click.prevent="showCode">Code</b-dropdown-item>
-              <b-dropdown-item href="#" @click.prevent="showParameters">Parameters</b-dropdown-item>
-              <b-dropdown-item href="#" @click.prevent="deleteAlgo">Delete</b-dropdown-item>
-            </b-nav-item-dropdown>
+    <div class="card-header">
+      <div class="card-header-enabled">
+        <span v-if="algo.enabled">
+          <img class="img-active-state" src="img/ActivePulseAnimated.gif" alt="Active" />
+          Enabled
+        </span>
+        <span v-if="!algo.enabled">
+          <img class="img-active-state" src="img/ux-i-offline.svg" alt="Active" />
+          Disabled
+        </span>
+      </div>
+      <div class="card-header-title">
+        <h5 class="card-title mb-0">{{ algo.name }}</h5>
+      </div>
+      <div class="card-header-toggle">
+        <b-button-toolbar class="float-right enable-button-size">
+          <b-nav-item-dropdown text="Options" right>
+            <b-dropdown-item href="#" @click.prevent="showCode">Code</b-dropdown-item>
+            <b-dropdown-item href="#" @click.prevent="showParameters">Parameters</b-dropdown-item>
+            <b-dropdown-item href="#" @click.prevent="deleteAlgo">Delete</b-dropdown-item>
+          </b-nav-item-dropdown>
 
-            <i v-if="algo.enabled" class="fa fa-toggle-on" @click="toggleEnabled(algo, false)"></i>
-            <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="toggleEnabled(algo, true)"></i>
-          </b-button-toolbar>
-        </b-col>
-      </b-row>
+          <i v-if="algo.enabled" class="fa fa-toggle-on" @click="toggleEnabled(algo, false)"></i>
+          <i v-if="!algo.enabled" class="fa fa-toggle-off" @click="toggleEnabled(algo, true)"></i>
+        </b-button-toolbar>
+      </div>
     </div>
 
-    <b-row>
-      <b-col md="4" xs="11">
-        <b-row>
+    <div class="card-content">
+      <div class="card-body-summary">
+        <div class="card-summary-panel">
+          <label class="card-label large">Trades Created</label>
+          <h3
+            class="trade-count"
+            :class="{ 'green-text': algo.enabled }"
+          >{{ algo.stats.created | numberFilter }}</h3>
+          <a href="reviewTrades">Review Trades</a>
+        </div>
+        <div class="side-by-side">
           <div class="card-summary-panel">
-            <label class="card-label large">Trades Created</label>
-            <h3
-              class="trade-count"
-              :class="{ 'green-text': algo.enabled }"
-            >{{ algo.stats.created | numberFilter }}</h3>
-            <a href="reviewTrades">Review Trades</a>
+            <label class="card-label">Trade Exceptions</label>
+            <h5 class="trade-count">{{ algo.stats.exceptions | numberFilter }}</h5>
+            <a href="reviewExceptions">Review Exceptions</a>
           </div>
-        </b-row>
-        <b-row>
-          <b-col sm="6" style="padding:0">
-            <div class="card-summary-panel">
-              <label class="card-label">Trade Exceptions</label>
-              <h5 class="trade-count">{{ algo.stats.exceptions | numberFilter }}</h5>
-              <a href="reviewExceptions">Review Exceptions</a>
-            </div>
-          </b-col>
-          <b-col sm="6">
-            <div class="card-summary-panel">
-              <label class="card-label">Order Routed</label>
-              <h5 class="trade-count">{{ algo.stats.routed | numberFilter }}</h5>
-              <a href="reviewRoutes">Review Routes</a>
-            </div>
-          </b-col>
-        </b-row>
-      </b-col>
+          <div class="card-summary-panel">
+            <label class="card-label">Order Routed</label>
+            <h5 class="trade-count">{{ algo.stats.routed | numberFilter }}</h5>
+            <a href="reviewRoutes">Review Routes</a>
+          </div>
+        </div>
+      </div>
 
-      <b-col md="8" xs="1">
+      <div class="card-body-chart">
         <vue-highcharts :options="options" ref="chart"></vue-highcharts>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
 
     <div slot="footer">
       <span>{{lastMsg}}</span>
@@ -89,9 +81,7 @@ export default {
   props: ["algo", "parentSize"],
   watch: {
     parentSize: function(newSize, oldSize) {
-      console.log(newSize);
-      this.$refs.chart.getChart().reflow();
-      // console.log(this.$refs.chart.getChart());
+        this.$refs.chart.getChart().reflow();
     }
   },
   data: function() {
@@ -218,13 +208,6 @@ export default {
 .green-text {
   color: #4dbd74;
 }
-
-.card-enabled-indicator {
-  border-right: 1px solid #ccc;
-  padding: 8px 0 0 0;
-  min-width: 85px;
-}
-
 .fa-toggle-on {
   margin: 2px 0;
   font-size: 32px;
@@ -253,16 +236,44 @@ a {
 }
 .card-header {
   padding: 0 6px;
+  display: flex;
 }
-.card-header-block {
+
+.card-header-enabled {
+  border-right: 1px solid #ccc;
+  padding: 14px 8px 0 0;
+  min-width: 85px;
+}
+.card-header-title {
+  padding: 12px;
+  flex-grow: 1;
+}
+.card-header-toggle {
   padding: 6px;
 }
+
 .card-body {
-  padding: 10px 0 0 0;
+  padding: 0;
 }
+.card-body-summary {
+  padding: 0;
+}
+.card-body-chart {
+  padding: 0;
+  flex: auto 1 1;
+  width: 0;
+  overflow: hidden;
+}
+.card-content {
+  display: flex;
+}
+.side-by-side {
+  display: flex;
+}
+
 .card-summary-panel {
-  min-width: 170px;
-  margin: 10px 0 10px 0;
+  min-width: 110px;
+  margin: 10px;
 }
 .card-footer {
   padding: 4px 8px;
@@ -288,6 +299,10 @@ a {
 }
 .trade-count {
   margin: 0;
+}
+chart {
+display: block;
+width: 100%;
 }
 /* .enable-button-size {    
   min-width: 160px;
