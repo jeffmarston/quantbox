@@ -25,7 +25,7 @@
 
       <main class="main">
         <Breadcrumb :list="list" />
-        <div class="container-fluid">
+        <div class="container-fluid main-display-port">
           <router-view :key="$route.fullPath"></router-view>
         </div>
       </main>
@@ -106,3 +106,9 @@ export default {
   }
 };
 </script>
+<style scoped>
+.main-display-port {
+    height: calc(100vh - 100px);
+    padding: 0;
+}
+</style>

@@ -18,9 +18,15 @@
 
     <div class="card-view">
       <b-row>
-        <b-col lg="6" xs="12" v-for="(algo, idx) in allAlgos" :key="idx">
+        <b-col
+          class="algo-column"
+          :class="{ 'large-card': largecard}"
+          v-for="(algo, idx) in allAlgos"
+          :key="idx"
+        >
           <algo-card
             :algo="algo"
+            :parentSize="size"
             @showParameters="showParameters(algo)"
             @showCode="showCode(algo)"
             @deleteAlgo="deleteAlgo(algo)"
@@ -53,8 +59,8 @@
 import AlgoCard from "./AlgoCard";
 import SignalrHub from "../../shared/SignalrHub";
 import { getAlgos } from "../../shared/restProvider";
-import CodeEditor from "../admin/CodeEditor";
-import AlgoConfig from "../admin/AlgoConfig";
+import CodeEditor from "./CodeEditor";
+import AlgoConfig from "./AlgoConfig";
 
 const _ = require("lodash");
 
@@ -75,6 +81,8 @@ export default {
   },
   data: function() {
     return {
+      largecard: false,
+      size: 0,
       allAlgos: [],
       showModal: false,
       editingAlgo: null,
@@ -82,6 +90,12 @@ export default {
     };
   },
   methods: {
+    resize(newSize) {
+      this.largecard = this.$el.clientWidth < 1300;
+    },
+    resized(newSize) {
+      this.size = this.$el.clientWidth;
+    },
     load() {
       getAlgos().then(o => {
         this.allAlgos = [];
@@ -203,5 +217,12 @@ h4 {
 .top-bar-button {
   float: right;
   margin-left: 8px;
+}
+.algo-column {
+  min-width: 50%;
+}
+.large-card {
+  flex: 0 0 100%;
+  max-width: 100%;
 }
 </style>

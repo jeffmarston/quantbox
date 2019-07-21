@@ -28,9 +28,10 @@ body {
   font-size: 14px;
 }
 
-// .breadcrumb-item > a {
-//   color: #20d82f;
-// }
+.breadcrumb {
+  margin-bottom: 0;
+  border-bottom: none;
+}
 
 .app-header {
   background-color: #222;

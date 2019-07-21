@@ -33,29 +33,20 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row>
-      <b-col sm="6" v-for="(config, idx) in allAlgoConfig" :key="idx">
-        <b-card>
-          <algo-config :algoName="config.name"></algo-config>
-        </b-card>
-      </b-col>
-    </b-row>
   </div>
 </template>
 
 <script>
-import { getAllAlgoConfig, getEmsConfig, saveEmsConfig } from "../../shared/restProvider";
-import AlgoConfig from "../admin/AlgoConfig";
-const _ = require("lodash");
+import {
+  getEmsConfig,
+  saveEmsConfig
+} from "../../shared/restProvider";
 
 export default {
   name: "settings",
-  components: {
-    AlgoConfig
-  },
+  components: {},
   data() {
     return {
-      allAlgoConfig: [],
       emsConfig: {}
     };
   },
@@ -64,17 +55,12 @@ export default {
   },
   methods: {
     load() {
-      // getAllAlgoConfig().then(o => {
-      //   this.allAlgoConfig = o;
-      // });
-
       getEmsConfig().then(o => {
         this.emsConfig = o;
       });
     },
     save() {
-      saveEmsConfig(this.emsConfig).then(o => {
-      });
+      saveEmsConfig(this.emsConfig).then(o => {});
     }
   }
 };

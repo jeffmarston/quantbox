@@ -77,7 +77,7 @@ import {
   enableAlgos,
   deleteAlgoConfig
 } from "../../shared/restProvider";
-import AlgoConfig from "../admin/AlgoConfig";
+import AlgoConfig from "./AlgoConfig";
 import VueHighcharts from "vue2-highcharts";
 
 export default {
@@ -86,7 +86,14 @@ export default {
     AlgoConfig,
     VueHighcharts
   },
-  props: ["algo"],
+  props: ["algo", "parentSize"],
+  watch: {
+    parentSize: function(newSize, oldSize) {
+      console.log(newSize);
+      this.$refs.chart.getChart().reflow();
+      // console.log(this.$refs.chart.getChart());
+    }
+  },
   data: function() {
     return {
       timer: null,
