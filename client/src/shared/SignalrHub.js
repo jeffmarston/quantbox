@@ -11,6 +11,17 @@ connection.start().then(function () {
   readyFunction();
 });
 
+connection.onclose(function() {
+  setInterval(() => {
+    if (connection.connectionState === 0) {  
+      console.log("Connection lost, attempting to reconnect...");
+      connection.start().catch(o=> {
+        console.error("Connection error");   
+      });
+    }
+  }, 5000); // Restart connection after 5 seconds.
+});
+
 export default class SignalrHub {
   constructor(readyFunc) {
     readyFunction = readyFunc;
@@ -20,10 +31,6 @@ export default class SignalrHub {
 
   subscribe(cmd, servicename) {
     connection.invoke("subscribe", cmd, servicename).catch(err => console.error(err));
-  }
-
-  getServices() {
-    connection.invoke("GetServices").catch(err => console.error(err));
   }
 
 }
