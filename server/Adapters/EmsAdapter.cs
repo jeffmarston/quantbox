@@ -3,6 +3,7 @@ using RealTick.Api.Data;
 using RealTick.Api.Talipc;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Eze.Quantbox
 {
@@ -45,6 +46,19 @@ namespace Eze.Quantbox
         public void Reset()
         {
             Total = Pending = Staged = Working = Completed = Deleted = TotalQty = CompletedQty = 0;
+        }
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(Total).Append(",");
+            sb.Append(Pending).Append(",");
+            sb.Append(Staged).Append(",");
+            sb.Append(Working).Append(",");
+            sb.Append(Completed).Append(",");
+            sb.Append(Deleted).Append(",");
+            sb.Append(TotalQty).Append(",");
+            sb.Append(CompletedQty).AppendLine();
+            return sb.ToString();
         }
 
         public double GetQtyCompletionRate()
@@ -257,6 +271,14 @@ namespace Eze.Quantbox
                     OrderStats stats = GetOrCreateStats(order.Portfolio);
                     stats.ReplaceOrder(order, oldOrder); // it's ok if oldOrder is null
                     _book[order.OrderID] = order;
+
+
+
+                    // Fire event to publish the result
+                    StatsChanged?.Invoke(order.Portfolio, stats);
+
+
+
                 }
             }
         }

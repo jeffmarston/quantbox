@@ -137,9 +137,10 @@ export default {
         }
       });
 
-      conn.on("algo-stats", stats => {
+      conn.on("algo-stats", (name, stats) => {
         for (let i = 0; i < this.allAlgos.length; i++) {
-          if (this.allAlgos[i].name === stats.name) {
+          if (this.allAlgos[i].name === name) {
+            console.log(stats);
             this.allAlgos[i].stats = stats;
           }
         }

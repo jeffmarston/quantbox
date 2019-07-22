@@ -37,10 +37,8 @@ namespace Eze.Quantbox
                 .WithOrigins(
                   "http://localhost:8080"
                 , "http://localhost:5000"
-                , "http://marston7060.ezesoft.net:8080"
-                , "http://marston7060.ezesoft.net:5000"
-                , "http://marston7060:5000"
-                , "http://marston7060:8080")
+                , "http://10.164.1.232:8080"
+                , "http://10.164.1.232:5000")
                 ;
             }));
             services.AddSignalR();

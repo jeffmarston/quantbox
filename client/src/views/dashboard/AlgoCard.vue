@@ -35,18 +35,18 @@
           <h3
             class="trade-count"
             :class="{ 'green-text': algo.enabled }"
-          >{{ algo.stats.created | numberFilter }}</h3>
+          >{{ algo.stats.total | numberFilter }}</h3>
           <a href="reviewTrades">Review Trades</a>
         </div>
         <div class="side-by-side">
           <div class="card-summary-panel">
             <label class="card-label">Trade Exceptions</label>
-            <h5 class="trade-count">{{ algo.stats.exceptions | numberFilter }}</h5>
+            <h5 class="trade-count">{{ algo.stats.deleted | numberFilter }}</h5>
             <a href="reviewExceptions">Review Exceptions</a>
           </div>
           <div class="card-summary-panel">
             <label class="card-label">Order Routed</label>
-            <h5 class="trade-count">{{ algo.stats.routed | numberFilter }}</h5>
+            <h5 class="trade-count">{{ algo.stats.staging | numberFilter }}</h5>
             <a href="reviewRoutes">Review Routes</a>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default {
           history.length > 0 ? history[history.length - 1] : null;
 
         if (lastElement) {
-          series.addPoint([rightNow, this.algo.stats.created], true, true);
+          series.addPoint([rightNow, this.algo.stats.total], true, true);
         }
       }, 2000);
     },
@@ -196,7 +196,8 @@ export default {
   },
   filters: {
     numberFilter(value) {
-      return `${value.toLocaleString()}`;
+      return value;
+      // return `${value.toLocaleString()}`;
     }
   }
 };

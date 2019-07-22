@@ -25,7 +25,10 @@ namespace Eze.Quantbox
 
         private void Adapter_StatsChanged(string name, OrderStats stats)
         {
-           PublishToConsole("========> " + name + " fired a publish event");
+            if (Name == name) {
+                PublishToConsole(name + " stats " + stats);
+                PublishStats(stats);
+            }
         }
 
         public override void Dispose()
@@ -85,9 +88,9 @@ namespace Eze.Quantbox
                 StampHistory();
             }
 
-            OrderStats stats = Adapter.GetStats(Name);
-            if ( stats != null )
-                PublishToConsole(Name + ": " + stats.GetQtyCompletionRate().ToString("F2") + "% Completed - Total Orders: " + stats.Total + "  (Working: " + stats.Working + ", Staged =" + stats.Staged + ", Completed =" + stats.Completed + ")");
+            //OrderStats stats = Adapter.GetStats(Name);
+            //if ( stats != null )
+            //    PublishToConsole(Name + ": " + stats.GetQtyCompletionRate().ToString("F2") + "% Completed - Total Orders: " + stats.Total + "  (Working: " + stats.Working + ", Staged =" + stats.Staged + ", Completed =" + stats.Completed + ")");
         }
     }
 }

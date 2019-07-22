@@ -53,14 +53,24 @@ namespace Eze.Quantbox
                 Debug.WriteLine("Sending state update for " + this.Name);
             }
         }
-        public void PublishStats()
+
+        //public void PublishStats()
+        //{
+        //    if (Publisher != null)
+        //    {
+        //        Publisher.SendAsync("algo-stats", this.Stats);
+        //        Debug.WriteLine("Sending state update for " + Name);
+        //    }
+        //}
+        public void PublishStats(OrderStats stats)
         {
             if (Publisher != null)
             {
-                Publisher.SendAsync("algo-stats", this.Stats);
+                Publisher.SendAsync("algo-stats", Name, stats);
                 Debug.WriteLine("Sending state update for " + Name);
             }
         }
+
         public void PublishToConsole(string msg)
         {
             if (Publisher != null)
