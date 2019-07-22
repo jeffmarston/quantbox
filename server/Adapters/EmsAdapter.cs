@@ -10,6 +10,7 @@ namespace Eze.Quantbox
     public class OrderRecord
     {
         public string OrderID;
+        public string Portfolio;
         public string OrderTag;
         public string Type;
         public string Side;
@@ -204,6 +205,8 @@ namespace Eze.Quantbox
                         order.lWorking = f.LongValue;
                     else if (f.FieldInfo.Name == "ORDER_TAG")
                         order.OrderTag = f.StringValue;
+                    else if (f.FieldInfo.Name == "PORTFOLIO_NAME")
+                        order.Portfolio = f.StringValue;
                 }
                 ProcessOrder(order, bRequest);
             }
@@ -222,24 +225,24 @@ namespace Eze.Quantbox
                     if (_book.ContainsKey(order.OrderID))
                         oldOrder = _book[order.OrderID];
 
-                    OrderStats stats = GetOrCreateStats(order.OrderTag);
+                    OrderStats stats = GetOrCreateStats(order.Portfolio);
                     stats.ReplaceOrder(order, oldOrder); // it's ok if oldOrder is null
                     _book[order.OrderID] = order;
                 }
             }
         }
 
-        private OrderStats GetOrCreateStats(string tag)
+        private OrderStats GetOrCreateStats(string name)
         {
-            if (tag == null || tag == "")
-                tag = "<no tag>";
+            if (name == null || name == "")
+                name = "<none>";
             OrderStats stats = null;
-            if (Stats.ContainsKey(tag))
-                stats = Stats[tag];
+            if (Stats.ContainsKey(name))
+                stats = Stats[name];
             if (stats == null)
             {
                 stats = new OrderStats();
-                Stats[tag] = stats;
+                Stats[name] = stats;
             }
             return stats;
         }
@@ -253,8 +256,7 @@ namespace Eze.Quantbox
 
             foreach ( KeyValuePair<string, OrderRecord> entry in _book )
             {
-                string tag = entry.Value.OrderTag;
-                OrderStats stats = GetOrCreateStats(tag);
+                OrderStats stats = GetOrCreateStats(entry.Value.Portfolio);
                 stats.AddOrder(entry.Value);
             }
         }
@@ -310,6 +312,7 @@ namespace Eze.Quantbox
                 row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
                 row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));
                 row.Add(new Field("STYP", FieldType.IntScalar, 1)); // STOCK
+                row.Add(new Field("PORTFOLIO_NAME", FieldType.StringScalar, trade.Algo));
                 row.Add(new Field("ORDER_TAG", FieldType.StringScalar, trade.Algo)); // STOCK
 
                 data.Add(row);
