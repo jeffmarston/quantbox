@@ -68,6 +68,11 @@ namespace Eze.Quantbox
                     break;
             }
         }
+
+        public void ReplaceOrder(OrderRecord newOrder, OrderRecord oldOrder)
+        {
+            // DGover to complete
+        }
     }
 
     public class EmsAdapter : ITradingSystemAdapter, IDisposable
@@ -204,6 +209,15 @@ namespace Eze.Quantbox
                     string sDetails = order.GetDetails();
                     if (!bRequest)    // don't want to spam the console at startup...
                         Console.WriteLine("Received Order Update: " + sDetails);
+
+                    if (_book.ContainsKey(order.OrderID))
+                    {
+                        GetStats(order.OrderTag).ReplaceOrder(order, _book[order.OrderID]);
+                    }
+                    else
+                    {
+                        GetStats(order.OrderTag).AddOrder(order);
+                    }
                     _book[order.OrderID] = order;
                 }
             }
@@ -250,6 +264,7 @@ namespace Eze.Quantbox
         public string Branch { get; private set; }
         public string Customer { get; private set; }
         public string Deposit { get; private set; }
+        public Action PublishStats { get; set; }
 
         public bool CreateTrades(IList<Trade> trades)
         {
@@ -294,6 +309,8 @@ namespace Eze.Quantbox
 
         #region IDisposable
         private bool disposedValue = false;
+
+        public event StatsEventHandler StatsChanged;
 
         protected virtual void Dispose(bool disposing)
         {

@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Timers;
 
 namespace Eze.Quantbox
 {
 
     public class CsvAdapter: ITradingSystemAdapter
     {
+        private Random _rand = new Random();
+        private Timer _timer = new Timer();
         public EmsSettings Settings { get; }
         public OrderStats GetStats(string AlgoName) { return null; }
 
@@ -20,9 +23,23 @@ namespace Eze.Quantbox
             {
                 Directory.CreateDirectory(csvFolder);
             }
+
+            _timer.Interval = 1000;
+            _timer.Elapsed += _timer_Elapsed;
+            _timer.Enabled = true;
         }
+
+        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            // StatsChanged
+        }
+
         public string FilenameRoot { get; internal set; }
+        public Action PublishStats { get; set; }
+
         private static object _lockObj = new object();
+
+        public event StatsEventHandler StatsChanged;
 
         public bool CreateTrades(IList<Trade> trades)
         {
@@ -46,6 +63,6 @@ namespace Eze.Quantbox
                 File.AppendAllText(csvFolder + filename, sb.ToString());
             }
             return true;
-        }
+        } 
     }
 }

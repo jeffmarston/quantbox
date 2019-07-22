@@ -15,10 +15,17 @@ namespace Eze.Quantbox
             Adapter = adapter;
             Metadata = metadata;
             Stats = new AlgoStats(Name);
+            Adapter.StatsChanged += Adapter_StatsChanged;
+
 
             _timer.Interval = 1000;
             _timer.Elapsed += Timer_Elapsed;
             _timer.Enabled = true;
+        }
+
+        private void Adapter_StatsChanged(string name, OrderStats stats)
+        {
+           PublishToConsole("========> " + name + " fired a publish event");
         }
 
         public override void Dispose()
@@ -70,7 +77,7 @@ namespace Eze.Quantbox
                 Stats.Exceptions += Stats.Created / 5;
                 StampHistory();
 
-                PublishStats();
+                // PublishStats();
             }
             else
             {
