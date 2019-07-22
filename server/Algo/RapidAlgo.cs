@@ -87,7 +87,7 @@ namespace Eze.Quantbox
 
             OrderStats stats = Adapter.GetStats(Name);
             if ( stats != null )
-                PublishToConsole(Name + ": Total: " + stats.Total + "  (Working: " + stats.Working + ", Staged =" + stats.Staged + ", Completed =" + stats.Completed + ")");
+                PublishToConsole(Name + ": " + stats.GetQtyCompletionRate().ToString("F2") + "% Completed - Total Orders: " + stats.Total + "  (Working: " + stats.Working + ", Staged =" + stats.Staged + ", Completed =" + stats.Completed + ")");
         }
     }
 }

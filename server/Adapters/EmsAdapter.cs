@@ -39,10 +39,19 @@ namespace Eze.Quantbox
         public long Working;    //  at least one order out in the market
         public long Completed;  // no longer live, and at least partially completed
         public long Deleted;    // no longer live, nothing filled
+        public long TotalQty;
+        public long CompletedQty;
 
         public void Reset()
         {
-            Total = Pending = Staged = Working = Completed = Deleted = 0;
+            Total = Pending = Staged = Working = Completed = Deleted = TotalQty = CompletedQty = 0;
+        }
+
+        public double GetQtyCompletionRate()
+        {
+            if (TotalQty == 0)
+                return 0.0;
+            return 100.0 * CompletedQty / (double)TotalQty;
         }
 
         public void AddOrder(OrderRecord order)
@@ -76,9 +85,12 @@ namespace Eze.Quantbox
                     Deleted += inc;
                     break;
             }
-        }
 
-        public void ReplaceOrder(OrderRecord newOrder, OrderRecord oldOrder)
+            TotalQty += (order.lQty * inc);
+            CompletedQty += (order.lQtyTraded * inc);
+    }
+
+    public void ReplaceOrder(OrderRecord newOrder, OrderRecord oldOrder)
         {
             if (oldOrder != null)
                 UpdateOrderStats(oldOrder, false);  // remove old order's contribution to stats
