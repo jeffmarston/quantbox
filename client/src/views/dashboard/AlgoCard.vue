@@ -182,10 +182,12 @@ export default {
       if (confirm("Are you sure you want to delete " + this.algo.name + "?")) {
         deleteAlgoConfig(this.algo.name).then(o => {
           console.log("Deleted: " + this.algo.name);
-          clearInterval(this.timer);
         });
       }
     }
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
   },
   computed: {
     lastMsg: function() {
