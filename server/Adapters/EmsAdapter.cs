@@ -55,7 +55,7 @@ namespace Eze.Quantbox
         {
             int inc = bAdd ? 1 : -1;
 
-            Total++;
+            Total += inc;
             switch (order.Status)
             {
                 case "PENDING":
