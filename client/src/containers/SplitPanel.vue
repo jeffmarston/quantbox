@@ -1,7 +1,7 @@
 <template class="splitpanel-template">
-  <splitpanes style="height: 100%" @resized="resized()" @resize="resize()">
-    <algo-dash  splitpanes-size="100" ref="dash"></algo-dash>
-    <console-aside splitpanes-size="0"></console-aside>
+  <splitpanes watch-slots style="height: 100%" @resized="resized()" @resize="resize()">
+    <algo-dash @toggleConsole="toggleConsole" :splitpanes-size="100 - consolesize" ref="dash"></algo-dash>
+    <console-aside :splitpanes-size="consolesize"></console-aside>
   </splitpanes>
 </template>
 
@@ -10,6 +10,7 @@ import AlgoDash from "../views/dashboard/AlgoDash";
 import ConsoleAside from "../containers/ConsoleAside";
 import Splitpanes from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
+import { setTimeout } from "timers";
 
 export default {
   name: "split-panel",
@@ -20,16 +21,27 @@ export default {
   },
   data() {
     return {
-      dashsize: "large"
+      consolesize: 0
     };
   },
   mounted() {},
   methods: {
     resize() {
-        this.$refs.dash.resize();
+      this.$refs.dash.resize();
     },
     resized() {
-        this.$refs.dash.resized();
+      this.$refs.dash.resized();
+    },
+    toggleConsole() {
+      if (this.consolesize < 5) {
+        this.consolesize = 50;
+      } else {
+        this.consolesize = 0;
+      }
+      setTimeout(() => {
+        this.resize();
+        this.resized();
+      }, 250);
     }
   }
 };

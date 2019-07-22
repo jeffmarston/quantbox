@@ -1,5 +1,5 @@
 <template>
-  <div class="animated fadeIn style='min-width: 450px;'">
+  <div class="animated fadeIn dashboard">
     <div class="top-bar">
       <b-row>
         <b-col md="12" lg="12">
@@ -7,11 +7,9 @@
           <b-button class="top-bar-button" variant="primary" @click="createNewAlgo">
             <i class="fa fa-plus"></i>Create New
           </b-button>
-          <router-link to="/settings">
-            <b-button class="top-bar-button" variant="secondary">
-              <i class="fa fa-cog"></i>Options
-            </b-button>
-          </router-link>
+          <b-button class="top-bar-button" variant="secondary" @click="openConsole">
+            <i class="fa fa-code"></i>Console
+          </b-button>
         </b-col>
       </b-row>
     </div>
@@ -91,10 +89,14 @@ export default {
   },
   methods: {
     resize(newSize) {
+      console.log(this.$el.clientWidth);
       this.largecard = this.$el.clientWidth < 1300;
     },
     resized(newSize) {
       this.size = this.$el.clientWidth;
+    },
+    openConsole() {
+      this.$emit("toggleConsole");
     },
     load() {
       getAlgos().then(o => {
@@ -131,20 +133,7 @@ export default {
         }
         // Inserting a new card
         if (!foundIt) {
-          let algoToInsert = updatedAlgo;
-          algoToInsert.enabled = updatedAlgo.enabled;
-          algoToInsert.stats = updatedAlgo.stats;
-
-          // transform into chart datapoints
-          algoToInsert.history = [];
-          updatedAlgo.history.forEach(dp => {
-            algoToInsert.history.push({
-              date: dp.date,
-              value: dp.value
-            });
-          });
-
-          this.allAlgos.push(algoToInsert);
+          this.load();
         }
       });
 
@@ -220,9 +209,15 @@ h4 {
 }
 .algo-column {
   min-width: 50%;
+  flex-grow: 0;
 }
 .large-card {
   flex: 0 0 100%;
   max-width: 100%;
+}
+.dashboard {
+  min-width: 450px;
+  overflow-y: auto;
+  height: 100%;
 }
 </style>

@@ -80,8 +80,8 @@ export default {
   },
   props: ["algo", "parentSize"],
   watch: {
-    parentSize: function(newSize, oldSize) {
-        this.$refs.chart.getChart().reflow();
+    parentSize: function(newValue, oldValue) {
+      this.$refs.chart.getChart().reflow();
     }
   },
   data: function() {
@@ -301,8 +301,8 @@ a {
   margin: 0;
 }
 chart {
-display: block;
-width: 100%;
+  display: block;
+  width: 100%;
 }
 /* .enable-button-size {    
   min-width: 160px;
