@@ -20,6 +20,7 @@ namespace Eze.Quantbox
         public long lQtyTraded;
         public double dPrice;
         public long lWorking;
+        public Price ArrivalPrice;
 
         public string GetDetails()
         {
@@ -41,6 +42,8 @@ namespace Eze.Quantbox
         public long Deleted;    // no longer live, nothing filled
         public long TotalQty;
         public long CompletedQty;
+        public double TotalValue;
+        public double CompletedValue;
 
         public void Reset()
         {
@@ -51,7 +54,14 @@ namespace Eze.Quantbox
         {
             if (TotalQty == 0)
                 return 0.0;
-            return 100.0 * CompletedQty / (double)TotalQty;
+            return CompletedQty / (double)TotalQty;
+        }
+
+        public double GetValueCompletionRate()
+        {
+            if (TotalValue == 0)
+                return 0.0;
+            return CompletedValue / (double)TotalValue;
         }
 
         public void AddOrder(OrderRecord order)
@@ -88,7 +98,9 @@ namespace Eze.Quantbox
 
             TotalQty += (order.lQty * inc);
             CompletedQty += (order.lQtyTraded * inc);
-    }
+            TotalValue += (double)(order.lQty * order.ArrivalPrice.DecimalValue);
+            CompletedValue += (double)(order.lQtyTraded * order.ArrivalPrice.DecimalValue);
+        }
 
     // Called when there is a realtime update to an order
     public bool ReplaceOrder(OrderRecord newOrder, OrderRecord oldOrder)
@@ -236,6 +248,8 @@ namespace Eze.Quantbox
                         order.OrderTag = f.StringValue;
                     else if (f.FieldInfo.Name == "PORTFOLIO_NAME")
                         order.Portfolio = f.StringValue;
+                    else if (f.FieldInfo.Name == "TRDPRC_1")
+                        order.ArrivalPrice = f.PriceValue;
                 }
                 ProcessOrder(order, bRequest);
             }
