@@ -52,10 +52,12 @@ export default {
   height: 100%;
   padding: 6px;
   overflow: auto;
+  white-space: nowrap;
 }
 .console-line {
   font-family: "Source Code Pro", monospace;
   margin: -2px;
   color: #c0c0c0;
+  overflow: hidden;
 }
 </style>

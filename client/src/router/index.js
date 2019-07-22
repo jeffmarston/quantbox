@@ -6,8 +6,9 @@ const DefaultContainer = () => import('@/containers/DefaultContainer');
 
 // Views - Components
 const AlgoDash = () => import('@/views/dashboard/AlgoDash');
-const AlgoGrid = () => import('@/views/admin/AlgoGrid');
-const CodeEditor = () => import('@/views/admin/CodeEditor');
+const AlgoGrid = () => import('@/views/dashboard/AlgoGrid');
+const CodeEditor = () => import('@/views/dashboard/CodeEditor');
+const SplitPanel = () => import('@/containers/SplitPanel');
 const Settings = () => import('@/views/general/Settings');
 
 // Views - Pages
@@ -43,7 +44,7 @@ router.addRoutes([
         {
           path: 'dashboard',
           name: 'Dashboard',
-          component: AlgoDash
+          component: SplitPanel
         },
         {
           path: 'grid',

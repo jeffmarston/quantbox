@@ -80,6 +80,10 @@ namespace Eze.Quantbox
         public AbstractAlgoModel CreateAlgo(AlgoMetadata metadata)
         {
             var newOne = new RapidAlgo(metadata, _adapter);
+            for (int i = 0; i > -120; i--)
+            {
+                newOne.History.Add(new AlgoHistory() { Date = DateTime.Now.AddSeconds(i), Value = 0 });
+            }
             newOne.Publisher = _publisher;
             Algos.Add(newOne);
             return newOne;

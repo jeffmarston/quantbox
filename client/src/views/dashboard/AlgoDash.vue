@@ -1,5 +1,5 @@
 <template>
-  <div class="animated fadeIn">
+  <div class="animated fadeIn dashboard">
     <div class="top-bar">
       <b-row>
         <b-col md="12" lg="12">
@@ -7,20 +7,24 @@
           <b-button class="top-bar-button" variant="primary" @click="createNewAlgo">
             <i class="fa fa-plus"></i>Create New
           </b-button>
-          <router-link to="/settings">
-            <b-button class="top-bar-button" variant="secondary">
-              <i class="fa fa-cog"></i>Options
-            </b-button>
-          </router-link>
+          <b-button class="top-bar-button" variant="secondary" @click="openConsole">
+            <i class="fa fa-code"></i>Console
+          </b-button>
         </b-col>
       </b-row>
     </div>
 
     <div class="card-view">
       <b-row>
-        <b-col lg="6" xs="12" v-for="(algo, idx) in allAlgos" :key="idx">
+        <b-col
+          class="algo-column"
+          :class="{ 'large-card': largecard}"
+          v-for="(algo, idx) in allAlgos"
+          :key="idx"
+        >
           <algo-card
             :algo="algo"
+            :parentSize="size"
             @showParameters="showParameters(algo)"
             @showCode="showCode(algo)"
             @deleteAlgo="deleteAlgo(algo)"
@@ -53,8 +57,8 @@
 import AlgoCard from "./AlgoCard";
 import SignalrHub from "../../shared/SignalrHub";
 import { getAlgos } from "../../shared/restProvider";
-import CodeEditor from "../admin/CodeEditor";
-import AlgoConfig from "../admin/AlgoConfig";
+import CodeEditor from "./CodeEditor";
+import AlgoConfig from "./AlgoConfig";
 
 const _ = require("lodash");
 
@@ -75,6 +79,8 @@ export default {
   },
   data: function() {
     return {
+      largecard: false,
+      size: 0,
       allAlgos: [],
       showModal: false,
       editingAlgo: null,
@@ -82,6 +88,16 @@ export default {
     };
   },
   methods: {
+    resize(newSize) {
+      console.log(this.$el.clientWidth);
+      this.largecard = this.$el.clientWidth < 1300;
+    },
+    resized(newSize) {
+      this.size = this.$el.clientWidth;
+    },
+    openConsole() {
+      this.$emit("toggleConsole");
+    },
     load() {
       getAlgos().then(o => {
         this.allAlgos = [];
@@ -117,20 +133,7 @@ export default {
         }
         // Inserting a new card
         if (!foundIt) {
-          let algoToInsert = updatedAlgo;
-          algoToInsert.enabled = updatedAlgo.enabled;
-          algoToInsert.stats = updatedAlgo.stats;
-
-          // transform into chart datapoints
-          algoToInsert.history = [];
-          updatedAlgo.history.forEach(dp => {
-            algoToInsert.history.push({
-              date: dp.date,
-              value: dp.value
-            });
-          });
-
-          this.allAlgos.push(algoToInsert);
+          this.load();
         }
       });
 
@@ -203,5 +206,18 @@ h4 {
 .top-bar-button {
   float: right;
   margin-left: 8px;
+}
+.algo-column {
+  min-width: 50%;
+  flex-grow: 0;
+}
+.large-card {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+.dashboard {
+  min-width: 450px;
+  overflow-y: auto;
+  height: 100%;
 }
 </style>
