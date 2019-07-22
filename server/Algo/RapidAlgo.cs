@@ -88,9 +88,13 @@ namespace Eze.Quantbox
                 StampHistory();
             }
 
-            //OrderStats stats = Adapter.GetStats(Name);
-            //if ( stats != null )
-            //    PublishToConsole(Name + ": " + stats.GetQtyCompletionRate().ToString("F2") + "% Completed - Total Orders: " + stats.Total + "  (Working: " + stats.Working + ", Staged =" + stats.Staged + ", Completed =" + stats.Completed + ")");
+            OrderStats stats = Adapter.GetStats(Name);
+            if (stats != null)
+            {
+                double dQtyCompletion = stats.GetQtyCompletionRate() * 100;
+                double dValueCompletion = stats.GetValueCompletionRate() * 100;
+                PublishToConsole(Name + ": " + dValueCompletion.ToString("F2") + "% Completed - Total Orders: " + stats.Total + "  (Working: " + stats.Working + ", Staged =" + stats.Staged + ", Completed =" + stats.Completed + ")");
+            }
         }
     }
 }
