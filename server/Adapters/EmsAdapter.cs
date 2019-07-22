@@ -46,32 +46,42 @@ namespace Eze.Quantbox
 
         public void AddOrder(OrderRecord order)
         {
+            UpdateOrderStats(order, true);
+        }
+
+        // either add an order to stats, or remove it.
+        public void UpdateOrderStats(OrderRecord order, bool bAdd=true)
+        {
+            int inc = bAdd ? 1 : -1;
+
             Total++;
             switch (order.Status)
             {
                 case "PENDING":
-                    Pending++;
+                    Pending += inc;
                     break;
                 case "LIVE":
                     {
                         if (order.lWorking > 0)
-                            Working++;
+                            Working += inc;
                         else
-                            Staged++;
+                            Staged += inc;
                         break;
                     }
                 case "COMPLETED":
-                    Completed++;
+                    Completed += inc;
                     break;
                 case "DELETED":
-                    Deleted++;
+                    Deleted += inc;
                     break;
             }
         }
 
         public void ReplaceOrder(OrderRecord newOrder, OrderRecord oldOrder)
         {
-            // DGover to complete
+            if (oldOrder != null)
+                UpdateOrderStats(oldOrder, false);  // remove old order's contribution to stats
+            UpdateOrderStats(newOrder, true);
         }
     }
 
@@ -94,7 +104,8 @@ namespace Eze.Quantbox
 
         public EmsAdapter(EmsSettings settings)
         {
-            Settings = settings;
+            if ( settings != null )
+                Settings = settings;
             if (_app == null)
             {
                 _app = new TalipcToolkitApp();
@@ -163,7 +174,6 @@ namespace Eze.Quantbox
             {
                 IDataBlock block = e.Data.GetDataAsBlock();
                 ProcessDataBlock(block, false);
-                RecalculateStats();
             }
         }
 
@@ -197,7 +207,6 @@ namespace Eze.Quantbox
                 }
                 ProcessOrder(order, bRequest);
             }
-            RecalculateStats();
         }
 
         private void ProcessOrder(OrderRecord order, bool bRequest)
@@ -209,20 +218,34 @@ namespace Eze.Quantbox
                     string sDetails = order.GetDetails();
                     if (!bRequest)    // don't want to spam the console at startup...
                         Console.WriteLine("Received Order Update: " + sDetails);
-
+                    OrderRecord oldOrder = null;
                     if (_book.ContainsKey(order.OrderID))
-                    {
-                        GetStats(order.OrderTag).ReplaceOrder(order, _book[order.OrderID]);
-                    }
-                    else
-                    {
-                        GetStats(order.OrderTag).AddOrder(order);
-                    }
+                        oldOrder = _book[order.OrderID];
+
+                    OrderStats stats = GetOrCreateStats(order.OrderTag);
+                    stats.ReplaceOrder(order, oldOrder); // it's ok if oldOrder is null
                     _book[order.OrderID] = order;
                 }
             }
         }
 
+        private OrderStats GetOrCreateStats(string tag)
+        {
+            if (tag == null || tag == "")
+                tag = "<no tag>";
+            OrderStats stats = null;
+            if (Stats.ContainsKey(tag))
+                stats = Stats[tag];
+            if (stats == null)
+            {
+                stats = new OrderStats();
+                Stats[tag] = stats;
+            }
+            return stats;
+        }
+
+        // Call this to walk the book and recalculate all stats.  May not be necessary anymore, now that we support 
+        // delta updates for stats.
         private void RecalculateStats()
         {
             foreach (KeyValuePair<string, OrderStats> s in Stats)
@@ -231,17 +254,7 @@ namespace Eze.Quantbox
             foreach ( KeyValuePair<string, OrderRecord> entry in _book )
             {
                 string tag = entry.Value.OrderTag;
-                if (tag == null || tag == "")
-                    tag = "<no tag>";
-                OrderStats stats = null;
-                if ( Stats.ContainsKey(tag) )
-                    stats = Stats[tag];
-                if (stats == null)
-                {
-                    stats = new OrderStats();
-                    Stats[tag] = stats;
-                }
-
+                OrderStats stats = GetOrCreateStats(tag);
                 stats.AddOrder(entry.Value);
             }
         }
