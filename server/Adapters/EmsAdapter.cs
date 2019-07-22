@@ -90,11 +90,28 @@ namespace Eze.Quantbox
             CompletedQty += (order.lQtyTraded * inc);
     }
 
-    public void ReplaceOrder(OrderRecord newOrder, OrderRecord oldOrder)
+    // Called when there is a realtime update to an order
+    public bool ReplaceOrder(OrderRecord newOrder, OrderRecord oldOrder)
         {
-            if (oldOrder != null)
-                UpdateOrderStats(oldOrder, false);  // remove old order's contribution to stats
-            UpdateOrderStats(newOrder, true);
+            bool AnythingInterestingChanged = false;
+            if ( oldOrder == null )
+                AnythingInterestingChanged = true;
+            else
+            {
+                if (newOrder.Status != oldOrder.Status)
+                    AnythingInterestingChanged = true;
+                else if ( newOrder.lWorking != oldOrder.lWorking )
+                    AnythingInterestingChanged = true;
+                else if ( newOrder.lQtyTraded != oldOrder.lQtyTraded )
+                    AnythingInterestingChanged = true;
+            }
+            if (AnythingInterestingChanged)
+            {
+                if (oldOrder != null)
+                    UpdateOrderStats(oldOrder, false);  // remove old order's contribution to stats
+                UpdateOrderStats(newOrder, true);
+            }
+            return AnythingInterestingChanged;
         }
     }
 
