@@ -31,6 +31,11 @@ namespace Eze.Quantbox
                 sDetails += "(" + lQtyTraded + " traded @ " + dPrice.ToString("F2") + ")";
             return sDetails;
         }
+
+        public bool IsLive()
+        {
+            return Status == "LIVE" || Status == "PENDING";
+        }
     }
 
     public class OrderStats
@@ -110,10 +115,13 @@ namespace Eze.Quantbox
                     break;
             }
 
-            TotalQty += (order.lQty * inc);
+            long TargetQty = order.IsLive ? order.lQty : order.lQtyTraded;
+            long Residual = TargetQty - order.lQtyTraded;
+            TotalQty += (TargetQty * inc);
             CompletedQty += (order.lQtyTraded * inc);
-            TotalValue += (double)(order.lQty * order.ArrivalPrice.DecimalValue);
-            CompletedValue += (double)(order.lQtyTraded * order.ArrivalPrice.DecimalValue);
+            CompletedValue += (double)(order.lQtyTraded * order.dPrice);
+            double ResidualValue = (double)(Residual * order.ArrivalPrice.DecimalValue);
+            TotalValue += CompletedValue + ResidualValue;
             CompletedPct = 1000 * GetValueCompletionRate();
             CompletedPct = Math.Truncate(CompletedPct) / 10;
 
