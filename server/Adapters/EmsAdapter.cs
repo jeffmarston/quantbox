@@ -112,7 +112,8 @@ namespace Eze.Quantbox
             CompletedQty += (order.lQtyTraded * inc);
             TotalValue += (double)(order.lQty * order.ArrivalPrice.DecimalValue);
             CompletedValue += (double)(order.lQtyTraded * order.ArrivalPrice.DecimalValue);
-            CompletedPct = GetValueCompletionRate();
+            CompletedPct = 1000 * GetValueCompletionRate();
+            CompletedPct = Math.Truncate(CompletedPct) / 10;
         }
 
     // Called when there is a realtime update to an order
