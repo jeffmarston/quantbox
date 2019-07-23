@@ -25,9 +25,13 @@ namespace Eze.Quantbox
 
         private void Adapter_StatsChanged(string name, OrderStats stats)
         {
-            if (name == "*" || Name == name) {
+            if (name == "*" || Name == name)
+            {
+                Stats.Created = (int)stats.Total;
+                Stats.Exceptions = (int)stats.Deleted;
+                Stats.Routed = (int)stats.Staged;
                 PublishToConsole(Name + " Stats: " + stats);
-                PublishStats(stats);
+                PublishStats();
             }
         }
 

@@ -31,6 +31,7 @@ namespace Eze.Quantbox
 
         private void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            // algo name "*" has no real meaning for the CsvAdapter. But he name is required for the EmsAdapater so we have to pass something.
             StatsChanged?.Invoke("*", new OrderStats() {
                 Total = _rand.Next(1, 9),
                 Deleted = _rand.Next(1, 9),

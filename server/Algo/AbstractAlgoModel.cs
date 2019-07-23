@@ -54,22 +54,22 @@ namespace Eze.Quantbox
             }
         }
 
-        //public void PublishStats()
-        //{
-        //    if (Publisher != null)
-        //    {
-        //        Publisher.SendAsync("algo-stats", this.Stats);
-        //        Debug.WriteLine("Sending state update for " + Name);
-        //    }
-        //}
-        public void PublishStats(OrderStats stats)
+        public void PublishStats()
         {
             if (Publisher != null)
             {
-                Publisher.SendAsync("algo-stats", Name, stats);
+                Publisher.SendAsync("algo-stats", this.Stats);
                 Debug.WriteLine("Sending state update for " + Name);
             }
         }
+        //public void PublishStats(OrderStats stats)
+        //{
+        //    if (Publisher != null)
+        //    {
+        //        Publisher.SendAsync("algo-stats", Name, stats);
+        //        Debug.WriteLine("Sending state update for " + Name);
+        //    }
+        //}
 
         public void PublishToConsole(string msg)
         {
