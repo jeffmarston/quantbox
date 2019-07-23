@@ -31,7 +31,11 @@ namespace Eze.Quantbox
 
         private void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            // StatsChanged
+            StatsChanged?.Invoke("*", new OrderStats() {
+                Total = _rand.Next(1, 9),
+                Deleted = _rand.Next(1, 9),
+                Staged = _rand.Next(1, 9)
+            });
         }
 
         public string FilenameRoot { get; internal set; }

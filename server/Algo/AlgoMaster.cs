@@ -59,7 +59,7 @@ namespace Eze.Quantbox
                 var config = JsonConvert.DeserializeObject<QuantBoxConfig>(txt);
 
                 // EMS Settings
-                if (config.EmsSettings != null && config.EmsSettings.Gateway.Length > 0)
+                if (config.EmsSettings != null && config.EmsSettings.Gateway != null && config.EmsSettings.Gateway.Length > 0)
                 {
                     //_adapter = new CsvAdapter(config.EmsSettings);
                     _adapter = new EmsAdapter(config.EmsSettings);

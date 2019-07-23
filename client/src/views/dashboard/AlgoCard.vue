@@ -46,7 +46,7 @@
           </div>
           <div class="card-summary-panel">
             <label class="card-label">Order Routed</label>
-            <h5 class="trade-count">{{ algo.stats.staging | numberFilter }}</h5>
+            <h5 class="trade-count">{{ algo.stats.staged | numberFilter }}</h5>
             <a href="reviewRoutes">Review Routes</a>
           </div>
         </div>
