@@ -14,7 +14,7 @@ namespace Eze.Quantbox
             Name = metadata.Name;
             Adapter = adapter;
             Metadata = metadata;
-            Stats = new AlgoStats(Name);
+            Stats = new OrderStats();
             Adapter.StatsChanged += Adapter_StatsChanged;
 
 
@@ -27,11 +27,9 @@ namespace Eze.Quantbox
         {
             if (name == "*" || Name == name)
             {
-                Stats.Created = (int)stats.Total;
-                Stats.Exceptions = (int)stats.Deleted;
-                Stats.Routed = (int)stats.Staged;
+                Stats = stats;
                 PublishToConsole(Name + " Stats: " + stats);
-                PublishStats();
+                PublishStats(stats);
             }
         }
 
@@ -49,11 +47,8 @@ namespace Eze.Quantbox
             if (this.Enabled && _rand.Next(Metadata.FrequencySec) == 0)
             {
                 // Prevent crazy huge number of trades.
-                if (Stats.Created > 10000)
+                if (Stats.Total > 10000)
                 {
-                    Stats.Created = 0;
-                    Stats.Routed = 0;
-                    Stats.Exceptions = 0;
                     Enabled = false;
                 }
                 var numTrades = _rand.Next(Metadata.MinBatchSize, Metadata.MaxBatchSize);
@@ -76,15 +71,7 @@ namespace Eze.Quantbox
                 Adapter.CreateTrades(tradesToCreate);
 
                 OrderStats EmsStats = Adapter.GetStats(Name);
-                Stats.Created += numTrades;
-                if ( EmsStats != null )
-                    Stats.Routed = (int)(EmsStats.Completed + EmsStats.Working);
-                else
-                    Stats.Routed += Stats.Created / 2;
-                Stats.Exceptions += Stats.Created / 5;
                 StampHistory();
-
-                // PublishStats();
             }
             else
             {

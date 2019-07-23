@@ -45,6 +45,7 @@ namespace Eze.Quantbox
         public long CompletedQty;
         public double TotalValue;
         public double CompletedValue;
+        public double CompletedPct;
 
         public void Reset()
         {
@@ -111,6 +112,7 @@ namespace Eze.Quantbox
             CompletedQty += (order.lQtyTraded * inc);
             TotalValue += (double)(order.lQty * order.ArrivalPrice.DecimalValue);
             CompletedValue += (double)(order.lQtyTraded * order.ArrivalPrice.DecimalValue);
+            CompletedPct = GetValueCompletionRate();
         }
 
     // Called when there is a realtime update to an order

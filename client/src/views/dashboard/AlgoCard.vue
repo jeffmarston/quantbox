@@ -30,24 +30,42 @@
 
     <div class="card-content">
       <div class="card-body-summary">
-        <div class="card-summary-panel">
-          <label class="card-label large">Trades Created</label>
-          <h3
-            class="trade-count"
-            :class="{ 'green-text': algo.enabled }"
-          >{{ algo.stats.created | numberFilter }}</h3>
-          <a href="reviewTrades">Review Trades</a>
+        <div class="side-by-side">
+          <div class="card-summary-panel">
+            <label class="card-label large">Trades Created</label>
+            <h3
+              class="counter-format"
+              :class="{ 'green-text': algo.enabled }"
+            >{{ algo.stats.total | numberFilter }}</h3>
+            <a href="reviewTrades">Review Trades</a>
+          </div>
+          <div class="card-summary-panel">
+            <label class="card-label large">Completion</label>
+            <h3 class="counter-format">{{ algo.stats.completedPct | numberFilter }} %</h3>
+            <a href="reviewCompletions">Review Completion</a>
+          </div>
         </div>
         <div class="side-by-side">
           <div class="card-summary-panel">
             <label class="card-label">Trade Exceptions</label>
-            <h5 class="trade-count">{{ algo.stats.exceptions | numberFilter }}</h5>
+            <h5 class="counter-format">{{ algo.stats.deleted | numberFilter }}</h5>
             <a href="reviewExceptions">Review Exceptions</a>
           </div>
           <div class="card-summary-panel">
-            <label class="card-label">Order Routed</label>
-            <h5 class="trade-count">{{ algo.stats.routed | numberFilter }}</h5>
+            <label class="card-label">Orders Routed</label>
+            <h5 class="counter-format">{{ algo.stats.working | numberFilter }}</h5>
             <a href="reviewRoutes">Review Routes</a>
+          </div>
+        </div>
+
+        <div class="side-by-side">
+          <div class="card-summary-panel">
+            <label class="card-label">Target Value:</label>
+            <h5 class="counter-format green-text">${{ algo.stats.totalValue | numberFilter }}</h5>
+          </div>
+          <div class="card-summary-panel">
+            <label class="card-label">Completed Value:</label>
+            <h5 class="counter-format green-text">${{ algo.stats.completedValue | numberFilter }}</h5>
           </div>
         </div>
       </div>
@@ -196,8 +214,10 @@ export default {
   },
   filters: {
     numberFilter(value) {
+      if (value) {
+        return `${value.toLocaleString()}`;
+      }
       return value;
-      // return `${value.toLocaleString()}`;
     }
   }
 };
@@ -300,7 +320,7 @@ a {
 .card-label.large {
   font-size: 16px;
 }
-.trade-count {
+.counter-format {
   margin: 0;
 }
 chart {

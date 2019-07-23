@@ -9,7 +9,7 @@ namespace Eze.Quantbox
     public abstract class AbstractAlgoModel : IDisposable
     {
         public AlgoMetadata Metadata { get; set; }
-        public AlgoStats Stats { get; protected set; }
+        public OrderStats Stats { get; protected set; }
         
         public IClientProxy Publisher { protected get; set; }
         public ITradingSystemAdapter Adapter { get; set; }
@@ -34,7 +34,7 @@ namespace Eze.Quantbox
             History.Add(new AlgoHistory()
             {
                 Date = date,
-                Value = Stats.Created
+                Value = (int)Stats.Total
             });
         }
 
@@ -54,22 +54,22 @@ namespace Eze.Quantbox
             }
         }
 
-        public void PublishStats()
-        {
-            if (Publisher != null)
-            {
-                Publisher.SendAsync("algo-stats", this.Name, this.Stats);
-                Debug.WriteLine("Sending state update for " + Name);
-            }
-        }
-        //public void PublishStats(OrderStats stats)
+        //public void PublishStats()
         //{
         //    if (Publisher != null)
         //    {
-        //        Publisher.SendAsync("algo-stats", Name, stats);
+        //        Publisher.SendAsync("algo-stats", this.Name, this.Stats);
         //        Debug.WriteLine("Sending state update for " + Name);
         //    }
         //}
+        public void PublishStats(OrderStats stats)
+        {
+            if (Publisher != null)
+            {
+                Publisher.SendAsync("algo-stats", Name, stats);
+                Debug.WriteLine("Sending state update for " + Name);
+            }
+        }
 
         public void PublishToConsole(string msg)
         {

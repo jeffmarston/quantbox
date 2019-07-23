@@ -6,7 +6,6 @@ using System.Timers;
 
 namespace Eze.Quantbox
 {
-
     public class CsvAdapter: ITradingSystemAdapter
     {
         private Random _rand = new Random();
