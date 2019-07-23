@@ -58,7 +58,7 @@ namespace Eze.Quantbox
         {
             if (Publisher != null)
             {
-                Publisher.SendAsync("algo-stats", this.Stats);
+                Publisher.SendAsync("algo-stats", this.Name, this.Stats);
                 Debug.WriteLine("Sending state update for " + Name);
             }
         }

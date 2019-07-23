@@ -380,7 +380,9 @@ namespace Eze.Quantbox
                 row.Add(new Field("EXIT_VEHICLE", FieldType.StringScalar, "NONE"));
                 row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
                 row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));
-                row.Add(new Field("STYP", FieldType.IntScalar, 1)); // STOCK
+                if (trade.Symbol != "BAD") {
+                    row.Add(new Field("STYP", FieldType.IntScalar, 1)); // STOCK
+                }
                 row.Add(new Field("PORTFOLIO_NAME", FieldType.StringScalar, trade.Algo));
                 row.Add(new Field("ORDER_TAG", FieldType.StringScalar, trade.Algo)); // STOCK
 

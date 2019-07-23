@@ -89,7 +89,6 @@ export default {
   },
   methods: {
     resize(newSize) {
-      console.log(this.$el.clientWidth);
       this.largecard = this.$el.clientWidth < 1300;
     },
     resized(newSize) {
@@ -138,6 +137,9 @@ export default {
       });
 
       conn.on("algo-stats", (name, stats) => {
+        
+        console.log(name + ": " + JSON.stringify(stats));
+
         for (let i = 0; i < this.allAlgos.length; i++) {
           if (this.allAlgos[i].name === name) {
             console.log(stats);
