@@ -26,7 +26,7 @@ namespace Eze.Quantbox
         private void Adapter_StatsChanged(string name, OrderStats stats)
         {
             if (name == "*" || Name == name) {
-                PublishToConsole(Name + " stats " + stats);
+                PublishToConsole(Name + " Stats: " + stats);
                 PublishStats(stats);
             }
         }
@@ -86,14 +86,6 @@ namespace Eze.Quantbox
             {
                 // do nothing, just record history;
                 StampHistory();
-            }
-
-            OrderStats stats = Adapter.GetStats(Name);
-            if (stats != null)
-            {
-                double dQtyCompletion = stats.GetQtyCompletionRate() * 100;
-                double dValueCompletion = stats.GetValueCompletionRate() * 100;
-                PublishToConsole(Name + ": " + dValueCompletion.ToString("F2") + "% Completed - Total Orders: " + stats.Total + "  (Working: " + stats.Working + ", Staged =" + stats.Staged + ", Completed =" + stats.Completed + ")");
             }
         }
     }

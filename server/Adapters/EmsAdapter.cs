@@ -53,14 +53,11 @@ namespace Eze.Quantbox
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(Total).Append(",");
-            sb.Append(Pending).Append(",");
-            sb.Append(Staged).Append(",");
-            sb.Append(Working).Append(",");
-            sb.Append(Completed).Append(",");
-            sb.Append(Deleted).Append(",");
-            sb.Append(TotalQty).Append(",");
-            sb.Append(CompletedQty).AppendLine();
+            double dValueCompletion = GetValueCompletionRate() * 100;
+            sb.AppendFormat("{0:F2}% Completed", dValueCompletion);
+            sb.AppendFormat(", Total Orders: {0}", Total);
+            sb.AppendFormat(" (Working: {0}, Staged: {1}, Completed: {2})", Working, Staged, Completed);
+            sb.AppendLine();
             return sb.ToString();
         }
 
@@ -267,6 +264,16 @@ namespace Eze.Quantbox
                 }
                 ProcessOrder(order, bRequest);
             }
+
+            if ( bRequest ) // when we get a data refesh, re-publish all stats
+            {
+                foreach (KeyValuePair<string, OrderStats> s in Stats)
+                {
+                    OrderStats stats = s.Value;
+                    // Fire event to publish the result
+                    StatsChanged?.Invoke(s.Key, stats);
+                }
+            }
         }
 
         private void ProcessOrder(OrderRecord order, bool bRequest)
@@ -286,12 +293,9 @@ namespace Eze.Quantbox
                     stats.ReplaceOrder(order, oldOrder); // it's ok if oldOrder is null
                     _book[order.OrderID] = order;
 
-
-
                     // Fire event to publish the result
-                    StatsChanged?.Invoke(order.Portfolio, stats);
-
-
+                    if ( !bRequest )    // only do this here for realtime updates.  Otherwise, do it outside of loop.
+                        StatsChanged?.Invoke(order.Portfolio, stats);
 
                 }
             }
