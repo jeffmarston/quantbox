@@ -52,12 +52,25 @@
             <a href="reviewExceptions">Review Exceptions</a>
           </div>
           <div class="card-summary-panel">
-            <label class="card-label">Orders Routed</label>
+            <label class="card-label">Working Orders</label>
             <h5 class="counter-format">{{ algo.stats.working | numberFilter }}</h5>
-            <a href="reviewRoutes">Review Routes</a>
+            <a href="reviewRoutes">Review Working Orders</a>
           </div>
         </div>
 
+        <div class="side-by-side">
+          <div class="card-summary-panel">
+            <label class="card-label">Auto Executed</label>
+            <h5 class="counter-format">{{ algo.stats.deleted | numberFilter }}</h5>
+            <a href="reviewExceptions">Review Automated</a>
+          </div>
+          <div class="card-summary-panel">
+            <label class="card-label">Manually Executed</label>
+            <h5 class="counter-format">{{ algo.stats.working | numberFilter }}</h5>
+            <a href="reviewRoutes">Review Manual</a>
+          </div>
+        </div>
+        
         <div class="side-by-side">
           <div class="card-summary-panel">
             <label class="card-label">Target Value:</label>
@@ -113,7 +126,7 @@ export default {
           events: {
             load: this.myLoader
           },
-          height: "200"
+          height: "300"
         },
         title: {
           text: ""
