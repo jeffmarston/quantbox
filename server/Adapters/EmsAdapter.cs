@@ -115,13 +115,15 @@ namespace Eze.Quantbox
                     break;
             }
 
-            long TargetQty = order.IsLive() ? order.lQty : order.lQtyTraded;
-            long Residual = TargetQty - order.lQtyTraded;
-            TotalQty += (TargetQty * inc);
+            long OrderTargetQty = order.IsLive() ? order.lQty : order.lQtyTraded;
+            long OrderResidual = OrderTargetQty - order.lQtyTraded;
+            double OrderCompletedValue = (double)(order.lQtyTraded * order.dPrice);
+            double OrderResidualValue = (double)(OrderResidual * order.ArrivalPrice.DecimalValue);
+
+            TotalQty += (OrderTargetQty * inc);
             CompletedQty += (order.lQtyTraded * inc);
-            CompletedValue += (double)(order.lQtyTraded * order.dPrice);
-            double ResidualValue = (double)(Residual * order.ArrivalPrice.DecimalValue);
-            TotalValue += CompletedValue + ResidualValue;
+            CompletedValue += (double)(OrderCompletedValue * inc);
+            TotalValue += (OrderCompletedValue + OrderResidualValue) * inc;
             CompletedPct = 1000 * GetValueCompletionRate();
             CompletedPct = Math.Truncate(CompletedPct) / 10;
 
