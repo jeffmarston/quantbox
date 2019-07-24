@@ -10,7 +10,7 @@ namespace Eze.Quantbox
     {
         private Random _rand = new Random();
         private Timer _timer = new Timer();
-        public EmsSettings Settings { get; }
+        public EmsSettings Settings { get; set; }
         public OrderStats GetStats(string AlgoName) { return null; }
 
         private const string csvFolder = @"csv\";

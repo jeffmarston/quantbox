@@ -11,25 +11,13 @@ namespace Eze.Quantbox
         private readonly string _folderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Eze", "Quantbox");
         private readonly string _filename = "config.json";
         private IClientProxy _publisher;
-
-        //private ITradingSystemAdapter _adapter = new CsvAdapter(EmsSettings.CreateDefault());
-        private ITradingSystemAdapter _adapter = new CsvAdapter(new EmsSettings());
+        private ITradingSystemAdapter _adapter; 
 
         public List<AbstractAlgoModel> Algos { get; internal set; }
         public EmsSettings EmsSettings
         {
-            get
-            {
-                return _adapter.Settings;
-            }
-            set
-            {
-                _adapter = new EmsAdapter(value);
-                foreach (var algo in Algos)
-                {
-                    algo.Adapter = _adapter;
-                }
-            }
+            get { return _adapter.Settings; }
+            set { _adapter.Settings = value; }
         }
         public IClientProxy Publisher
         {
@@ -61,8 +49,21 @@ namespace Eze.Quantbox
                 // EMS Settings
                 if (config.EmsSettings != null && config.EmsSettings.Gateway != null && config.EmsSettings.Gateway.Length > 0)
                 {
-                    //_adapter = new CsvAdapter(config.EmsSettings);
-                    _adapter = new EmsAdapter(config.EmsSettings);
+                    Console.WriteLine("Using EMS Adapter at gateway: " + config.EmsSettings.Gateway);
+                    try
+                    {
+                        _adapter = new EmsAdapter(config.EmsSettings);
+                    }
+                    catch (DllNotFoundException e)
+                    {
+                        Console.WriteLine("Error loading EMS Toolkit: " + e.Message);
+                        throw;
+                    }
+                }
+                else
+                {
+                    _adapter = new CsvAdapter(new EmsSettings());
+                    Console.WriteLine("No EMS configuration, using CSV Adapter");
                 }
 
                 // Algo Metadata
@@ -83,7 +84,7 @@ namespace Eze.Quantbox
             var newOne = new RapidAlgo(metadata, _adapter);
             var date = DateTime.Now;
             date = new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, date.Kind);
-            for (int i = -120; i < 0; i+=2)
+            for (int i = -120; i < 0; i += 2)
             {
                 newOne.History.Add(new AlgoHistory() { Date = date.AddSeconds(i), Value = 0 });
             }

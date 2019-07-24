@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -91,7 +92,7 @@ namespace Eze.Quantbox
 
         // GET api/configuration/ems
         [HttpGet("ems")]
-        public ActionResult<EmsSettings> PostEmsConfig()
+        public ActionResult<EmsSettings> GetEmsConfig()
         {
             return AlgoMaster.EmsSettings;
         }
@@ -100,8 +101,15 @@ namespace Eze.Quantbox
         [HttpPost("ems")]
         public ActionResult<string> PostEmsConfig([FromBody] EmsSettings config)
         {
-            AlgoMaster.EmsSettings = config;
-            AlgoMaster.Save();
+            try
+            {
+                AlgoMaster.EmsSettings = config;
+                AlgoMaster.Save();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
             return Accepted();
         }
     }

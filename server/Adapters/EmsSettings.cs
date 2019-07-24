@@ -12,11 +12,11 @@
         {
             return new EmsSettings()
             {
-                Gateway = "stgtsperf1.dev.local",
-                Bank = "VALENTINE",
-                Branch = "WINTHROPE",
-                Customer = "MORTIMER",
-                Deposit = "NEUTRAL"
+                //Gateway = "stgtsperf1.dev.local",
+                //Bank = "VALENTINE",
+                //Branch = "WINTHROPE",
+                //Customer = "MORTIMER",
+                //Deposit = "NEUTRAL"
             };
         }
     }
