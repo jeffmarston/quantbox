@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using RealTick.Api.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +58,11 @@ namespace Eze.Quantbox
                     catch (DllNotFoundException e)
                     {
                         Console.WriteLine("Error loading EMS Toolkit: " + e.Message);
+                        throw;
+                    }
+                    catch (ToolkitPermsException tkEx)
+                    {
+                        Console.WriteLine("Error authenticating with EMS Toolkit: " + tkEx.Message);
                         throw;
                     }
                 }
