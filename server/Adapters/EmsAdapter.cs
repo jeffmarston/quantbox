@@ -404,6 +404,9 @@ namespace Eze.Quantbox
                 if (side == "Short" || side == "SHORT")
                     side = "SellShort";
                 row.Add(new Field("BUYORSELL", FieldType.StringScalar, side));
+                if ( side == "SellShort" )
+                    row.Add(new Field("SHORT_LOCATE_ID", FieldType.StringScalar, "GSCO"));
+
                 row.Add(new Field("EXIT_VEHICLE", FieldType.StringScalar, "NONE"));
                 row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
                 row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));
