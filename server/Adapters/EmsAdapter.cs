@@ -115,7 +115,7 @@ namespace Eze.Quantbox
                     break;
             }
 
-            long TargetQty = order.IsLive ? order.lQty : order.lQtyTraded;
+            long TargetQty = order.IsLive() ? order.lQty : order.lQtyTraded;
             long Residual = TargetQty - order.lQtyTraded;
             TotalQty += (TargetQty * inc);
             CompletedQty += (order.lQtyTraded * inc);
