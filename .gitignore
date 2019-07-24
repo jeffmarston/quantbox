@@ -12,3 +12,4 @@ blackboxsim/**
 request_QuantBox.json
 response_QuantBox.json
 blackboxsim_setup.exe
+server/*.LOG

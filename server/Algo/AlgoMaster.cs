@@ -74,7 +74,10 @@ namespace Eze.Quantbox
             }
             else
             {
+                _adapter = new CsvAdapter(new EmsSettings());
+                Console.WriteLine("No EMS configuration, using CSV Adapter");
                 // No config, create an initial one just for ease of demo
+
                 CreateAlgo(new AlgoMetadata("Algorithm One"));
             }
         }
