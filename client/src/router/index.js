@@ -5,8 +5,6 @@ import Router from 'vue-router';
 const DefaultContainer = () => import('@/containers/DefaultContainer');
 
 // Views - Components
-const AlgoDash = () => import('@/views/dashboard/AlgoDash');
-const AlgoGrid = () => import('@/views/dashboard/AlgoGrid');
 const CodeEditor = () => import('@/views/dashboard/CodeEditor');
 const SplitPanel = () => import('@/containers/SplitPanel');
 const Settings = () => import('@/views/general/Settings');
@@ -45,11 +43,6 @@ router.addRoutes([
           path: 'dashboard',
           name: 'Dashboard',
           component: SplitPanel
-        },
-        {
-          path: 'grid',
-          name: 'grid',
-          component: AlgoGrid
         },
         {
           path: 'algos',

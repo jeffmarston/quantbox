@@ -127,7 +127,6 @@ export default {
             });
 
             this.allAlgos[i] = algoToUpdate;
-            //console.log(algoToUpdate);
           }
         }
         // Inserting a new card
@@ -137,12 +136,8 @@ export default {
       });
 
       conn.on("algo-stats", (name, stats) => {
-        
-        console.log(name + ": " + JSON.stringify(stats));
-
         for (let i = 0; i < this.allAlgos.length; i++) {
           if (this.allAlgos[i].name === name) {
-            console.log(stats);
             this.allAlgos[i].stats = stats;
           }
         }
