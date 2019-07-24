@@ -61,12 +61,12 @@
         <div class="side-by-side">
           <div class="card-summary-panel">
             <label class="card-label">Auto Executed</label>
-            <h5 class="counter-format">{{ algo.stats.deleted | numberFilter }}</h5>
+            <h5 class="counter-format">{{ algo.stats.autoRouted | numberFilter }}</h5>
             <a href="reviewExceptions">Review Automated</a>
           </div>
           <div class="card-summary-panel">
             <label class="card-label">Manually Executed</label>
-            <h5 class="counter-format">{{ algo.stats.working | numberFilter }}</h5>
+            <h5 class="counter-format">{{ algo.stats.manual | numberFilter }}</h5>
             <a href="reviewRoutes">Review Manual</a>
           </div>
         </div>

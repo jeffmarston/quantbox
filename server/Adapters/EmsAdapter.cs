@@ -7,7 +7,6 @@ using System.Text;
 
 namespace Eze.Quantbox
 {
-
     public class OrderRecord
     {
         public string OrderID;
@@ -22,6 +21,7 @@ namespace Eze.Quantbox
         public double dPrice;
         public long lWorking;
         public Price ArrivalPrice;
+        public ulong ConversionRuleFlags;
 
         public string GetDetails()
         {
@@ -30,6 +30,11 @@ namespace Eze.Quantbox
             if (lQtyTraded > 0)
                 sDetails += "(" + lQtyTraded + " traded @ " + dPrice.ToString("F2") + ")";
             return sDetails;
+        }
+
+        public bool IsLive()
+        {
+            return Status == "LIVE" || Status == "PENDING";
         }
     }
 
@@ -46,6 +51,8 @@ namespace Eze.Quantbox
         public double TotalValue;
         public double CompletedValue;
         public double CompletedPct;
+        public long Manual;
+        public long AutoRouted;
 
         public void Reset()
         {
@@ -108,12 +115,27 @@ namespace Eze.Quantbox
                     break;
             }
 
-            TotalQty += (order.lQty * inc);
+            long OrderTargetQty = order.IsLive() ? order.lQty : order.lQtyTraded;
+            long OrderResidual = OrderTargetQty - order.lQtyTraded;
+            double OrderCompletedValue = (double)(order.lQtyTraded * order.dPrice);
+            double OrderResidualValue = (double)(OrderResidual * order.ArrivalPrice.DecimalValue);
+
+            TotalQty += (OrderTargetQty * inc);
             CompletedQty += (order.lQtyTraded * inc);
-            TotalValue += (double)(order.lQty * order.ArrivalPrice.DecimalValue);
-            CompletedValue += (double)(order.lQtyTraded * order.ArrivalPrice.DecimalValue);
+            CompletedValue += (double)(OrderCompletedValue * inc);
+            TotalValue += (OrderCompletedValue + OrderResidualValue) * inc;
             CompletedPct = 1000 * GetValueCompletionRate();
             CompletedPct = Math.Truncate(CompletedPct) / 10;
+
+            if (order.Status != "DELETED")
+            {
+                const ulong CRF_SUBMITTED_BY_RULES = 0x00000001; // sorry for this magic
+
+                if ((order.ConversionRuleFlags & CRF_SUBMITTED_BY_RULES) != 0)
+                    AutoRouted += inc;
+                else
+                    Manual += inc;
+            }
         }
 
     // Called when there is a realtime update to an order
@@ -264,6 +286,8 @@ namespace Eze.Quantbox
                         order.Portfolio = f.StringValue;
                     else if (f.FieldInfo.Name == "TRDPRC_1")
                         order.ArrivalPrice = f.PriceValue;
+                    else if (f.FieldInfo.Name == "TS3_CONVERSION_RULE_FLAGS")
+                        order.ConversionRuleFlags = (ulong)f.LongValue;
                 }
                 ProcessOrder(order, bRequest);
             }
@@ -380,6 +404,9 @@ namespace Eze.Quantbox
                 if (side == "Short" || side == "SHORT")
                     side = "SellShort";
                 row.Add(new Field("BUYORSELL", FieldType.StringScalar, side));
+                if ( side == "SellShort" )
+                    row.Add(new Field("SHORT_LOCATE_ID", FieldType.StringScalar, "GSCO"));
+
                 row.Add(new Field("EXIT_VEHICLE", FieldType.StringScalar, "NONE"));
                 row.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
                 row.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));

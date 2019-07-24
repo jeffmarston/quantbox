@@ -59,7 +59,7 @@ namespace Eze.Quantbox
                     {
                         Symbol = Metadata.Symbols[_rand.Next(0, Metadata.Symbols.Count)],
                         Side = (_rand.Next(100) < Metadata.BuyShortRatio) ? "Buy" : "Short",
-                        Amount = _rand.Next(1, 40) * 100,
+                        Amount = _rand.Next(1, 60) * 100,
                         Trader = "JEFF",
                         Manager = "FO",
                         Algo = Name
