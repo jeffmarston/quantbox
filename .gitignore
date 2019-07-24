@@ -7,5 +7,7 @@ server/packages/
 server/.vs
 server/**/obj/**
 
+blackboxsim/**
+
 request_QuantBox.json
 response_QuantBox.json

@@ -1,16 +1,14 @@
 
-OMS Site Installer
-==============
-SignalR, Nancy
-Vue.js
+Black Box Simulator
+=======================
 
+Run ```blackboxsim_setup.exe```
 
-Building
-==============
+This should create a folder called blackboxsim
+```cd blackboxsim```
+```install.bat```
 
-To build:
-- `npm install`
-- `npm run tsc`
+This will create and start a new service called "Eze Black Box Simulator"
+Open a browser and navigate to:
+```http://localhost:5000```
 
-To Run:
-- `npm run lite`
