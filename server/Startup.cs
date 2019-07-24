@@ -34,12 +34,7 @@ namespace Eze.Quantbox
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyOrigin()
-                .WithOrigins(
-                  "http://localhost:8080"
-                , "http://localhost:5000"
-                , "http://10.164.1.232:8080"
-                , "http://10.164.1.232:5000")
-                ;
+                .WithOrigins("http://localhost:8080");
             }));
             services.AddSignalR();
             services.AddSingleton(new AlgoMaster());
@@ -61,7 +56,6 @@ namespace Eze.Quantbox
                 routes.MapHub<MasterHub>("/MasterHub");
             });
             app.UseMvcWithDefaultRoute();
-           // app.UseUrls("http://*:1000", "https://*:1234", "http://0.0.0.0:5000")
 
             System.Console.WriteLine("API docs at: /swagger/");
         }
