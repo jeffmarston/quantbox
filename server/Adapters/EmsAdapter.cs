@@ -168,7 +168,7 @@ namespace Eze.Quantbox
         static TalipcToolkitApp _app;
         private AsyncQuery _query;
 
-        public EmsSettings Settings { get; }
+        public EmsSettings Settings { get; set; }
         public Dictionary<string, OrderStats> Stats = new Dictionary<string, OrderStats>();
         public OrderStats GetStats(string AlgoName)
         {

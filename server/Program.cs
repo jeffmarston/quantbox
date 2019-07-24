@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -20,13 +21,15 @@ namespace Eze.Quantbox
                 Directory.SetCurrentDirectory(pathToContentRoot);
             }
 
+            var staticContentPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..\\client\\dist"));
+            Console.WriteLine("Static content served from: " + staticContentPath);
             var host = new WebHostBuilder()
                 .UseUrls("http://0.0.0.0:5000")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel()
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                .UseWebRoot(Path.Combine(Directory.GetCurrentDirectory(), "..\\client\\dist"))
+                .UseWebRoot(staticContentPath)
                 .ConfigureKestrel((context, options) =>
                 {
                     // Set properties and call methods on options

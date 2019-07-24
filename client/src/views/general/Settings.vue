@@ -27,6 +27,7 @@
 
       <div slot="footer">
         <b-button type="submit" variant="success" @click="save">Save</b-button>
+        <span class="error-text">{{errorText}}</span>
       </div>
     </b-card>
   </div>
@@ -40,7 +41,8 @@ export default {
   components: {},
   data() {
     return {
-      emsConfig: {}
+      emsConfig: {},
+      errorText: null
     };
   },
   mounted() {
@@ -53,7 +55,13 @@ export default {
       });
     },
     save() {
-      saveEmsConfig(this.emsConfig).then(o => {});
+      let promise = saveEmsConfig(this.emsConfig);
+      promise.then(o => {
+        this.$router.push('/');
+      });
+      promise.catch(e => {
+        this.errorText = 'Error saving: ' + e;
+      });
     }
   }
 };
@@ -62,5 +70,9 @@ export default {
 <style>
 .master-page {
   padding:12px;
+}
+.error-text {
+  color: red;
+  padding: 6px 12px;;
 }
 </style>

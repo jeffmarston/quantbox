@@ -1,16 +1,18 @@
 
-OMS Site Installer
-==============
-SignalR, Nancy
-Vue.js
+Black Box Simulator
+=======================
 
+## Run Server
 
-Building
-==============
+You will need administrator permissions to install the service:
+> run install.bat
 
-To build:
-- `npm install`
-- `npm run tsc`
+Alternatively, you can run from the console:
+> Eze.Quantbox.exe --console
 
-To Run:
-- `npm run lite`
+## Open client
+
+This will create and start a new service called "Eze Black Box Simulator"
+Open a browser and navigate to:
+> http://localhost:5000
+

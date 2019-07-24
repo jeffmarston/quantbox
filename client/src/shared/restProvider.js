@@ -1,22 +1,22 @@
 
-const env = require("../environment.config.json");
+const serverAddress = require("../environment").getServerAddress();
 
 export async function getAlgos() {
-    const response = await fetch(env.serverAddress + "/api/algo", {
+    const response = await fetch(serverAddress + "/api/algo", {
         mode: "cors"
     });
     return await response.json();
 }
 
 export async function getAllAlgoConfig() {
-    const response = await fetch(env.serverAddress + "/api/configuration/algos", {
+    const response = await fetch(serverAddress + "/api/configuration/algos", {
         mode: "cors"
     });
     return await response.json();
 }
 
 export async function getAlgoConfig(algoName) {
-    const response = await fetch(env.serverAddress + "/api/configuration/algo/" + algoName, {
+    const response = await fetch(serverAddress + "/api/configuration/algo/" + algoName, {
         mode: "cors"
     });
     return await response.json();
@@ -24,7 +24,7 @@ export async function getAlgoConfig(algoName) {
 
 export async function deleteAlgoConfig(algoName) {
     var response = await fetch(
-        env.serverAddress + "/api/configuration/algo/" + algoName, {
+        serverAddress + "/api/configuration/algo/" + algoName, {
             method: 'DELETE',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' }
@@ -33,7 +33,7 @@ export async function deleteAlgoConfig(algoName) {
 }
 
 export async function getEmsConfig() {
-    const response = await fetch(env.serverAddress + "/api/configuration/ems", {
+    const response = await fetch(serverAddress + "/api/configuration/ems", {
         mode: "cors"
     });
     return await response.json();
@@ -41,7 +41,7 @@ export async function getEmsConfig() {
 
 export async function saveEmsConfig(emsConfig) {
     var response = await fetch(
-        env.serverAddress + "/api/configuration/ems", {
+        serverAddress + "/api/configuration/ems", {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
@@ -53,7 +53,7 @@ export async function saveEmsConfig(emsConfig) {
 export async function saveAlgoConfig(algoConfig) {
     var saveConfig = algoConfig;
     var response = await fetch(
-        env.serverAddress + "/api/configuration/algo/" + algoConfig.name, {
+        serverAddress + "/api/configuration/algo/" + algoConfig.name, {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
@@ -64,7 +64,7 @@ export async function saveAlgoConfig(algoConfig) {
 
 export async function enableAlgos(algoName, enable) {
     const response = await fetch(
-        env.serverAddress + "/api/algo/" + algoName + "/enabled", {
+        serverAddress + "/api/algo/" + algoName + "/enabled", {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },

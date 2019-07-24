@@ -7,7 +7,7 @@ namespace Eze.Quantbox
 
     public interface ITradingSystemAdapter
     {
-        EmsSettings Settings { get; }
+        EmsSettings Settings { get; set;  }
 
         OrderStats GetStats(string AlgoName);
 
