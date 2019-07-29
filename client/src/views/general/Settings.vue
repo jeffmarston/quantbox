@@ -1,8 +1,26 @@
 <template>
   <div class="animated fadeIn master-page">
-    <b-card>
-      <div slot="header">EMS Configuration</div>
+    <b-radio-group>
+      <b-radio v-model="selectedAdapter" value="EMS">Use EMS Adapter</b-radio>
+      <b-radio v-model="selectedAdapter" value="CSV">Use CSV Adapter</b-radio>
+    </b-radio-group>
 
+    <b-card v-if="selectedAdapter==='CSV'">
+      <div slot="header">CSV Configuration</div>
+      <b-form>
+        <b-form-group label="Deposit" label-for="deposit" :label-cols="3">
+          <b-form-input id="deposit" type="text" v-model="emsConfig.deposit"></b-form-input>
+        </b-form-group>
+      </b-form>
+
+      <div slot="footer">
+        <b-button type="submit" variant="success" @click="save">Save</b-button>
+        <span class="error-text">{{errorText}}</span>
+      </div>
+    </b-card>
+
+    <b-card v-if="selectedAdapter==='EMS'">
+      <div slot="header">EMS Configuration</div>
       <b-form>
         <b-form-group label="Server" label-for="gateway" :label-cols="3">
           <b-form-input id="gateway" type="text" v-model="emsConfig.gateway"></b-form-input>
@@ -42,7 +60,8 @@ export default {
   data() {
     return {
       emsConfig: {},
-      errorText: null
+      errorText: null,
+      selectedAdapter: 'CSV'
     };
   },
   mounted() {

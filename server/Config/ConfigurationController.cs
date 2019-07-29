@@ -16,7 +16,6 @@ namespace Eze.Quantbox
             AlgoMaster = algoMaster;
         }
 
-
         // GET api/configuration/algo/{algoName}
         [HttpGet("algos")]
         public ActionResult<List<AlgoMetadata>> Get()
@@ -110,6 +109,15 @@ namespace Eze.Quantbox
             {
                 Console.WriteLine(e);
             }
+            return Accepted();
+        }
+
+
+        // POST api/configuration/ems
+        [HttpPost("adapter")]
+        public ActionResult<string> PostAdapter([FromBody] string adapterToUse)
+        {
+            Console.WriteLine("Use " + adapterToUse);
             return Accepted();
         }
     }

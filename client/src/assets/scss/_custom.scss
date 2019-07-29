@@ -113,3 +113,10 @@ html:not([dir="rtl"]) .aside-menu-show.aside-menu-fixed .main, html:not([dir="rt
 .tab-content {
   border-bottom:none;
 }
+.card {
+  border-radius: 0;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
+}
+.btn {
+  box-shadow: 2px 2px 5px rgba(0,0,0,.16);
+}

@@ -60,9 +60,8 @@ export default {
   cursor: col-resize;
   background: gray;
 }
-/* .splitpanes__splitter {
-    min-width: 8px;
-    cursor: col-resize;
-    background: red !important;
-} */
+.splitpanes--vertical > .splitpanes__splitter:hover{
+  background: #20a8d8;
+  transition: background linear 200ms;
+}
 </style>
