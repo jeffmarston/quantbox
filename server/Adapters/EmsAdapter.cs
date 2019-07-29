@@ -127,7 +127,7 @@ namespace Eze.Quantbox
             CompletedPct = 1000 * GetValueCompletionRate();
             CompletedPct = Math.Truncate(CompletedPct) / 10;
 
-            if (order.Status != "DELETED")
+            if (order.Status != "DELETED" && order.Status != "PENDING")
             {
                 const ulong CRF_SUBMITTED_BY_RULES = 0x00000001; // sorry for this magic
 
