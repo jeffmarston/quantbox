@@ -32,20 +32,20 @@ export async function deleteAlgoConfig(algoName) {
     return await response.status;
 }
 
-export async function getEmsConfig() {
-    const response = await fetch(serverAddress + "/api/configuration/ems", {
+export async function getConfig() {
+    const response = await fetch(serverAddress + "/api/configuration", {
         mode: "cors"
     });
     return await response.json();
 }
 
-export async function saveEmsConfig(emsConfig) {
+export async function saveConfig(config) {
     var response = await fetch(
-        serverAddress + "/api/configuration/ems", {
+        serverAddress + "/api/configuration", {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(emsConfig)
+            body: JSON.stringify(config)
         });
     return await response.status;
 }
@@ -72,3 +72,20 @@ export async function enableAlgos(algoName, enable) {
         });
     return await response.status;
 }
+
+
+// export async function getAdapter() {
+//     const response = await fetch(serverAddress + "/api/configuration/adapter", {
+//         mode: "cors"
+//     });
+//     return await response;
+// }
+// export async function saveAdapter(adapterName) {
+//     const response = await fetch(
+//         serverAddress + "/api/configuration/adapter/" + adapterName, {
+//             method: 'POST',
+//             mode: 'cors',
+//             headers: { 'Content-Type': 'application/json' }
+//         });
+//     return await response.status;
+// }

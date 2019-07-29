@@ -1,50 +1,74 @@
 <template>
   <div class="animated fadeIn master-page">
-    <b-radio-group>
-      <b-radio v-model="selectedAdapter" value="EMS">Use EMS Adapter</b-radio>
-      <b-radio v-model="selectedAdapter" value="CSV">Use CSV Adapter</b-radio>
-    </b-radio-group>
-
-    <b-card v-if="selectedAdapter==='CSV'">
-      <div slot="header">CSV Configuration</div>
+    <b-radio v-model="activeAdapter" value="CSV">Use CSV Adapter</b-radio>
+    <b-card :disabled="isDisabled('CSV')">
       <b-form>
-        <b-form-group label="Deposit" label-for="deposit" :label-cols="3">
-          <b-form-input id="deposit" type="text" v-model="emsConfig.deposit"></b-form-input>
+        <b-form-group label="Filename" label-for="deposit" :label-cols="3">
+          <b-form-input
+            :disabled="isDisabled('CSV')"
+            id="filename"
+            type="text"
+          ></b-form-input>
         </b-form-group>
       </b-form>
 
       <div slot="footer">
-        <b-button type="submit" variant="success" @click="save">Save</b-button>
+        <b-button type="submit" variant="success" @click="save" :disabled="isDisabled('CSV')">Save</b-button>
         <span class="error-text">{{errorText}}</span>
       </div>
     </b-card>
 
-    <b-card v-if="selectedAdapter==='EMS'">
-      <div slot="header">EMS Configuration</div>
+    <b-radio v-model="activeAdapter" value="EMS">Use EMS Adapter</b-radio>
+    <b-card :disabled="isDisabled('EMS')">
       <b-form>
         <b-form-group label="Server" label-for="gateway" :label-cols="3">
-          <b-form-input id="gateway" type="text" v-model="emsConfig.gateway"></b-form-input>
+          <b-form-input
+            :disabled="isDisabled('EMS')"
+            id="gateway"
+            type="text"
+            v-model="emsSettings.gateway"
+          ></b-form-input>
         </b-form-group>
 
         <b-form-group label="Bank" label-for="bank" :label-cols="3">
-          <b-form-input id="bank" type="text" v-model="emsConfig.bank"></b-form-input>
+          <b-form-input
+            :disabled="isDisabled('EMS')"
+            id="bank"
+            type="text"
+            v-model="emsSettings.bank"
+          ></b-form-input>
         </b-form-group>
 
         <b-form-group label="Branch" label-for="branch" :label-cols="3">
-          <b-form-input id="branch" type="text" v-model="emsConfig.branch"></b-form-input>
+          <b-form-input
+            :disabled="isDisabled('EMS')"
+            id="branch"
+            type="text"
+            v-model="emsSettings.branch"
+          ></b-form-input>
         </b-form-group>
 
         <b-form-group label="Customer" label-for="customer" :label-cols="3">
-          <b-form-input id="customer" type="text" v-model="emsConfig.customer"></b-form-input>
+          <b-form-input
+            :disabled="isDisabled('EMS')"
+            id="customer"
+            type="text"
+            v-model="emsSettings.customer"
+          ></b-form-input>
         </b-form-group>
 
         <b-form-group label="Deposit" label-for="deposit" :label-cols="3">
-          <b-form-input id="deposit" type="text" v-model="emsConfig.deposit"></b-form-input>
+          <b-form-input
+            :disabled="isDisabled('EMS')"
+            id="deposit"
+            type="text"
+            v-model="emsSettings.deposit"
+          ></b-form-input>
         </b-form-group>
       </b-form>
 
       <div slot="footer">
-        <b-button type="submit" variant="success" @click="save">Save</b-button>
+        <b-button :disabled="isDisabled('EMS')" type="submit" variant="success" @click="save">Save</b-button>
         <span class="error-text">{{errorText}}</span>
       </div>
     </b-card>
@@ -52,34 +76,44 @@
 </template>
 
 <script>
-import { getEmsConfig, saveEmsConfig } from "../../shared/restProvider";
+import {
+  getConfig,
+  saveConfig,
+} from "../../shared/restProvider";
 
 export default {
   name: "settings",
-  components: {},
   data() {
     return {
-      emsConfig: {},
+      emsSettings: {},
       errorText: null,
-      selectedAdapter: 'CSV'
+      activeAdapter: "CSV"
     };
   },
   mounted() {
     this.load();
   },
   methods: {
+    isDisabled: function(adapterName) {
+      return this.activeAdapter !== adapterName;
+    },
     load() {
-      getEmsConfig().then(o => {
-        this.emsConfig = o;
+      getConfig().then(o => {
+        this.emsSettings = o.emsSettings;
+        this.activeAdapter = o.activeAdapter;
+        if (!this.emsSettings) {
+          this.emsSettings = {};
+        }
       });
     },
     save() {
-      let promise = saveEmsConfig(this.emsConfig);
+      console.log(this.activeAdapter);
+      let promise = saveConfig({ activeAdapter: this.activeAdapter, emsSettings: this.emsSettings });
       promise.then(o => {
-        this.$router.push('/');
+        this.$router.push("/");
       });
       promise.catch(e => {
-        this.errorText = 'Error saving: ' + e;
+        this.errorText = "Error saving: " + e;
       });
     }
   }
@@ -88,10 +122,16 @@ export default {
 
 <style>
 .master-page {
-  padding:12px;
+  padding: 12px;
 }
 .error-text {
   color: red;
-  padding: 6px 12px;;
+  padding: 6px 12px;
+}
+.custom-radio {
+  padding: 6px 30px;
+}
+.card[disabled] {
+  background: #eee;
 }
 </style>

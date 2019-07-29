@@ -52,6 +52,7 @@ export default {
   background: #555;
   color: white;
   display: flex;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16);
 
 .my-breadcrumb
   max-width: 100%;

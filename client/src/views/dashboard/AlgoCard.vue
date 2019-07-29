@@ -73,11 +73,11 @@
         
         <div class="side-by-side">
           <div class="card-summary-panel">
-            <label class="card-label">Target Value:</label>
+            <label class="card-label">Target Value</label>
             <h5 class="counter-format green-text">${{ algo.stats.totalValue | numberFilter }}</h5>
           </div>
           <div class="card-summary-panel">
-            <label class="card-label">Completed Value:</label>
+            <label class="card-label">Completed Value</label>
             <h5 class="counter-format green-text">${{ algo.stats.completedValue | numberFilter }}</h5>
           </div>
         </div>

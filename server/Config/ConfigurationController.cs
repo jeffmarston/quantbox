@@ -90,19 +90,24 @@ namespace Eze.Quantbox
         }
 
         // GET api/configuration/ems
-        [HttpGet("ems")]
-        public ActionResult<EmsSettings> GetEmsConfig()
+        [HttpGet()]
+        public ActionResult<QuantBoxConfig> GetConfig()
         {
-            return AlgoMaster.EmsSettings;
+            return new QuantBoxConfig()
+            {
+                ActiveAdapter = AlgoMaster.ActiveAdapter,
+                EmsSettings = AlgoMaster.EmsSettings
+            };
         }
 
         // POST api/configuration/ems
-        [HttpPost("ems")]
-        public ActionResult<string> PostEmsConfig([FromBody] EmsSettings config)
+        [HttpPost()]
+        public ActionResult<string> PostConfig([FromBody] QuantBoxConfig config)
         {
             try
             {
-                AlgoMaster.EmsSettings = config;
+                AlgoMaster.ActiveAdapter = config.ActiveAdapter;
+                AlgoMaster.EmsSettings = config.EmsSettings;
                 AlgoMaster.Save();
             }
             catch (Exception e)
@@ -112,13 +117,32 @@ namespace Eze.Quantbox
             return Accepted();
         }
 
+        // POST api/configuration/adapter
+        //[HttpPost("adapter/{adapter}")]
+        //public ActionResult<string> PostActiveAdapter(string adapter)
+        //{
+        //    if (adapter != "EMS" && adapter != "CSV")
+        //    {
+        //        return NotFound();
+        //    }
 
-        // POST api/configuration/ems
-        [HttpPost("adapter")]
-        public ActionResult<string> PostAdapter([FromBody] string adapterToUse)
-        {
-            Console.WriteLine("Use " + adapterToUse);
-            return Accepted();
-        }
+        //    try
+        //    {
+        //        AlgoMaster.SetActiveAdapter(adapter);
+        //        AlgoMaster.Save();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e);
+        //    }
+        //    return Accepted();
+        //}
+
+        //// GET api/configuration/ems
+        //[HttpGet("adapter")]
+        //public ActionResult<string> GetAdapter()
+        //{
+        //    return AlgoMaster.GetActiveAdapter();
+        //}
     }
 }

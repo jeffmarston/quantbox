@@ -12,13 +12,11 @@ namespace Eze.Quantbox
         private Random _rand = new Random();
         private Timer _timer = new Timer();
         private Dictionary<string, OrderStats> _algoStats = new Dictionary<string, OrderStats>();
-        public EmsSettings Settings { get; set; }
         public OrderStats GetStats(string AlgoName) { return null; }
 
         private const string csvFolder = @"csv\";
-        public CsvAdapter(EmsSettings emsSettings)
+        public CsvAdapter()
         {
-            Settings = emsSettings;
             FilenameRoot = "GeneratedTrades";
             if (!Directory.Exists(csvFolder))
             {

@@ -9,6 +9,6 @@ namespace Eze.Quantbox
     {
         public IEnumerable<AlgoMetadata> Metadata { get; set; }
         public EmsSettings EmsSettings { get; set; }
-
+        public string ActiveAdapter { get; set; }
     }
 }
