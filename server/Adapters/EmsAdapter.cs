@@ -133,7 +133,7 @@ namespace Eze.Quantbox
 
                 if ((order.ConversionRuleFlags & CRF_SUBMITTED_BY_RULES) != 0)
                     AutoRouted += inc;
-                else if ( order.lWorking > 0 )
+                else if ( order.lWorking > 0 || order.lQtyTraded > 0 )
                     Manual += inc;
             }
         }
