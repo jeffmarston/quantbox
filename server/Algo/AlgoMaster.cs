@@ -79,11 +79,21 @@ namespace Eze.Quantbox
                     catch (DllNotFoundException e)
                     {
                         Console.WriteLine("Error loading EMS Toolkit: " + e.Message);
+                        using (EventLog eventLog = new EventLog("Application"))
+                        {
+                            eventLog.Source = "Application";
+                            eventLog.WriteEntry("Error loading EMS Toolkit: " + e.Message, EventLogEntryType.Error, 101, 1);
+                        }
                         throw;
                     }
                     catch (ToolkitPermsException tkEx)
                     {
                         Console.WriteLine("Error authenticating with EMS Toolkit: " + tkEx.Message);
+                        using (EventLog eventLog = new EventLog("Application"))
+                        {
+                            eventLog.Source = "Application";
+                            eventLog.WriteEntry("Error authenticating with EMS Toolkit: " + tkEx.Message, EventLogEntryType.Error, 101, 1);
+                        }
                         throw;
                     }
                 }
