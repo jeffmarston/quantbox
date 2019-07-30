@@ -3,6 +3,5 @@ dotnet build
 cd ..
 
 cd client
-npm run build 
+call npm run build 
 cd..
-

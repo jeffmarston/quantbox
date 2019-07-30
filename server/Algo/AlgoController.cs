@@ -21,19 +21,6 @@ namespace Eze.Quantbox
         [HttpGet]
         public ActionResult<List<AbstractAlgoModel>> Get()
         {
-            // hack to publish shortly after it's requested, since the client doesn't want to update with the results returned from the REST call.
-            var timer = new Timer();
-            timer.Interval = 2000;
-            timer.Elapsed += (object sender, ElapsedEventArgs e) =>
-            {
-                foreach (var algo in AlgoMaster.Algos)
-                {
-                    algo.PublishState();
-                }
-                timer.Enabled = false;
-            };
-            timer.Enabled = true;
-
             return AlgoMaster.Algos;
         }
 
