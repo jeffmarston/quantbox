@@ -129,9 +129,18 @@ namespace Eze.Quantbox
 
             string json = JsonConvert.SerializeObject(config, Formatting.Indented);
 
-            // If directory doesn't exist, create it
-            System.IO.Directory.CreateDirectory(_folderPath);
-            System.IO.File.WriteAllText(System.IO.Path.Combine(_folderPath, _filename), json);
+            try
+            {
+                Console.WriteLine("Saving to: " + System.IO.Path.Combine(_folderPath, _filename));
+
+                // If directory doesn't exist, create it
+                System.IO.Directory.CreateDirectory(_folderPath);
+                System.IO.File.WriteAllText(System.IO.Path.Combine(_folderPath, _filename), json);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to save: " + e);
+            }
         }
     }
 }

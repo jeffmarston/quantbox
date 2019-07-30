@@ -1,85 +1,94 @@
 <template>
   <div class="animated fadeIn master-page">
-    <b-radio v-model="activeAdapter" value="CSV">Use CSV Adapter</b-radio>
-    <b-card :disabled="isDisabled('CSV')">
-      <b-form>
-        <b-form-group label="Filename" label-for="deposit" :label-cols="3">
-          <b-form-input
-            :disabled="isDisabled('CSV')"
-            id="filename"
-            type="text"
-          ></b-form-input>
-        </b-form-group>
-      </b-form>
+    <b-row>
+      <b-col md="6">
+        <b-radio v-model="activeAdapter" value="CSV">Use CSV Adapter</b-radio>
+        <b-card :disabled="isDisabled('CSV')">
+          <b-form>
+            <b-form-group label="Filename" label-for="deposit" :label-cols="3">
+              <b-form-input :disabled="isDisabled('CSV')" id="filename" type="text"></b-form-input>
+            </b-form-group>
+          </b-form>
 
-      <div slot="footer">
-        <b-button type="submit" variant="success" @click="save" :disabled="isDisabled('CSV')">Save</b-button>
-        <span class="error-text">{{errorText}}</span>
-      </div>
-    </b-card>
+          <div slot="footer">
+            <b-button
+              type="submit"
+              variant="success"
+              @click="save"
+              :disabled="isDisabled('CSV')"
+            >Save</b-button>
+            <span class="error-text">{{errorText}}</span>
+          </div>
+        </b-card>
+      </b-col>
 
-    <b-radio v-model="activeAdapter" value="EMS">Use EMS Adapter</b-radio>
-    <b-card :disabled="isDisabled('EMS')">
-      <b-form>
-        <b-form-group label="Server" label-for="gateway" :label-cols="3">
-          <b-form-input
-            :disabled="isDisabled('EMS')"
-            id="gateway"
-            type="text"
-            v-model="emsSettings.gateway"
-          ></b-form-input>
-        </b-form-group>
+      <b-col md="6">
+        <b-radio v-model="activeAdapter" value="EMS">Use EMS Adapter</b-radio>
+        <b-card :disabled="isDisabled('EMS')">
+          <b-form>
+            <b-form-group label="Server" label-for="gateway" :label-cols="3">
+              <b-form-input
+                :disabled="isDisabled('EMS')"
+                id="gateway"
+                type="text"
+                v-model="emsSettings.gateway"
+              ></b-form-input>
+            </b-form-group>
 
-        <b-form-group label="Bank" label-for="bank" :label-cols="3">
-          <b-form-input
-            :disabled="isDisabled('EMS')"
-            id="bank"
-            type="text"
-            v-model="emsSettings.bank"
-          ></b-form-input>
-        </b-form-group>
+            <b-form-group label="Bank" label-for="bank" :label-cols="3">
+              <b-form-input
+                :disabled="isDisabled('EMS')"
+                id="bank"
+                type="text"
+                v-model="emsSettings.bank"
+              ></b-form-input>
+            </b-form-group>
 
-        <b-form-group label="Branch" label-for="branch" :label-cols="3">
-          <b-form-input
-            :disabled="isDisabled('EMS')"
-            id="branch"
-            type="text"
-            v-model="emsSettings.branch"
-          ></b-form-input>
-        </b-form-group>
+            <b-form-group label="Branch" label-for="branch" :label-cols="3">
+              <b-form-input
+                :disabled="isDisabled('EMS')"
+                id="branch"
+                type="text"
+                v-model="emsSettings.branch"
+              ></b-form-input>
+            </b-form-group>
 
-        <b-form-group label="Customer" label-for="customer" :label-cols="3">
-          <b-form-input
-            :disabled="isDisabled('EMS')"
-            id="customer"
-            type="text"
-            v-model="emsSettings.customer"
-          ></b-form-input>
-        </b-form-group>
+            <b-form-group label="Customer" label-for="customer" :label-cols="3">
+              <b-form-input
+                :disabled="isDisabled('EMS')"
+                id="customer"
+                type="text"
+                v-model="emsSettings.customer"
+              ></b-form-input>
+            </b-form-group>
 
-        <b-form-group label="Deposit" label-for="deposit" :label-cols="3">
-          <b-form-input
-            :disabled="isDisabled('EMS')"
-            id="deposit"
-            type="text"
-            v-model="emsSettings.deposit"
-          ></b-form-input>
-        </b-form-group>
-      </b-form>
+            <b-form-group label="Deposit" label-for="deposit" :label-cols="3">
+              <b-form-input
+                :disabled="isDisabled('EMS')"
+                id="deposit"
+                type="text"
+                v-model="emsSettings.deposit"
+              ></b-form-input>
+            </b-form-group>
+          </b-form>
 
-      <div slot="footer">
-        <b-button :disabled="isDisabled('EMS')" type="submit" variant="success" @click="save">Save</b-button>
-        <span class="error-text">{{errorText}}</span>
-      </div>
-    </b-card>
+          <div slot="footer">
+            <b-button
+              :disabled="isDisabled('EMS')"
+              type="submit"
+              variant="success"
+              @click="save"
+            >Save</b-button>
+            <span class="error-text">{{errorText}}</span>
+          </div>
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script>
-import {
-  getConfig,
-  saveConfig,
-} from "../../shared/restProvider";
+import { getConfig, saveConfig } from "../../shared/restProvider";
 
 export default {
   name: "settings",
@@ -108,7 +117,10 @@ export default {
     },
     save() {
       console.log(this.activeAdapter);
-      let promise = saveConfig({ activeAdapter: this.activeAdapter, emsSettings: this.emsSettings });
+      let promise = saveConfig({
+        activeAdapter: this.activeAdapter,
+        emsSettings: this.emsSettings
+      });
       promise.then(o => {
         this.$router.push("/");
       });

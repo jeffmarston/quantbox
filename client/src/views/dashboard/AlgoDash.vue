@@ -17,6 +17,7 @@
     <div class="card-view">
       <b-row>
         <b-col
+          md="6"
           class="algo-column"
           :class="{ 'large-card': largecard}"
           v-for="(algo, idx) in allAlgos"
@@ -205,10 +206,10 @@ h4 {
   float: right;
   margin-left: 8px;
 }
-.algo-column {
+/* .algo-column {
   min-width: 50%;
   flex-grow: 0;
-}
+} */
 .large-card {
   flex: 0 0 100%;
   max-width: 100%;
