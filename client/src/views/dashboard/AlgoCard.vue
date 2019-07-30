@@ -70,7 +70,7 @@
             <a href="reviewRoutes">Review Manual</a>
           </div>
         </div>
-        
+
         <div class="side-by-side">
           <div class="card-summary-panel">
             <label class="card-label">Target Value</label>
@@ -85,6 +85,7 @@
 
       <div class="card-body-chart">
         <vue-highcharts :options="options" ref="chart"></vue-highcharts>
+        <b-button class="kill-button" @click="cancelAll">Cancel Open Orders</b-button>
       </div>
     </div>
 
@@ -98,7 +99,8 @@
 import {
   getAlgos,
   enableAlgos,
-  deleteAlgoConfig
+  deleteAlgoConfig,
+  cancelOrders
 } from "../../shared/restProvider";
 import AlgoConfig from "./AlgoConfig";
 import VueHighcharts from "vue2-highcharts";
@@ -215,6 +217,11 @@ export default {
           console.log("Deleted: " + this.algo.name);
         });
       }
+    },
+    cancelAll(){
+      cancelOrders(this.algo.name).then(o => {
+        console.log("Cancelled: " + this.algo.name);
+      });
     }
   },
   beforeDestroy() {
@@ -300,6 +307,11 @@ a {
   width: 0;
   overflow: hidden;
 }
+.kill-button {
+  float: right;
+  margin: 4px 10px;
+}
+
 .card-content {
   display: flex;
 }

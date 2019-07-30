@@ -462,6 +462,12 @@ namespace Eze.Quantbox
         {
             Dispose(true);
         }
+
+        public void CancelAllOrders(string algoName)
+        {
+            // TODO DGover 
+            throw new NotImplementedException();
+        }
         #endregion
 
     }

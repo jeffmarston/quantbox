@@ -46,5 +46,22 @@ namespace Eze.Quantbox
             }
         }
 
+        // POST api/algo/{algoName}/enabled
+        [HttpPost("{algoName}/cancel")]
+        public ActionResult<string> PostCancelOrders(string algoName)
+        {
+            algoName = algoName.ToLower().Trim();
+            var foundAlgo = AlgoMaster.Algos.Find(o => o.Name.ToLower().Trim() == algoName);
+            if (foundAlgo == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                foundAlgo.Adapter.CancelAllOrders(foundAlgo.Name);
+                return Accepted();
+            }
+        }
+
     }
 }

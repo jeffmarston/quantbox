@@ -73,6 +73,16 @@ export async function enableAlgos(algoName, enable) {
     return await response.status;
 }
 
+export async function cancelOrders(algoName) {
+    const response = await fetch(
+        serverAddress + "/api/algo/" + algoName + "/cancel", {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' }
+        });
+    return await response.status;
+}
+
 
 // export async function getAdapter() {
 //     const response = await fetch(serverAddress + "/api/configuration/adapter", {

@@ -12,7 +12,7 @@ namespace Eze.Quantbox
         private Random _rand = new Random();
         private Timer _timer = new Timer();
         private Dictionary<string, OrderStats> _algoStats = new Dictionary<string, OrderStats>();
-        public OrderStats GetStats(string AlgoName) { return null; }
+        public OrderStats GetStats(string algoName) { return null; }
 
         private const string csvFolder = @"csv\";
         public CsvAdapter()
@@ -88,6 +88,11 @@ namespace Eze.Quantbox
                 File.AppendAllText(csvFolder + filename, sb.ToString());
             }
             return true;
-        } 
+        }
+
+        public void CancelAllOrders(string algoName)
+        {
+            Console.WriteLine("Canceling all orders for " + algoName);
+        }
     }
 }
