@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using RealTick.Api.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Eze.Quantbox
@@ -133,6 +134,12 @@ namespace Eze.Quantbox
             {
                 Console.WriteLine("Saving to: " + System.IO.Path.Combine(_folderPath, _filename));
 
+                using (EventLog eventLog = new EventLog("Application"))
+                {
+                    eventLog.Source = "Application";
+                    eventLog.WriteEntry("Saving to: " + System.IO.Path.Combine(_folderPath, _filename), EventLogEntryType.Information, 101, 1);
+                }
+
                 // If directory doesn't exist, create it
                 System.IO.Directory.CreateDirectory(_folderPath);
                 System.IO.File.WriteAllText(System.IO.Path.Combine(_folderPath, _filename), json);
@@ -140,6 +147,12 @@ namespace Eze.Quantbox
             catch (Exception e)
             {
                 Console.WriteLine("Failed to save: " + e);
+
+                using (EventLog eventLog = new EventLog("Application"))
+                {
+                    eventLog.Source = "BlackBoxSim";
+                    eventLog.WriteEntry("Failed to save: " + e, EventLogEntryType.Information, 101, 1);
+                }
             }
         }
     }
