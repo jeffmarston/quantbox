@@ -22,6 +22,7 @@ namespace Eze.Quantbox
         public long lWorking;
         public Price ArrivalPrice;
         public ulong ConversionRuleFlags;
+        public string TicketID; // only exists on child orders
 
         public string GetDetails()
         {
@@ -179,6 +180,8 @@ namespace Eze.Quantbox
         }
 
         private Dictionary<string, OrderRecord> _book = new Dictionary<string, OrderRecord>();
+        private Dictionary<string, OrderRecord> _child_book = new Dictionary<string, OrderRecord>();
+
 
         public EmsAdapter(EmsSettings settings)
         {
@@ -288,6 +291,8 @@ namespace Eze.Quantbox
                         order.ArrivalPrice = f.PriceValue;
                     else if (f.FieldInfo.Name == "TS3_CONVERSION_RULE_FLAGS")
                         order.ConversionRuleFlags = (ulong)f.LongValue;
+                    else if (f.FieldInfo.Name == "TICKET_ID")
+                        order.TicketID = f.StringValue;
                 }
                 ProcessOrder(order, bRequest);
             }
@@ -321,11 +326,38 @@ namespace Eze.Quantbox
                     _book[order.OrderID] = order;
 
                     // Fire event to publish the result
-                    if ( !bRequest )    // only do this here for realtime updates.  Otherwise, do it outside of loop.
+                    if (!bRequest)    // only do this here for realtime updates.  Otherwise, do it outside of loop.
                         StatsChanged?.Invoke(order.Portfolio, stats);
 
                 }
+                else if (order.Type == "UserSubmitOrder")
+                {
+                    _child_book[order.OrderID] = order;
+                }
             }
+        }
+
+        private List<string> BuildListOfChildOrderIDs(string algoName, bool bLiveOnly=true)
+        {
+            List<string> IDs = new List<string>();
+
+            foreach (KeyValuePair<string, OrderRecord> entry in _child_book)
+            {
+                string TicketID = entry.Value.TicketID;
+                if (TicketID != null && TicketID.Length > 0)
+                {
+                    // look up the parent and see if it is associated with the desired Algo
+                    OrderRecord parent = _book[entry.Value.TicketID];
+                    if (parent != null && parent.Portfolio == algoName)
+                    {
+                        if ( !bLiveOnly || entry.Value.IsLive() )
+                            IDs.Add(entry.Value.OrderID);
+                    }
+                }
+            }
+
+
+            return IDs;
         }
 
         private OrderStats GetOrCreateStats(string name)
@@ -376,6 +408,23 @@ namespace Eze.Quantbox
         public string Customer { get; private set; }
         public string Deposit { get; private set; }
         public Action PublishStats { get; set; }
+
+        public bool CancelOneOrder(string orderID, string msg)
+        {
+            var data = new DataBlock();
+            var row = new Row();
+
+            row.Add(new Field("TYPE", FieldType.StringScalar, "UserSubmitCancel"));
+            row.Add(new Field("REFERS_TO_ID", FieldType.StringScalar, orderID));
+            if ( msg != null && msg.Length > 0 )
+                row.Add(new Field("REASON", FieldType.StringScalar, msg));
+
+            data.Add(row);
+
+            _query.Poke("ORDERS;*;", data.ConvertToBinary());
+
+            return true;
+        }
 
         public bool CreateTrades(IList<Trade> trades)
         {
@@ -465,8 +514,14 @@ namespace Eze.Quantbox
 
         public void CancelAllOrders(string algoName)
         {
-            // TODO DGover 
-            throw new NotImplementedException();
+            List<string> orderIDs = BuildListOfChildOrderIDs(algoName, true);
+            if (orderIDs != null)
+            {
+                foreach (string ID in orderIDs)
+                {
+                    CancelOneOrder(ID, "Cancel All");
+                }
+            }
         }
         #endregion
 
