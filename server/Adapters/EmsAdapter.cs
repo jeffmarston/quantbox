@@ -37,6 +37,16 @@ namespace Eze.Quantbox
         {
             return Status == "LIVE" || Status == "PENDING";
         }
+        // If buy, then 1.  If sell, than -1.  Otherwise, 0
+        public int SideMult()
+        {
+            if (Side.Equals("Buy", StringComparison.OrdinalIgnoreCase))
+                return 1;
+            else if (Side.Equals("Sell", StringComparison.OrdinalIgnoreCase) || Side.Equals("SellShort", StringComparison.OrdinalIgnoreCase))
+                return -1;
+            // not a buy or a sell?
+            return 0;
+        }
     }
 
     public class OrderStats
@@ -49,16 +59,14 @@ namespace Eze.Quantbox
         public long Deleted;    // no longer live, nothing filled
         public long TotalQty;
         public long CompletedQty;
-        public double TotalValue;
+        public double TotalValue;   // this is really Target Value:  Value of completed portion, plus estimate of residual portion.
         public double CompletedValue;
         public double CompletedPct;
+        public double BenchmarkValue;
+        public double BenchmarkPL;
         public long Manual;
         public long AutoRouted;
 
-        public void Reset()
-        {
-            Total = Pending = Staged = Working = Completed = Deleted = TotalQty = CompletedQty = 0;
-        }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -66,6 +74,7 @@ namespace Eze.Quantbox
             sb.AppendFormat("{0:F2}% Completed", dValueCompletion);
             sb.AppendFormat(", Total Orders: {0}", Total);
             sb.AppendFormat(" (Working: {0}, Staged: {1}, Completed: {2})", Working, Staged, Completed);
+            sb.AppendFormat(", P&L: {0:C2}", BenchmarkPL);
             sb.AppendLine();
             return sb.ToString();
         }
@@ -120,11 +129,17 @@ namespace Eze.Quantbox
             long OrderResidual = OrderTargetQty - order.lQtyTraded;
             double OrderCompletedValue = (double)(order.lQtyTraded * order.dPrice);
             double OrderResidualValue = (double)(OrderResidual * order.ArrivalPrice.DecimalValue);
+            double OrderTargetValue = OrderCompletedValue + OrderResidualValue;
+            double OrderBenchmarkValue = (double)(OrderTargetQty * order.ArrivalPrice.DecimalValue);
+            // Ex:  bought at 5, benchmark 7 -> P&L = 2.  Flip the sign for sells (SideMult)
+            double OrderPL = (OrderBenchmarkValue - OrderTargetValue) * order.SideMult();
 
             TotalQty += (OrderTargetQty * inc);
             CompletedQty += (order.lQtyTraded * inc);
-            CompletedValue += (double)(OrderCompletedValue * inc);
-            TotalValue += (OrderCompletedValue + OrderResidualValue) * inc;
+            CompletedValue += (OrderCompletedValue * inc);
+            TotalValue += (OrderTargetValue * inc);
+            BenchmarkValue += (OrderBenchmarkValue * inc);
+            BenchmarkPL += (OrderPL * inc);
             CompletedPct = 1000 * GetValueCompletionRate();
             CompletedPct = Math.Truncate(CompletedPct) / 10;
 
@@ -379,8 +394,7 @@ namespace Eze.Quantbox
         // delta updates for stats.
         private void RecalculateStats()
         {
-            foreach (KeyValuePair<string, OrderStats> s in Stats)
-                s.Value.Reset();
+            Stats.Clear();
 
             foreach ( KeyValuePair<string, OrderRecord> entry in _book )
             {
