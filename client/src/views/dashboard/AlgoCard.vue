@@ -88,7 +88,8 @@
         <div class="side-by-side">
           <div class="card-summary-panel">
             <label class="card-label">Benchmark P&L</label>
-            <h5 class="counter-format green-text">${{ algo.stats.benchmarkPL | numberFilter }}</h5>
+            <h5 v-if="algo.stats.benchmarkPL >= 0" class="counter-format green-text">${{ algo.stats.benchmarkPL | numberFilter }}</h5>
+            <h5 v-if="algo.stats.benchmarkPL < 0" class="counter-format red-text">${{ algo.stats.benchmarkPL | numberFilter }}</h5>
           </div>
           <b-button variant="danger" class="kill-button" @click="cancelAll">Cancel Open Orders</b-button>
         </div>
@@ -256,6 +257,9 @@ export default {
 .green-text {
   color: #4dbd74;
 }
+.red-text {
+    color: #ff0000;
+  }
 .fa-toggle-on {
   margin: 2px 0;
   font-size: 32px;
@@ -314,7 +318,7 @@ a {
 }
 .kill-button {
   float: right;
-  margin: 4px 10px;
+  margin: 16px 10px 10px ;
 }
 
 .card-content {
