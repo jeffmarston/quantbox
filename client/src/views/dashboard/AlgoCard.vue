@@ -88,8 +88,7 @@
         <div class="side-by-side">
           <div class="card-summary-panel">
             <label class="card-label">Benchmark P&L</label>
-            <h5 v-if="algo.stats.benchmarkPL >= 0" class="counter-format green-text">${{ algo.stats.benchmarkPL | numberFilter }}</h5>
-            <h5 v-if="algo.stats.benchmarkPL < 0" class="counter-format red-text">${{ algo.stats.benchmarkPL | numberFilter }}</h5>
+            <h5 v-bind:class="[algo.stats.benchmarkPL < 0 ? 'red-text' : 'green-text']">${{ algo.stats.benchmarkPL | numberFilter }}</h5>
           </div>
           <b-button variant="danger" class="kill-button" @click="cancelAll">Cancel Open Orders</b-button>
         </div>
@@ -318,7 +317,7 @@ a {
 }
 .kill-button {
   float: right;
-  margin: 16px 10px 10px ;
+  margin: 16px 10px 16px ;
 }
 
 .card-content {
