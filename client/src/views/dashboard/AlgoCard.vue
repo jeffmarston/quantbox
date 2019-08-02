@@ -33,10 +33,10 @@
         <div class="side-by-side">
           <div class="card-summary-panel">
             <label class="card-label large">Trades Created</label>
-            <h3
-              class="counter-format"
-              :class="{ 'green-text': algo.enabled }"
-            >{{ algo.stats.total | numberFilter }}</h3>
+            <h3 class="counter-format"
+                :class="{ 'green-text': algo.enabled }">
+              {{ algo.stats.total | numberFilter }}
+            </h3>
             <a href="reviewTrades">Review Trades</a>
           </div>
           <div class="card-summary-panel">
@@ -85,10 +85,15 @@
 
       <div class="card-body-chart">
         <vue-highcharts :options="options" ref="chart"></vue-highcharts>
-        <b-button class="kill-button" @click="cancelAll">Cancel Open Orders</b-button>
+        <div class="side-by-side">
+          <div class="card-summary-panel">
+            <label class="card-label">Benchmark P&L</label>
+            <h5 class="counter-format green-text">${{ algo.stats.benchmarkPL | numberFilter }}</h5>
+          </div>
+          <b-button variant="danger" class="kill-button" @click="cancelAll">Cancel Open Orders</b-button>
+        </div>
       </div>
     </div>
-
     <div slot="footer">
       <span>{{lastMsg}}</span>
     </div>
@@ -128,7 +133,7 @@ export default {
           events: {
             load: this.myLoader
           },
-          height: "300"
+          height: "260"
         },
         title: {
           text: ""
