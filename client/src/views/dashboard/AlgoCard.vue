@@ -186,6 +186,25 @@ export default {
 
               return data;
             })()
+          },
+          {
+            name: "Auto Executed",
+            data: (() => {
+              let data = [];
+
+              // this.algo.history.forEach(element => {
+              //   let timeConverted = new Date(element.date).getTime();
+              //   data.push({
+              //     x: timeConverted,
+              //     y: 0,
+              //     marker: {
+              //       enabled: false
+              //     }
+              //   });
+              // });
+
+              return data;
+            })()
           }
         ]
       }
@@ -194,16 +213,34 @@ export default {
   methods: {
     myLoader(parentObj) {
       // set up the updating of the chart each second
-      let series = parentObj.target.series[0];
+      let createdSeries = parentObj.target.series[0];
+      let autoSeries = parentObj.target.series[1];
+        
       this.timer = setInterval(() => {
-        let history = this.algo.history;
-        let rightNow = new Date().getTime();
-        // this logic may not be necessary is highcharts can extend the line to the rightmost boundary
+        // this logic may not be necessary if highcharts can extend the line to the rightmost boundary
         let lastElement =
-          history.length > 0 ? history[history.length - 1] : null;
+          this.algo.history.length > 0
+            ? this.algo.history[this.algo.history.length - 1]
+            : null;
 
         if (lastElement) {
-          series.addPoint([rightNow, this.algo.stats.total], true, true);
+          let twosecondslater = new Date(lastElement.date).getTime() + 2000;
+          this.algo.history.push({
+            date: twosecondslater,
+            value: this.algo.stats.total
+          });
+          
+          autoSeries.addPoint(
+            [twosecondslater, this.algo.stats.autoRouted],
+            true,
+            true
+          );
+
+          createdSeries.addPoint(
+            [twosecondslater, this.algo.stats.total],
+            true,
+            true
+          );
         }
       }, 2000);
     },
