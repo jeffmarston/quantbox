@@ -186,25 +186,6 @@ export default {
 
               return data;
             })()
-          },
-          {
-            name: "Auto Executed",
-            data: (() => {
-              let data = [];
-
-              // this.algo.history.forEach(element => {
-              //   let timeConverted = new Date(element.date).getTime();
-              //   data.push({
-              //     x: timeConverted,
-              //     y: 0,
-              //     marker: {
-              //       enabled: false
-              //     }
-              //   });
-              // });
-
-              return data;
-            })()
           }
         ]
       }
@@ -214,7 +195,6 @@ export default {
     myLoader(parentObj) {
       // set up the updating of the chart each second
       let createdSeries = parentObj.target.series[0];
-      let autoSeries = parentObj.target.series[1];
         
       this.timer = setInterval(() => {
         // this logic may not be necessary if highcharts can extend the line to the rightmost boundary
@@ -229,12 +209,6 @@ export default {
             date: twosecondslater,
             value: this.algo.stats.total
           });
-          
-          autoSeries.addPoint(
-            [twosecondslater, this.algo.stats.autoRouted],
-            true,
-            true
-          );
 
           createdSeries.addPoint(
             [twosecondslater, this.algo.stats.total],
