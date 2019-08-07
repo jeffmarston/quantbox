@@ -52,8 +52,8 @@
             <a href="reviewExceptions">Review Exceptions</a>
           </div>
           <div class="card-summary-panel">
-            <label class="card-label">Working Orders</label>
-            <h5 class="counter-format">{{ algo.stats.working | numberFilter }}</h5>
+            <label class="card-label">Working / Staged</label>
+            <h5 class="counter-format">{{ algo.stats.working | numberFilter }} / {{ algo.stats.staged | numberFilter }}</h5>
             <a href="reviewRoutes">Review Working Orders</a>
           </div>
         </div>
