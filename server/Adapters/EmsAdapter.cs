@@ -168,6 +168,8 @@ namespace Eze.Quantbox
                     AnythingInterestingChanged = true;
                 else if ( newOrder.lQtyTraded != oldOrder.lQtyTraded )
                     AnythingInterestingChanged = true;
+                else if ( newOrder.lQty != oldOrder.lQty )
+                    AnythingInterestingChanged = true;
             }
             if (AnythingInterestingChanged)
             {
