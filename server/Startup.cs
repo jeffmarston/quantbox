@@ -48,8 +48,8 @@ namespace Eze.Quantbox
             app.UseStaticFiles();
 
             app.UseOpenApi();
-            app.UseSwaggerUi3(); // serve Swagger UI
-            //app.UseReDoc(); // serve ReDoc UI
+            //app.UseSwaggerUi3(); // serve Swagger UI
+            app.UseReDoc(); // serve ReDoc UI
 
             app.UseSignalR(routes =>
             {
