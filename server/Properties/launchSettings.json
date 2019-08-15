@@ -15,12 +15,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "ConsoleApp": {
+    "Eze.Quantbox": {
       "commandName": "Project",
       "commandLineArgs": "--port 5000",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PATH": "PATH=%PATH%;C:\\TAL"
       },
       "applicationUrl": "http://localhost:4009/"
     }

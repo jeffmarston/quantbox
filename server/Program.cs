@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace Eze.SchemaCompare
+namespace Eze.Quantbox
 {
     public class Program
     {

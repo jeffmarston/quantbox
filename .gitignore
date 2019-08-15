@@ -7,6 +7,9 @@ server/packages/
 server/.vs
 server/**/obj/**
 
+blackboxsim/**
 
-schema-extract/obj/**
-schema-extract/bin/**
+request_QuantBox.json
+response_QuantBox.json
+blackboxsim_setup.exe
+server/*.LOG
