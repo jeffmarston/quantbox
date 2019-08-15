@@ -2,15 +2,15 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Eze.Quantbox
+namespace Eze.SchemaCompare
 {
-    public class MasterHub : Hub
+    public class MessageHub : Hub
     {
-        public AlgoMaster AlgoMaster { get; private set; }
+        public DataAccessor DataAccessor { get; private set; }
 
-        public MasterHub(AlgoMaster algoMaster)
+        public MessageHub(DataAccessor da)
         {
-            AlgoMaster = algoMaster;
+            DataAccessor = da;
         }
 
         public override async Task OnConnectedAsync()
@@ -18,7 +18,7 @@ namespace Eze.Quantbox
             var connId = Context.ConnectionId;
             Console.WriteLine("Connected = " + connId);
 
-            AlgoMaster.Publisher = Clients.All;
+            DataAccessor.Publisher = Clients.All;
             await base.OnConnectedAsync();
         }
 

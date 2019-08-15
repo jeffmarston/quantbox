@@ -4,7 +4,7 @@ const env = require("../environment.js");
 var readyFunction = null;
 
 let connection = new signalR.HubConnectionBuilder()
-  .withUrl(env.getServerAddress() + "/MasterHub")
+  .withUrl(env.getServerAddress() + "/MessageHub")
   .build();
 
 connection.start().then(function () {

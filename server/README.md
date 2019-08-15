@@ -1,29 +1,48 @@
-faux quant
+
+Schema Compare
 ==============
 
-faux quant is a simulator to demonstrate black box trading integration with the OMS and EMS products.
-It uses Vue, signalR, and dotnet core to provide a realtime view of your algos' performance.
+TODO:
 
-## Prerequisites
-- node.js [https://nodejs.org](https://nodejs.org)
-- dotnet core [https://dotnet.microsoft.com/download](https://dotnet.microsoft.com/download)
 
-# Run it!
+API Structure:
 
-## Client
-```
-> cd client
-> npm install
-> npm build
+POST /schema
+POST /schema/Viking
 
-## Server
+body = { version: '2019.4', objects: [...] } 
 
-The server only needs dependencies installed, so change to the server folder, install dependencies, and run the following:
-```
-> cd server
-> dotnet restore
-> dotnet run --console
-```
+GET versions
+GET schema/Viking
+GET schema/*2019.4
 
-You're up and running with the defaults. Navigate to ```http://localhost:5000``` to start using it.
-To view the API documentation, navigate to ```http://localhost:5000/swagger```
+GET objects/Viking/pr_GetSomething
+GET objects/*2019.4/pr_GetSomething
+
+
+
+
+GET /schema?client="Viking"
+GET /schema?version="2019.4"
+
+GET /schema/Viking?object="pr_GetWithIt"
+GET /schema?object="pr_GetWithIt"
+
+
+JSON dump of checksums
+GET clients/Viking/schema
+GET standard/schema
+
+JSON dump of checksums
+GET schema/Viking
+GET schema/*		
+
+contents of a specific object
+GET schema/Viking/pr_GetSomething
+GET schema/*/pr_GetSomething
+
+
+Pages:
+
+Scheam dump:
+Standard  |  Client panes

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 
-namespace Eze.Quantbox
+namespace Eze.SchemaCompare
 {
     public class Startup
     {
@@ -18,6 +18,7 @@ namespace Eze.Quantbox
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
             //services.AddOpenApiDocument();
             services.AddOpenApiDocument(document =>
             {
@@ -37,7 +38,7 @@ namespace Eze.Quantbox
                 .WithOrigins("http://localhost:8080");
             }));
             services.AddSignalR();
-            services.AddSingleton(new AlgoMaster());
+            services.AddSingleton(new DataAccessor());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,12 +49,12 @@ namespace Eze.Quantbox
             app.UseStaticFiles();
 
             app.UseOpenApi();
-            //app.UseSwaggerUi3(); // serve Swagger UI
-            app.UseReDoc(); // serve ReDoc UI
+            app.UseSwaggerUi3(); // serve Swagger UI
+            //app.UseReDoc(); // serve ReDoc UI
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<MasterHub>("/MasterHub");
+                routes.MapHub<MessageHub>("/MessageHub");
             });
             app.UseMvcWithDefaultRoute();
 

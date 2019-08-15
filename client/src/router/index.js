@@ -5,8 +5,8 @@ import Router from 'vue-router';
 const DefaultContainer = () => import('@/containers/DefaultContainer');
 
 // Views - Components
-const CodeEditor = () => import('@/views/dashboard/CodeEditor');
-const SplitPanel = () => import('@/containers/SplitPanel');
+const ClientOverview = () => import('@/views/ClientOverview');
+const CodeDiff = () => import('@/views/CodeDiff');
 const Settings = () => import('@/views/general/Settings');
 
 // Views - Pages
@@ -35,39 +35,24 @@ const router = new Router({
 router.addRoutes([
     {
       path: '/',
-      redirect: '/dashboard',
+      redirect: '/overview',
       name: 'Home',
       component: DefaultContainer,
       children: [
         {
-          path: 'dashboard',
-          name: 'Dashboard',
-          component: SplitPanel
+          path: 'overview',
+          name: 'Overview',
+          component: ClientOverview
         },
         {
-          path: 'algos',
-          name: 'algorithms',
-          redirect: '/algos/algo1',
-          component: {
-            render(c) { return c('router-view') }
-          },
-          children: [
-            {
-              path: 'algo1',
-              name: 'algo1',
-              component: CodeEditor
-            },
-            {
-              path: 'algo2',
-              name: 'algo2',
-              component: CodeEditor
-            },
-            {
-              path: 'algo3',
-              name: 'algo3',
-              component: CodeEditor
-            }
-          ]
+          path: 'client',
+          name: 'client',
+          component: ClientOverview
+        },
+        {
+          path: 'diff',
+          name: 'diff',
+          component: CodeDiff
         },
         {
           path: 'settings',

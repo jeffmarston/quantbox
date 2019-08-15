@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <AppHeader fixed>
-      <h4 class="app-title">Black Box Simulator</h4>
+      <h4 class="app-title">Schema Compare</h4>
     </AppHeader>
     <div class="app-body">
       <main class="main">
@@ -51,6 +51,5 @@ export default {
 <style scoped>
 .main-display-port {
     height: calc(100vh - 100px);
-    padding: 0;
 }
 </style>
