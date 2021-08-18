@@ -94,5 +94,10 @@ namespace Eze.Quantbox
         {
             Console.WriteLine("Canceling all orders for " + algoName);
         }
+
+        public void StatsRecalcNeeded(string algoName)
+        {
+            Console.WriteLine("Recalculating stats for " + algoName);
+        }
     }
 }

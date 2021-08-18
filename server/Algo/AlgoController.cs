@@ -63,5 +63,21 @@ namespace Eze.Quantbox
             }
         }
 
+        // POST api/algo/{algoName}/enabled
+        [HttpPost("{algoName}/recalculate")]
+        public ActionResult<string> PostRecalculate(string algoName, [FromBody] Boolean enabled)
+        {
+            algoName = algoName.ToLower().Trim();
+            var foundAlgo = AlgoMaster.Algos.Find(o => o.Name.ToLower().Trim() == algoName);
+            if (foundAlgo == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                foundAlgo.Adapter.StatsRecalcNeeded(foundAlgo.Name);
+                return Accepted();
+            }
+        }
     }
 }

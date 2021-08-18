@@ -9,6 +9,8 @@ namespace Eze.Quantbox
     {
         OrderStats GetStats(string algoName);
 
+        void StatsRecalcNeeded(string algoName);
+
         bool CreateTrades(IList<Trade> trades);
 
         event StatsEventHandler StatsChanged;

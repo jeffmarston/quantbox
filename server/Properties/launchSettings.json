@@ -21,7 +21,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PATH": "PATH=%PATH%;C:\\TAL"
+        "PATH": "PATH=%PATH%;C:\\realtick"
       },
       "applicationUrl": "http://localhost:4009/"
     }

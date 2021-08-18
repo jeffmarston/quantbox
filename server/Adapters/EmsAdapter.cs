@@ -67,6 +67,8 @@ namespace Eze.Quantbox
         public long Manual;
         public long AutoRouted;
 
+        public bool _statsRecalcNeeded = false;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -127,9 +129,18 @@ namespace Eze.Quantbox
 
             long OrderTargetQty = order.IsLive() ? order.lQty : order.lQtyTraded;
             long OrderResidual = OrderTargetQty - order.lQtyTraded;
+            if (OrderResidual < 0)
+                OrderResidual = 0;
             double OrderCompletedValue = (double)(order.lQtyTraded * order.dPrice);
             double OrderResidualValue = (double)(OrderResidual * order.ArrivalPrice.DecimalValue);
             double OrderTargetValue = OrderCompletedValue + OrderResidualValue;
+
+            if ( OrderTargetValue < OrderCompletedValue )
+            {
+                // this shouldn't happen, but it seems like it does occasionally...
+                OrderTargetValue = OrderCompletedValue;
+            }
+
             double OrderBenchmarkValue = (double)(OrderTargetQty * order.ArrivalPrice.DecimalValue);
             // Ex:  bought at 5, benchmark 7 -> P&L = 2.  Flip the sign for sells (SideMult)
             double OrderPL = (OrderBenchmarkValue - OrderTargetValue) * order.SideMult();
@@ -149,7 +160,7 @@ namespace Eze.Quantbox
 
                 if ((order.ConversionRuleFlags & CRF_SUBMITTED_BY_RULES) != 0)
                     AutoRouted += inc;
-                else if ( order.lWorking > 0 || order.lQtyTraded > 0 )
+                else if (order.lWorking > 0 || order.lQtyTraded > 0)
                     Manual += inc;
             }
         }
@@ -185,6 +196,7 @@ namespace Eze.Quantbox
     {
         static TalipcToolkitApp _app;
         private AsyncQuery _query;
+        private Random _rand = new Random();
 
         public EmsSettings Settings { get; set; }
         public Dictionary<string, OrderStats> Stats = new Dictionary<string, OrderStats>();
@@ -342,10 +354,25 @@ namespace Eze.Quantbox
                     stats.ReplaceOrder(order, oldOrder); // it's ok if oldOrder is null
                     _book[order.OrderID] = order;
 
+                    // I don't like this...
+                    if ( stats._statsRecalcNeeded )
+                    {
+                        RecalculateStats(order.Portfolio);
+                    }
+
                     // Fire event to publish the result
                     if (!bRequest)    // only do this here for realtime updates.  Otherwise, do it outside of loop.
                         StatsChanged?.Invoke(order.Portfolio, stats);
+                    if ( !bRequest )
+                    {
+                        if (_rand.Next(10) == 0)
+                        {
+                            var IDs = new List<string>();
+                            IDs.Add(order.OrderID);
+                            AppendMagicDataToOrders(IDs);
+                        }
 
+                    }
                 }
                 else if (order.Type == "UserSubmitOrder")
                 {
@@ -392,16 +419,35 @@ namespace Eze.Quantbox
             return stats;
         }
 
+        public void StatsRecalcNeeded(string name)
+        {
+            if (Stats.ContainsKey(name))
+            {
+                OrderStats stats = Stats[name];
+                if ( stats != null )
+                    stats._statsRecalcNeeded = true;
+            }
+        }
+
         // Call this to walk the book and recalculate all stats.  May not be necessary anymore, now that we support 
         // delta updates for stats.
-        private void RecalculateStats()
+        public void RecalculateStats(string algoName)
         {
-            Stats.Clear();
+            if ( algoName != null && algoName != "" )
+            {
+                if (Stats.ContainsKey(algoName))
+                    Stats[algoName] = null;
+            }
+            else // clear them all
+                Stats.Clear();
 
             foreach ( KeyValuePair<string, OrderRecord> entry in _book )
             {
-                OrderStats stats = GetOrCreateStats(entry.Value.Portfolio);
-                stats.AddOrder(entry.Value);
+                if (algoName == null || algoName.Length == 0 || entry.Value.Portfolio == algoName)
+                {
+                    OrderStats stats = GetOrCreateStats(entry.Value.Portfolio);
+                    stats.AddOrder(entry.Value);
+                }
             }
         }
 
@@ -481,6 +527,46 @@ namespace Eze.Quantbox
                 row.Add(new Field("PORTFOLIO_NAME", FieldType.StringScalar, trade.Algo));
                 row.Add(new Field("ORDER_TAG", FieldType.StringScalar, trade.Algo)); // STOCK
 
+                data.Add(row);
+            }
+
+            _query.Poke("ORDERS;*;", data.ConvertToBinary());
+
+            /*
+            if (_rand.Next(5) == 0)
+            {
+                var IDs = new List<string>();
+
+                foreach (KeyValuePair<string, OrderRecord> entry in _book)
+                {
+                    if (entry.Value.Symbol == "MSFT")
+                        IDs.Add(entry.Value.OrderID);
+                }
+                AppendMagicDataToOrders(IDs);
+            }
+            */
+
+            return true;
+        }
+
+        public bool AppendMagicDataToOrders(IList<string> OrderIDs)
+        {
+            var data = new DataBlock();
+            foreach (var ID in OrderIDs)
+            {
+                var row = new Row();
+
+                row.Add(new Field("TYPE", FieldType.StringScalar, "AppendEventData"));
+                row.Add(new Field("REFERS_TO_ID", FieldType.StringScalar, ID));
+                // populate the FIX_MSG field just to demonstrate the concept   
+
+                string sRandomValue;
+
+                int r = _rand.Next(100);
+                sRandomValue = r.ToString() + "%";
+                row.Add(new Field("FIX_MSG", FieldType.StringScalar, sRandomValue));
+                const int UPDATE_OVERWRITE_EXISTING = 2;
+                row.Add(new Field("UPDATE_TYPE", FieldType.IntScalar, UPDATE_OVERWRITE_EXISTING));
                 data.Add(row);
             }
 
