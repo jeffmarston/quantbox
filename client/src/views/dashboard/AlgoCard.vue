@@ -91,6 +91,7 @@
             <h5 v-bind:class="[algo.stats.benchmarkPL < 0 ? 'red-text' : 'green-text']">${{ algo.stats.benchmarkPL | numberFilter }}</h5>
           </div>
           <b-button variant="danger" class="kill-button" @click="cancelAll">Cancel Open Orders</b-button>
+          <b-button variant="danger" class="kill-button" @click="sendWave">Execute Wave</b-button>
         </div>
       </div>
     </div>
@@ -105,7 +106,8 @@ import {
   getAlgos,
   enableAlgos,
   deleteAlgoConfig,
-  cancelOrders
+  cancelOrders,
+  executeWave
 } from "../../shared/restProvider";
 import AlgoConfig from "./AlgoConfig";
 import VueHighcharts from "vue2-highcharts";
@@ -237,6 +239,11 @@ export default {
     cancelAll(){
       cancelOrders(this.algo.name).then(o => {
         console.log("Cancelled: " + this.algo.name);
+      });
+    },
+    sendWave(){
+      executeWave(this.algo.name).then(o => {
+        console.log("Executed Wave for : " + this.algo.name);
       });
     }
   },

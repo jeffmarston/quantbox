@@ -1,6 +1,7 @@
 ﻿using RealTick.Api.Communication;
 using RealTick.Api.Data;
 using RealTick.Api.Talipc;
+using RealTick.Api.ClientAdapter;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -194,7 +195,8 @@ namespace Eze.Quantbox
 
     public class EmsAdapter : ITradingSystemAdapter, IDisposable
     {
-        static TalipcToolkitApp _app;
+        //static TalipcToolkitApp _app;
+        static ClientAdapterToolkitApp _app;
         private AsyncQuery _query;
         private Random _rand = new Random();
 
@@ -218,7 +220,8 @@ namespace Eze.Quantbox
                 Settings = settings;
             if (_app == null)
             {
-                _app = new TalipcToolkitApp();
+                //_app = new TalipcToolkitApp();
+                _app = new ClientAdapterToolkitApp();
             }
 
             Stats = new Dictionary<string, OrderStats>();
@@ -339,44 +342,47 @@ namespace Eze.Quantbox
 
         private void ProcessOrder(OrderRecord order, bool bRequest)
         {
-            if (order != null)
+            lock (_lockObj)
             {
-                if (order.Type == "UserSubmitStagedOrder")
+                if (order != null)
                 {
-                    string sDetails = order.GetDetails();
-                    if (!bRequest)    // don't want to spam the console at startup...
-                        Console.WriteLine("Received Order Update: " + sDetails);
-                    OrderRecord oldOrder = null;
-                    if (_book.ContainsKey(order.OrderID))
-                        oldOrder = _book[order.OrderID];
-
-                    OrderStats stats = GetOrCreateStats(order.Portfolio);
-                    stats.ReplaceOrder(order, oldOrder); // it's ok if oldOrder is null
-                    _book[order.OrderID] = order;
-
-                    // I don't like this...
-                    if ( stats._statsRecalcNeeded )
+                    if (order.Type == "UserSubmitStagedOrder")
                     {
-                        RecalculateStats(order.Portfolio);
-                    }
+                        string sDetails = order.GetDetails();
+                        if (!bRequest)    // don't want to spam the console at startup...
+                            Console.WriteLine("Received Order Update: " + sDetails);
+                        OrderRecord oldOrder = null;
+                        if (_book.ContainsKey(order.OrderID))
+                            oldOrder = _book[order.OrderID];
 
-                    // Fire event to publish the result
-                    if (!bRequest)    // only do this here for realtime updates.  Otherwise, do it outside of loop.
-                        StatsChanged?.Invoke(order.Portfolio, stats);
-                    if ( !bRequest )
-                    {
-                        if (_rand.Next(10) == 0)
+                        OrderStats stats = GetOrCreateStats(order.Portfolio);
+                        stats.ReplaceOrder(order, oldOrder); // it's ok if oldOrder is null
+                        _book[order.OrderID] = order;
+
+                        // I don't like this...
+                        if (stats._statsRecalcNeeded)
                         {
-                            var IDs = new List<string>();
-                            IDs.Add(order.OrderID);
-                            AppendMagicDataToOrders(IDs);
+                            RecalculateStats(order.Portfolio);
                         }
 
+                        // Fire event to publish the result
+                        if (!bRequest)    // only do this here for realtime updates.  Otherwise, do it outside of loop.
+                            StatsChanged?.Invoke(order.Portfolio, stats);
+                        if (!bRequest)
+                        {
+                            if (_rand.Next(10) == 0)
+                            {
+                                var IDs = new List<string>();
+                                IDs.Add(order.OrderID);
+                                AppendMagicDataToOrders(IDs);
+                            }
+
+                        }
                     }
-                }
-                else if (order.Type == "UserSubmitOrder")
-                {
-                    _child_book[order.OrderID] = order;
+                    else if (order.Type == "UserSubmitOrder")
+                    {
+                        _child_book[order.OrderID] = order;
+                    }
                 }
             }
         }
@@ -385,21 +391,23 @@ namespace Eze.Quantbox
         {
             List<string> IDs = new List<string>();
 
-            foreach (KeyValuePair<string, OrderRecord> entry in _child_book)
+            lock (_lockObj)
             {
-                string TicketID = entry.Value.TicketID;
-                if (TicketID != null && TicketID.Length > 0)
+                foreach (KeyValuePair<string, OrderRecord> entry in _child_book)
                 {
-                    // look up the parent and see if it is associated with the desired Algo
-                    OrderRecord parent = _book[entry.Value.TicketID];
-                    if (parent != null && parent.Portfolio == algoName)
+                    string TicketID = entry.Value.TicketID;
+                    if (TicketID != null && TicketID.Length > 0)
                     {
-                        if ( !bLiveOnly || entry.Value.IsLive() )
-                            IDs.Add(entry.Value.OrderID);
+                        // look up the parent and see if it is associated with the desired Algo
+                        OrderRecord parent = _book[entry.Value.TicketID];
+                        if (parent != null && parent.Portfolio == algoName)
+                        {
+                            if (!bLiveOnly || entry.Value.IsLive())
+                                IDs.Add(entry.Value.OrderID);
+                        }
                     }
                 }
             }
-
 
             return IDs;
         }
@@ -453,7 +461,8 @@ namespace Eze.Quantbox
 
         private void OnOtherAck(object sender, AckEventArgs e)
         {
-            //Console.WriteLine("OnOtherAck");
+            if ((e.Status & 0x8000) == 0 )
+                Console.WriteLine("Received NAck for " + e.Item);
         }
 
         private void OnTerminate(object sender, EventArgs e)
@@ -470,6 +479,8 @@ namespace Eze.Quantbox
         public string Customer { get; private set; }
         public string Deposit { get; private set; }
         public Action PublishStats { get; set; }
+
+        private static object _lockObj = new object();
 
         public bool CancelOneOrder(string orderID, string msg)
         {
@@ -488,8 +499,47 @@ namespace Eze.Quantbox
             return true;
         }
 
+        public bool CreateChildFromParent(OrderRecord parent, Row childRow)
+        {
+            bool bSuccess = false;
+
+            if (parent.Status == "LIVE" && parent.lQtyTraded < parent.lQty)
+            {
+                childRow.Add(new Field("TYPE", FieldType.StringScalar, "UserSubmitOrder"));
+
+                childRow.Add(new Field("BANK", FieldType.StringScalar, Bank));
+                childRow.Add(new Field("BRANCH", FieldType.StringScalar, Branch));
+                childRow.Add(new Field("CUSTOMER", FieldType.StringScalar, Customer));
+                childRow.Add(new Field("DEPOSIT", FieldType.StringScalar, Deposit));
+                childRow.Add(new Field("DISP_NAME", FieldType.StringScalar, parent.Symbol));
+                childRow.Add(new Field("TICKET_ID", FieldType.StringScalar, parent.OrderID));
+                long lChildQty = parent.lQty - parent.lQtyTraded;
+                childRow.Add(new Field("VOLUME", FieldType.IntScalar, (int)lChildQty));
+                childRow.Add(new Field("VOLUME_TYPE", FieldType.StringScalar, "AsEntered"));
+                childRow.Add(new Field("PRICE_TYPE", FieldType.StringScalar, "Market"));
+                childRow.Add(new Field("GOOD_UNTIL", FieldType.StringScalar, "DAY"));
+                childRow.Add(new Field("BUYORSELL", FieldType.StringScalar, parent.Side));
+                if (parent.Side == "SellShort")
+                    childRow.Add(new Field("SHORT_LOCATE_ID", FieldType.StringScalar, "GSCO"));
+
+                childRow.Add(new Field("EXIT_VEHICLE", FieldType.StringScalar, "NONE"));
+                childRow.Add(new Field("DEST_ROUTE", FieldType.StringScalar, "DEMO"));
+                childRow.Add(new Field("ROUTING_BBCD", FieldType.StringScalar, "TAL,HARTFORD,DEREK,7"));
+                childRow.Add(new Field("CURRENCY", FieldType.StringScalar, "USD"));
+                childRow.Add(new Field("ACCT_TYPE", FieldType.IntScalar, 119));
+                childRow.Add(new Field("STYP", FieldType.IntScalar, 1)); // STOCK
+
+                childRow.Add(new Field("PORTFOLIO_NAME", FieldType.StringScalar, parent.Portfolio));
+                childRow.Add(new Field("ORDER_TAG", FieldType.StringScalar, parent.OrderTag));
+                bSuccess = true;
+            }
+
+            return bSuccess;
+        }
+
         public bool CreateTrades(IList<Trade> trades)
         {
+            bool s_bForeignEx = false;
             if (trades.Count == 0)
             {
                 return false;
@@ -500,7 +550,11 @@ namespace Eze.Quantbox
             {
                 var row = new Row();
 
-                row.Add(new Field("TYPE", FieldType.StringScalar, "UserSubmitStagedOrder"));
+                if (s_bForeignEx)
+                    row.Add(new Field("TYPE", FieldType.StringScalar, "ForeignExecution"));
+                else
+                    row.Add(new Field("TYPE", FieldType.StringScalar, "UserSubmitStagedOrder"));
+
                 row.Add(new Field("BANK", FieldType.StringScalar, Bank));
                 row.Add(new Field("BRANCH", FieldType.StringScalar, Branch));
                 row.Add(new Field("CUSTOMER", FieldType.StringScalar, Customer));
@@ -509,7 +563,10 @@ namespace Eze.Quantbox
                 row.Add(new Field("VOLUME", FieldType.IntScalar, trade.Amount));
                 row.Add(new Field("VOLUME_TYPE", FieldType.StringScalar, "AsEntered"));
                 row.Add(new Field("PRICE_TYPE", FieldType.StringScalar, "Market"));
-                row.Add(new Field("PRICE", FieldType.PriceScalar, new Price("0.0")));
+                if (s_bForeignEx)
+                    row.Add(new Field("PRICE", FieldType.PriceScalar, new Price("12.34")));
+                else
+                    row.Add(new Field("PRICE", FieldType.PriceScalar, new Price("0.0")));
                 row.Add(new Field("GOOD_UNTIL", FieldType.StringScalar, "DAY"));
                 string side = trade.Side;
                 if (side == "Short" || side == "SHORT")
@@ -625,6 +682,29 @@ namespace Eze.Quantbox
                 }
             }
         }
+        public void SendOffWave(string algoName)
+        {
+            Console.WriteLine("Sending Wave of orders for " + algoName);
+
+            var data = new DataBlock();
+
+            lock (_lockObj)
+            {
+                foreach (KeyValuePair<string, OrderRecord> entry in _book)
+                {
+                    if (entry.Value.Status == "LIVE" && entry.Value.lWorking == 0)
+                    {
+                        var row = new Row();
+
+                        if (CreateChildFromParent(entry.Value, row))
+                            data.Add(row);
+                    }
+                }
+                if (data.Count > 0)
+                    _query.Poke("ORDERS;*;", data.ConvertToBinary());
+            }
+        }
+
         #endregion
 
     }

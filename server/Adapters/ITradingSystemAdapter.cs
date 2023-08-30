@@ -16,5 +16,7 @@ namespace Eze.Quantbox
         event StatsEventHandler StatsChanged;
 
         void CancelAllOrders(string algoName);
+
+        void SendOffWave(string algoName);
     }
 }

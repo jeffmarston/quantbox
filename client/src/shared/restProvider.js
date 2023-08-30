@@ -83,6 +83,16 @@ export async function cancelOrders(algoName) {
     return await response.status;
 }
 
+export async function executeWave(algoName) {
+  const response = await fetch(
+    serverAddress + "/api/algo/" + algoName + "/executeWave", {
+    method: 'POST',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  return await response.status;
+}
+
 
 // export async function getAdapter() {
 //     const response = await fetch(serverAddress + "/api/configuration/adapter", {

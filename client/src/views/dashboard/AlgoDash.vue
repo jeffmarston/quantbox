@@ -137,9 +137,12 @@ export default {
       });
 
       conn.on("algo-stats", (name, stats) => {
+        console.log("algo-stats update: " + name);
         for (let i = 0; i < this.allAlgos.length; i++) {
           if (this.allAlgos[i].name === name) {
             this.allAlgos[i].stats = stats;
+            console.log("Found algo" + name);
+            console.log(" - Total =" + stats.Total);
           }
         }
       });
